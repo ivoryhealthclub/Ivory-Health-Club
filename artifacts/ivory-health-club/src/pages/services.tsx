@@ -122,7 +122,7 @@ export default function Services() {
                 
                 <Link href="/book">
                   <Button 
-                    className={`uppercase tracking-wider rounded-none font-bold px-8 h-12 ${
+                    className={`uppercase tracking-wider rounded-[10px] font-bold px-8 h-12 ${
                       svc.reverse 
                         ? 'bg-primary text-secondary hover:bg-white' 
                         : 'bg-secondary text-white hover:bg-primary hover:text-secondary'
@@ -146,7 +146,7 @@ export default function Services() {
             exclusive networking events, or luxury private gatherings.
           </p>
           <Link href="/book">
-            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-secondary bg-transparent rounded-none uppercase tracking-wider font-bold px-10 h-14 text-lg">
+            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-secondary bg-transparent rounded-[10px] uppercase tracking-wider font-bold px-10 h-14 text-lg">
               Inquire About Events
             </Button>
           </Link>

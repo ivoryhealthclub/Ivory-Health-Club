@@ -90,11 +90,11 @@ export default function Book() {
             and our concierge will contact you shortly to confirm the reservation details.
           </p>
           <div className="flex flex-col gap-4">
-            <Button onClick={() => setSuccess(false)} variant="outline" className="w-full rounded-none border-secondary text-secondary h-12 uppercase tracking-wider font-bold">
+            <Button onClick={() => setSuccess(false)} variant="outline" className="w-full rounded-[10px] border-secondary text-secondary h-12 uppercase tracking-wider font-bold">
               Make Another Booking
             </Button>
             <Link href="/">
-              <Button className="w-full rounded-none bg-secondary text-white hover:bg-primary h-12 uppercase tracking-wider font-bold">
+              <Button className="w-full rounded-[10px] bg-secondary text-white hover:bg-primary h-12 uppercase tracking-wider font-bold">
                 Return Home
               </Button>
             </Link>

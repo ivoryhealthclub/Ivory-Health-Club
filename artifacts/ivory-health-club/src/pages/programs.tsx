@@ -73,7 +73,7 @@ export default function Programs() {
               ))}
             </div>
             <Link href="/book">
-              <Button className="w-full bg-secondary text-white hover:bg-primary hover:text-secondary uppercase tracking-wider font-bold rounded-none h-12">
+              <Button className="w-full bg-secondary text-white hover:bg-primary hover:text-secondary uppercase tracking-wider font-bold rounded-[10px] h-12">
                 Book a Class
               </Button>
             </Link>
@@ -107,7 +107,7 @@ export default function Programs() {
               ))}
             </div>
             <Link href="/book">
-              <Button variant="outline" className="w-full border-secondary text-secondary hover:bg-secondary hover:text-white uppercase tracking-wider font-bold rounded-none h-12">
+              <Button variant="outline" className="w-full border-secondary text-secondary hover:bg-secondary hover:text-white uppercase tracking-wider font-bold rounded-[10px] h-12">
                 Enroll Child
               </Button>
             </Link>

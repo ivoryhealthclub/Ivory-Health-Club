@@ -106,7 +106,7 @@ export default function Membership() {
                   
                   <Link href={`/enroll?plan=${plan.id}`}>
                     <Button 
-                      className={`w-full uppercase tracking-wider rounded-none font-bold h-12 ${
+                      className={`w-full uppercase tracking-wider rounded-[10px] font-bold h-12 ${
                         isDiamond || isGoldPlus 
                           ? 'bg-primary text-secondary hover:bg-secondary hover:text-white' 
                           : 'bg-secondary text-white hover:bg-primary hover:text-secondary'
@@ -130,7 +130,7 @@ export default function Membership() {
             We offer bespoke health and wellness packages for companies looking to invest in their executives and teams.
           </p>
           <Link href="/contact">
-            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-secondary uppercase tracking-wider font-bold rounded-none px-8 h-14 bg-transparent">
+            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-secondary uppercase tracking-wider font-bold rounded-[10px] px-8 h-14 bg-transparent">
               Contact Concierge
             </Button>
           </Link>

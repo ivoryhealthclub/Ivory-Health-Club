@@ -73,12 +73,12 @@ export default function Home() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link href="/membership">
-              <Button size="lg" className="w-full sm:w-auto px-8 h-14 text-lg bg-primary text-secondary hover:bg-primary/90 rounded-none uppercase tracking-wider font-bold">
+              <Button size="lg" className="w-full sm:w-auto px-8 h-14 text-lg bg-primary text-secondary hover:bg-primary/90 rounded-[10px] uppercase tracking-wider font-bold">
                 Become a Member
               </Button>
             </Link>
             <Link href="/services">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 h-14 text-lg border-white text-white hover:bg-white hover:text-secondary rounded-none uppercase tracking-wider font-bold bg-transparent">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 h-14 text-lg border-white text-white hover:bg-white hover:text-secondary rounded-[10px] uppercase tracking-wider font-bold bg-transparent">
                 Discover Ivory
               </Button>
             </Link>
@@ -148,7 +148,7 @@ export default function Home() {
           
           <div className="text-center mt-12">
             <Link href="/services">
-              <Button variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-white rounded-none uppercase tracking-wider font-bold px-8 h-12">
+              <Button variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-white rounded-[10px] uppercase tracking-wider font-bold px-8 h-12">
                 View All Services
               </Button>
             </Link>
@@ -168,7 +168,7 @@ export default function Home() {
               </p>
             </div>
             <Link href="/membership">
-              <Button className="bg-primary text-secondary hover:bg-white hover:text-secondary rounded-none uppercase tracking-wider font-bold">
+              <Button className="bg-primary text-secondary hover:bg-white hover:text-secondary rounded-[10px] uppercase tracking-wider font-bold">
                 See All Plans
               </Button>
             </Link>
@@ -191,7 +191,7 @@ export default function Home() {
                   ))}
                 </ul>
                 <Link href={`/enroll?plan=${plan.id}`}>
-                  <Button className="w-full bg-transparent border border-primary text-primary hover:bg-primary hover:text-secondary rounded-none uppercase tracking-wider font-bold">
+                  <Button className="w-full bg-transparent border border-primary text-primary hover:bg-primary hover:text-secondary rounded-[10px] uppercase tracking-wider font-bold">
                     Select Plan
                   </Button>
                 </Link>

@@ -107,7 +107,7 @@ export default function Enroll() {
           </p>
           <div className="flex justify-center gap-4">
             <Link href="/">
-              <Button variant="outline" className="border-secondary text-secondary rounded-none uppercase tracking-wider font-bold">
+              <Button variant="outline" className="border-secondary text-secondary rounded-[10px] uppercase tracking-wider font-bold">
                 Return Home
               </Button>
             </Link>
