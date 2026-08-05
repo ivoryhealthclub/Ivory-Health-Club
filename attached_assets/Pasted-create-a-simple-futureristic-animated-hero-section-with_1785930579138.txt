@@ -1,0 +1,72 @@
+create a simple, futureristic, animated hero section with scroll effect website for IVory Health Club, it a company that deal with health wellness, and over services like GYM, Spa, Entertainment
+Membership, Food and beverages wjicj include Restaurant and 
+Juicebar. Gallery, Blog, Contact, also programs like Fitness Programs
+KID/Youh Programs.
+user can enrol for membership which is categorised like 
+Silver Single:
+Gym, Aerobics, Basketball, Steam room, Sauna, 25% discount on guests & 10% discount on events.
+
+Silver Family (Couple with four kids under the age of 12 years):
+Gym, Aerobics, Basketball, Steam room, Sauna, 25% discount on guests & 10% discount on events.
+
+Gold Single:
+Gym, Aerobics, Swimming, Squash, Basketball, Ping pong, Volleyball, Steam room, Sauna, 50% discount on guests, & 15% discount on events.
+
+
+Gold Family (Couple with four kids under the age of 12 years):
+Gym, Aerobics, Swimming, Squash, Basketball, Volleyball, Ping pong, Steam room, Sauna, 50% discount on guests, & 15% discount on events.
+
+
+Gold Plus (Three adults with five kids under the age of 12 years):
+Gym, Aerobics, Swimming, Squash, Basketball, Lawn Tennis, Volleyball, Ping pong, Billiard, Steam room, Sauna, a monthly free spa treatment (member & spouse each), 50% discount on guests, & 15% discount on events.
+
+
+Diamond:
+Same as gold plus in addition to 2 monthly free spa treatments on appointment (member & spouse each) & 20% discount on events.
+
+
+70 Plus Club:
+Gym, Aerobics, Swimming, Squash, Basketball, Volleyball, Table tennis, Steam room, Sauna and group fitness, social and fun activities like Dance, nutrition, games, etc.
+
+which will allow user who want to register for any membership can fill the form on the website and make payment and also receive comfirmation message on the gmails. also allow user to book for any services also for book event Hall on the entertainment section.
+On the admin dashboard which will allow the admin to monitor, review registerions and booking, recieve an confirm payment, monitor all memebership subcribtions
+
+
+Suggested Website Color Usage
+Primary Buttons
+Background: #F8C301
+Text: #29166F
+Hover: #D8A700
+Secondary Buttons
+Background: #29166F
+Text: #FFFFFF
+Hover: #1B0F4F
+Hero Section
+Background Gradient:
+#140A3A
+#29166F
+#4A329A
+Cards
+Background: #FFFFFF
+Border: #E5E7EB
+Hover Shadow:
+rgba(41,22,111,.15)
+Icons
+Purple: #29166F
+Gold: #F8C301
+Links
+Default: #29166F
+Hover: #F8C301
+Recommended Gradients
+Premium Gold
+#F8C301 → #FFD54A
+Royal Purple
+#140A3A → #29166F → #4A329A
+Luxury Gradient
+#29166F → #4A329A → #F8C301
+Typography Colors
+Element	Color
+Main Heading	#29166F
+Body Text	#374151
+Highlight Text	#F8C301
+Light Text	#FFFFFF

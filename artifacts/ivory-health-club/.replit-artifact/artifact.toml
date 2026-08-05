@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Ivory Health Club"
+description = "A full-stack website for Ivory Health Club — a premium health and wellness center offering gym, spa, entertainment, food & beverages, fitness programs, and kids/youth programs. Includes animated hero with scroll effects, membership enrollment with payment, service/event booking, member portal, and an admin dashboard."
+version = "1.0.0"
+id = "artifacts/ivory-health-club"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24288
+
+[services.development]
+run = "pnpm --filter @workspace/ivory-health-club run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/ivory-health-club", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/ivory-health-club/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24288"
+BASE_PATH = "/"

@@ -3,20 +3,32 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Ivory Health Club API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: memberships
+    description: Membership plans and enrollments
+  - name: bookings
+    description: Service and event hall bookings
+  - name: blog
+    description: Blog posts
+  - name: gallery
+    description: Gallery images
+  - name: contact
+    description: Contact form submissions
+  - name: admin
+    description: Admin dashboard operations
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +36,848 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # Membership Plans
+  /membership-plans:
+    get:
+      operationId: listMembershipPlans
+      tags: [memberships]
+      summary: Get all membership plans
+      responses:
+        "200":
+          description: List of membership plans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MembershipPlan"
+
+  /membership-plans/{id}:
+    get:
+      operationId: getMembershipPlan
+      tags: [memberships]
+      summary: Get a membership plan by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Membership plan details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MembershipPlan"
+        "404":
+          description: Not found
+
+  # Enrollment / Registrations
+  /enrollments:
+    get:
+      operationId: listEnrollments
+      tags: [memberships]
+      summary: List all enrollments (admin)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, active, expired, cancelled]
+        - name: planId
+          in: query
+          schema:
+            type: number
+      responses:
+        "200":
+          description: List of enrollments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Enrollment"
+    post:
+      operationId: createEnrollment
+      tags: [memberships]
+      summary: Enroll a new member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EnrollmentInput"
+      responses:
+        "201":
+          description: Enrollment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Enrollment"
+        "400":
+          description: Validation error
+
+  /enrollments/{id}:
+    get:
+      operationId: getEnrollment
+      tags: [memberships]
+      summary: Get an enrollment by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Enrollment details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Enrollment"
+        "404":
+          description: Not found
+
+  /enrollments/{id}/confirm-payment:
+    patch:
+      operationId: confirmPayment
+      tags: [memberships]
+      summary: Admin confirms payment for an enrollment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentConfirmation"
+      responses:
+        "200":
+          description: Payment confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Enrollment"
+        "404":
+          description: Not found
+
+  # Bookings
+  /bookings:
+    get:
+      operationId: listBookings
+      tags: [bookings]
+      summary: List all bookings (admin)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, confirmed, cancelled]
+        - name: serviceType
+          in: query
+          schema:
+            type: string
+            enum: [gym, spa, entertainment, restaurant, juicebar, event_hall, fitness_program, youth_program]
+      responses:
+        "200":
+          description: List of bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+    post:
+      operationId: createBooking
+      tags: [bookings]
+      summary: Book a service or event hall
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingInput"
+      responses:
+        "201":
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "400":
+          description: Validation error
+
+  /bookings/{id}:
+    get:
+      operationId: getBooking
+      tags: [bookings]
+      summary: Get a booking by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Booking details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateBookingStatus
+      tags: [bookings]
+      summary: Update booking status (admin confirm/cancel)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingStatusUpdate"
+      responses:
+        "200":
+          description: Booking updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "404":
+          description: Not found
+
+  # Blog Posts
+  /blog-posts:
+    get:
+      operationId: listBlogPosts
+      tags: [blog]
+      summary: List all published blog posts
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: number
+            default: 10
+      responses:
+        "200":
+          description: List of blog posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BlogPost"
+    post:
+      operationId: createBlogPost
+      tags: [blog]
+      summary: Create a new blog post (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlogPostInput"
+      responses:
+        "201":
+          description: Blog post created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogPost"
+
+  /blog-posts/{id}:
+    get:
+      operationId: getBlogPost
+      tags: [blog]
+      summary: Get a blog post by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Blog post details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogPost"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateBlogPost
+      tags: [blog]
+      summary: Update a blog post (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlogPostPatch"
+      responses:
+        "200":
+          description: Blog post updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogPost"
+    delete:
+      operationId: deleteBlogPost
+      tags: [blog]
+      summary: Delete a blog post (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "204":
+          description: Deleted
+
+  # Gallery
+  /gallery:
+    get:
+      operationId: listGalleryImages
+      tags: [gallery]
+      summary: List gallery images
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of gallery images
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GalleryImage"
+    post:
+      operationId: createGalleryImage
+      tags: [gallery]
+      summary: Add a gallery image (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GalleryImageInput"
+      responses:
+        "201":
+          description: Gallery image added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GalleryImage"
+
+  /gallery/{id}:
+    delete:
+      operationId: deleteGalleryImage
+      tags: [gallery]
+      summary: Delete a gallery image (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "204":
+          description: Deleted
+
+  # Contact
+  /contact:
+    post:
+      operationId: submitContact
+      tags: [contact]
+      summary: Submit a contact form message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "201":
+          description: Message submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactMessage"
+        "400":
+          description: Validation error
+
+  /contact-messages:
+    get:
+      operationId: listContactMessages
+      tags: [contact]
+      summary: List all contact messages (admin)
+      parameters:
+        - name: isRead
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of contact messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ContactMessage"
+
+  /contact-messages/{id}/read:
+    patch:
+      operationId: markContactRead
+      tags: [contact]
+      summary: Mark a contact message as read (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MarkReadInput"
+      responses:
+        "200":
+          description: Message updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactMessage"
+
+  # Admin Dashboard
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Get dashboard summary stats
+      responses:
+        "200":
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /admin/recent-activity:
+    get:
+      operationId: getRecentActivity
+      tags: [admin]
+      summary: Get recent enrollments and bookings activity feed
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: number
+            default: 10
+      responses:
+        "200":
+          description: Recent activity list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+  /admin/membership-breakdown:
+    get:
+      operationId: getMembershipBreakdown
+      tags: [admin]
+      summary: Get enrollment counts grouped by plan
+      responses:
+        "200":
+          description: Membership breakdown by plan
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MembershipBreakdownItem"
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    MembershipPlan:
+      type: object
+      required: [id, name, tier, description, price, perks]
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        tier:
+          type: string
+          enum: [silver_single, silver_family, gold_single, gold_family, gold_plus, diamond, seventy_plus]
+        description:
+          type: string
+        price:
+          type: number
+        pricePeriod:
+          type: string
+          enum: [monthly, annual]
+        perks:
+          type: array
+          items:
+            type: string
+        discounts:
+          type: string
+        maxMembers:
+          type: ["number", "null"]
+
+    Enrollment:
+      type: object
+      required: [id, planId, firstName, lastName, email, phone, status, paymentStatus, createdAt]
+      properties:
+        id:
+          type: number
+        planId:
+          type: number
+        planName:
+          type: ["string", "null"]
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          type: ["string", "null"]
+        dateOfBirth:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, active, expired, cancelled]
+        paymentStatus:
+          type: string
+          enum: [unpaid, paid, failed]
+        paymentReference:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    EnrollmentInput:
+      type: object
+      required: [planId, firstName, lastName, email, phone]
+      properties:
+        planId:
+          type: number
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        dateOfBirth:
+          type: string
+        notes:
+          type: string
+
+    PaymentConfirmation:
+      type: object
+      required: [paymentReference]
+      properties:
+        paymentReference:
+          type: string
+        notes:
+          type: string
+
+    Booking:
+      type: object
+      required: [id, serviceType, firstName, lastName, email, phone, bookingDate, status, createdAt]
+      properties:
+        id:
+          type: number
+        serviceType:
+          type: string
+          enum: [gym, spa, entertainment, restaurant, juicebar, event_hall, fitness_program, youth_program]
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        bookingDate:
+          type: string
+        bookingTime:
+          type: ["string", "null"]
+        numberOfGuests:
+          type: ["number", "null"]
+        specialRequests:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    BookingInput:
+      type: object
+      required: [serviceType, firstName, lastName, email, phone, bookingDate]
+      properties:
+        serviceType:
+          type: string
+          enum: [gym, spa, entertainment, restaurant, juicebar, event_hall, fitness_program, youth_program]
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        bookingDate:
+          type: string
+        bookingTime:
+          type: string
+        numberOfGuests:
+          type: number
+        specialRequests:
+          type: string
+
+    BookingStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled]
+        notes:
+          type: string
+
+    BlogPost:
+      type: object
+      required: [id, title, slug, content, category, published, createdAt]
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        slug:
+          type: string
+        excerpt:
+          type: ["string", "null"]
+        content:
+          type: string
+        category:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        author:
+          type: string
+        published:
+          type: boolean
+        createdAt:
+          type: string
+
+    BlogPostInput:
+      type: object
+      required: [title, content, category, author]
+      properties:
+        title:
+          type: string
+        excerpt:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+        imageUrl:
+          type: string
+        author:
+          type: string
+        published:
+          type: boolean
+
+    BlogPostPatch:
+      type: object
+      properties:
+        title:
+          type: string
+        excerpt:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+        imageUrl:
+          type: string
+        author:
+          type: string
+        published:
+          type: boolean
+
+    GalleryImage:
+      type: object
+      required: [id, url, title, category, createdAt]
+      properties:
+        id:
+          type: number
+        url:
+          type: string
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        category:
+          type: string
+        createdAt:
+          type: string
+
+    GalleryImageInput:
+      type: object
+      required: [url, title, category]
+      properties:
+        url:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+
+    ContactMessage:
+      type: object
+      required: [id, name, email, subject, message, isRead, createdAt]
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        subject:
+          type: string
+        message:
+          type: string
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+
+    ContactInput:
+      type: object
+      required: [name, email, subject, message]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+
+    MarkReadInput:
+      type: object
+      required: [isRead]
+      properties:
+        isRead:
+          type: boolean
+
+    AdminStats:
+      type: object
+      required: [totalMembers, activeMembers, pendingEnrollments, totalBookings, pendingBookings, confirmedBookings, unreadMessages, totalRevenue]
+      properties:
+        totalMembers:
+          type: number
+        activeMembers:
+          type: number
+        pendingEnrollments:
+          type: number
+        totalBookings:
+          type: number
+        pendingBookings:
+          type: number
+        confirmedBookings:
+          type: number
+        unreadMessages:
+          type: number
+        totalRevenue:
+          type: number
+
+    ActivityItem:
+      type: object
+      required: [id, type, title, description, timestamp]
+      properties:
+        id:
+          type: number
+        type:
+          type: string
+          enum: [enrollment, booking, contact, payment]
+        title:
+          type: string
+        description:
+          type: string
+        timestamp:
+          type: string
+        status:
+          type: ["string", "null"]
+
+    MembershipBreakdownItem:
+      type: object
+      required: [planName, tier, count]
+      properties:
+        planName:
+          type: string
+        tier:
+          type: string
+        count:
+          type: number
