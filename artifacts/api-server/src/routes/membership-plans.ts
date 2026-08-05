@@ -14,7 +14,12 @@ router.get("/membership-plans", async (_req, res): Promise<void> => {
     .select()
     .from(membershipPlansTable)
     .orderBy(membershipPlansTable.id);
-  res.json(ListMembershipPlansResponse.parse(plans));
+  const normalized = plans.map((p) => ({
+    ...p,
+    discounts: p.discounts ?? undefined,
+    maxMembers: p.maxMembers ?? undefined,
+  }));
+  res.json(ListMembershipPlansResponse.parse(normalized));
 });
 
 router.get("/membership-plans/:id", async (req, res): Promise<void> => {
@@ -35,7 +40,11 @@ router.get("/membership-plans/:id", async (req, res): Promise<void> => {
     return;
   }
 
-  res.json(GetMembershipPlanResponse.parse(plan));
+  res.json(GetMembershipPlanResponse.parse({
+    ...plan,
+    discounts: plan.discounts ?? undefined,
+    maxMembers: plan.maxMembers ?? undefined,
+  }));
 });
 
 export default router;
