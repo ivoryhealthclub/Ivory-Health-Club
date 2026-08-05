@@ -64,15 +64,20 @@ export function Footer() {
             <ul className="flex flex-col gap-4">
               <li className="flex gap-3 items-start">
                 <MapPin className="text-primary shrink-0 mt-1" size={18} />
-                <span>12 Luxury Avenue, Victoria Island, Lagos, Nigeria</span>
+                <span>4, Ogundana Street, off Allen Avenue, Ikeja, Lagos State, Nigeria.</span>
               </li>
-              <li className="flex gap-3 items-center">
-                <Phone className="text-primary shrink-0" size={18} />
-                <span>+234 800 IVORY CLUB</span>
+              <li className="flex gap-3 items-start">
+                <Phone className="text-primary shrink-0 mt-1" size={18} />
+                <div className="flex flex-col gap-1">
+                  <a href="tel:+2348108897628" className="hover:text-primary transition-colors">+234 810 889 7628</a>
+                  <a href="tel:+2348108897631" className="hover:text-primary transition-colors">+234 810 889 7631</a>
+                  <a href="tel:+2348108897650" className="hover:text-primary transition-colors">+234 810 889 7650</a>
+                  <a href="tel:+2348108897652" className="hover:text-primary transition-colors">+234 810 889 7652</a>
+                </div>
               </li>
               <li className="flex gap-3 items-center">
                 <Mail className="text-primary shrink-0" size={18} />
-                <span>concierge@ivoryhealth.club</span>
+                <a href="mailto:Info@ihc-ng.com" className="hover:text-primary transition-colors">Info@ihc-ng.com</a>
               </li>
             </ul>
           </div>
