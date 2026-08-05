@@ -1,0 +1,1 @@
+- [Imported preview setup](imported-preview-setup.md) — full-stack imports may need explicit workflows, dev schema setup, and a Vite API proxy.
