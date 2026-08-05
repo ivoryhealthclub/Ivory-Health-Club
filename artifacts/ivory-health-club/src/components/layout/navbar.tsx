@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import logo from "@assets/Logo_IHC_1785932659433.png";
 
 export function Navbar() {
   const [location] = useLocation();
@@ -43,18 +44,12 @@ export function Navbar() {
       )}
     >
       <div className="container mx-auto px-6 max-w-7xl flex items-center justify-between">
-        <Link href="/" className="group flex items-center gap-2">
-          <div className="w-10 h-10 bg-primary rounded-sm flex items-center justify-center text-secondary font-serif font-bold text-2xl group-hover:scale-105 transition-transform">
-            I
-          </div>
-          <div
-            className={cn(
-              "font-serif text-2xl font-bold tracking-wider",
-              isScrolled ? "text-secondary" : "text-white"
-            )}
-          >
-            IVORY
-          </div>
+        <Link href="/" className="group flex items-center">
+          <img
+            src={logo}
+            alt="Ivory Health Club"
+            className="h-12 w-auto object-contain transition-transform group-hover:scale-105"
+          />
         </Link>
 
         {/* Desktop Nav */}

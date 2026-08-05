@@ -12,6 +12,7 @@ import {
   LogOut,
   ChevronLeft
 } from "lucide-react";
+import logo from "@assets/Logo_IHC_1785932659433.png";
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
@@ -31,12 +32,12 @@ export function AdminLayout({ children }: { children: ReactNode }) {
       {/* Sidebar */}
       <aside className="w-full md:w-64 bg-secondary text-white md:min-h-screen flex flex-col shrink-0">
         <div className="p-6 border-b border-white/10 flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center text-secondary font-serif font-bold text-xl">
-            I
-          </div>
-          <div className="font-serif font-bold tracking-wider">
-            IVORY ADMIN
-          </div>
+          <img
+            src={logo}
+            alt="Ivory Health Club"
+            className="h-12 w-auto object-contain bg-white rounded-sm p-1"
+          />
+          <div className="font-serif font-bold tracking-wider">ADMIN</div>
         </div>
         
         <nav className="flex-1 py-6 px-4 flex flex-col gap-1 overflow-y-auto">

@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { Facebook, Instagram, Twitter, MapPin, Phone, Mail } from "lucide-react";
+import logo from "@assets/Logo_IHC_1785932659433.png";
 
 export function Footer() {
   return (
@@ -9,13 +10,12 @@ export function Footer() {
           
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 bg-primary rounded-sm flex items-center justify-center text-[#140A3A] font-serif font-bold text-2xl">
-                I
-              </div>
-              <div className="font-serif text-2xl font-bold tracking-wider text-white">
-                IVORY
-              </div>
+            <div className="mb-6">
+              <img
+                src={logo}
+                alt="Ivory Health Club"
+                className="h-16 w-auto object-contain"
+              />
             </div>
             <p className="text-white/60 text-sm leading-relaxed mb-6">
               A premium luxury health and wellness destination in Nigeria. 
