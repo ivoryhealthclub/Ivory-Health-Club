@@ -20,6 +20,7 @@ import BlogList from '@/pages/blog';
 import BlogPost from '@/pages/blog-post';
 import Book from '@/pages/book';
 import Contact from '@/pages/contact';
+import About from '@/pages/about';
 
 // Admin Pages
 import AdminDashboard from '@/pages/admin/dashboard';
@@ -47,6 +48,7 @@ function MainRoutes() {
           <Route path="/blog/:id" component={BlogPost} />
           <Route path="/book" component={Book} />
           <Route path="/contact" component={Contact} />
+          <Route path="/about" component={About} />
           <Route component={NotFound} />
         </Switch>
       </AnimatePresence>
