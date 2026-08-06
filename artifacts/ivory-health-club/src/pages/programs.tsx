@@ -3,54 +3,121 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import programsImg from "@assets/generated_images/programs.jpg";
 import youthImg from "@assets/generated_images/youth.jpg";
+import sevenPlusImg from "@assets/generated_images/70-plus-club.jpg";
+import weightLossImg from "@assets/generated_images/weight-loss-challenge.jpg";
+import bond4Img from "@assets/generated_images/bond4fitness.jpg";
+import fit2LiveImg from "@assets/generated_images/fit2live-bootcamp.jpg";
+import personalTrainingImg from "@assets/generated_images/personal-training.jpg";
+import boxingImg from "@assets/generated_images/boxing-class.jpg";
+
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.55, delay },
+});
+
+interface SpecialProgramProps {
+  image: string;
+  tag: string;
+  title: string;
+  body: React.ReactNode;
+  reverse?: boolean;
+  accent?: "gold" | "navy";
+}
+
+function SpecialProgram({ image, tag, title, body, reverse, accent = "navy" }: SpecialProgramProps) {
+  const overlayClass =
+    accent === "gold"
+      ? reverse
+        ? "bg-gradient-to-r from-primary/70 to-transparent"
+        : "bg-gradient-to-l from-primary/70 to-transparent"
+      : reverse
+      ? "bg-gradient-to-r from-secondary/80 to-transparent"
+      : "bg-gradient-to-l from-secondary/80 to-transparent";
+
+  return (
+    <motion.div
+      {...fadeUp()}
+      className={`bg-white shadow-xl rounded-xl overflow-hidden flex flex-col ${
+        reverse ? "lg:flex-row-reverse" : "lg:flex-row"
+      } mb-16`}
+    >
+      {/* Image */}
+      <div className="lg:w-1/2 relative min-h-[360px]">
+        <img src={image} alt={title} className="absolute inset-0 w-full h-full object-cover" />
+        <div className={`absolute inset-0 ${overlayClass}`} />
+        <div
+          className={`absolute inset-0 flex items-end p-10 ${
+            reverse ? "justify-start" : "justify-end text-right"
+          }`}
+        >
+          <span className="bg-primary text-secondary text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full">
+            {tag}
+          </span>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="lg:w-1/2 p-10 lg:p-14 flex flex-col justify-center">
+        <h3 className="text-3xl font-serif font-bold text-secondary mb-5">{title}</h3>
+        <div className="text-gray-600 leading-relaxed space-y-3 mb-8">{body}</div>
+        <Link href="/book">
+          <Button className="self-start uppercase tracking-wider rounded-full font-bold px-8 bg-secondary text-white hover:bg-primary hover:text-secondary transition-all duration-200">
+            Get Started
+          </Button>
+        </Link>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function Programs() {
   const adultPrograms = [
-    { title: "HIIT Intensity", schedule: "Mon, Wed, Fri - 6:00 AM", trainer: "Alex M." },
-    { title: "Vinyasa Flow Yoga", schedule: "Tue, Thu - 7:00 AM", trainer: "Sarah K." },
-    { title: "Pilates Core", schedule: "Mon, Wed - 6:00 PM", trainer: "Sarah K." },
-    { title: "Spin & Burn", schedule: "Daily - 5:30 PM", trainer: "David J." },
-    { title: "Strength & Conditioning", schedule: "Tue, Thu, Sat - 8:00 AM", trainer: "Marcus T." },
+    { title: "HIIT Intensity", schedule: "Mon, Wed, Fri — 6:00 AM", trainer: "Alex M." },
+    { title: "Vinyasa Flow Yoga", schedule: "Tue, Thu — 7:00 AM", trainer: "Sarah K." },
+    { title: "Pilates Core", schedule: "Mon, Wed — 6:00 PM", trainer: "Sarah K." },
+    { title: "Spin & Burn", schedule: "Daily — 5:30 PM", trainer: "David J." },
+    { title: "Strength & Conditioning", schedule: "Tue, Thu, Sat — 8:00 AM", trainer: "Marcus T." },
   ];
 
   const youthPrograms = [
-    { title: "Kids Karate", age: "6-12 Years", schedule: "Sat - 10:00 AM" },
-    { title: "Teen Functional Fitness", age: "13-17 Years", schedule: "Wed - 4:30 PM" },
-    { title: "Youth Swim Club", age: "8-14 Years", schedule: "Sun - 9:00 AM" },
+    { title: "Kids Karate", age: "6–12 Years", schedule: "Sat — 10:00 AM" },
+    { title: "Teen Functional Fitness", age: "13–17 Years", schedule: "Wed — 4:30 PM" },
+    { title: "Youth Swim Club", age: "8–14 Years", schedule: "Sun — 9:00 AM" },
   ];
 
   return (
     <div className="pt-24 bg-gray-50 min-h-screen">
-      <div className="container mx-auto px-6 max-w-7xl pb-20">
-        
+      <div className="container mx-auto px-6 max-w-7xl pb-24">
+
+        {/* Page Header */}
         <div className="text-center max-w-3xl mx-auto mb-20">
-          <motion.h4 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+          <motion.h4
+            {...fadeUp()}
             className="text-primary font-bold tracking-widest uppercase mb-4"
           >
             Group Fitness
           </motion.h4>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+          <motion.h1
+            {...fadeUp(0.1)}
             className="text-5xl md:text-6xl font-serif text-secondary font-bold mb-6"
           >
             Move Together
           </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+          <motion.p
+            {...fadeUp(0.2)}
             className="text-xl text-gray-600"
           >
             Experience the energy of our elite group classes led by master trainers in our specialized luxury studios.
           </motion.p>
         </div>
 
-        {/* Adult Programs */}
-        <div className="bg-white shadow-xl rounded-sm overflow-hidden mb-20 flex flex-col lg:flex-row">
+        {/* Adult Fitness Classes */}
+        <motion.div
+          {...fadeUp()}
+          className="bg-white shadow-xl rounded-xl overflow-hidden mb-16 flex flex-col lg:flex-row"
+        >
           <div className="lg:w-1/2 relative min-h-[400px]">
             <img src={programsImg} alt="Fitness Classes" className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-r from-secondary/80 to-transparent flex items-center p-12">
@@ -61,27 +128,28 @@ export default function Programs() {
             <h3 className="text-2xl font-serif font-bold text-secondary mb-6 border-b border-gray-100 pb-4">Adult Fitness Classes</h3>
             <div className="space-y-4 mb-8">
               {adultPrograms.map((prog, i) => (
-                <div key={i} className="flex justify-between items-center p-4 hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100 rounded-sm">
+                <div key={i} className="flex justify-between items-center p-4 hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100 rounded-lg">
                   <div>
                     <h4 className="font-bold text-secondary">{prog.title}</h4>
                     <p className="text-sm text-gray-500">{prog.trainer}</p>
                   </div>
-                  <div className="text-right text-sm text-primary font-bold">
-                    {prog.schedule}
-                  </div>
+                  <div className="text-right text-sm text-primary font-bold">{prog.schedule}</div>
                 </div>
               ))}
             </div>
             <Link href="/book">
-              <Button className="w-full bg-secondary text-white hover:bg-primary hover:text-secondary uppercase tracking-wider font-bold rounded-[10px] h-12">
+              <Button className="w-full bg-secondary text-white hover:bg-primary hover:text-secondary uppercase tracking-wider font-bold rounded-full h-12 transition-all duration-200">
                 Book a Class
               </Button>
             </Link>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Youth Programs */}
-        <div className="bg-white shadow-xl rounded-sm overflow-hidden flex flex-col lg:flex-row-reverse">
+        {/* Kids & Youth */}
+        <motion.div
+          {...fadeUp()}
+          className="bg-white shadow-xl rounded-xl overflow-hidden mb-16 flex flex-col lg:flex-row-reverse"
+        >
           <div className="lg:w-1/2 relative min-h-[400px]">
             <img src={youthImg} alt="Youth Programs" className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-l from-primary/80 to-transparent flex items-center justify-end p-12 text-right">
@@ -91,28 +159,150 @@ export default function Programs() {
           <div className="lg:w-1/2 p-12">
             <h3 className="text-2xl font-serif font-bold text-secondary mb-6 border-b border-gray-100 pb-4">Kids & Youth Programs</h3>
             <p className="text-gray-600 mb-8">
-              Instill the value of health early. Our youth programs are designed to be fun, safe, and engaging, run by certified youth fitness specialists.
+              Instill the value of health early. Our youth programs are designed to be fun, safe, and engaging — run by certified youth fitness specialists.
             </p>
             <div className="space-y-4 mb-8">
               {youthPrograms.map((prog, i) => (
-                <div key={i} className="flex justify-between items-center p-4 bg-gray-50 rounded-sm border border-gray-100">
+                <div key={i} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-100">
                   <div>
                     <h4 className="font-bold text-secondary">{prog.title}</h4>
                     <p className="text-sm text-gray-500">Ages: {prog.age}</p>
                   </div>
-                  <div className="text-right text-sm text-secondary font-bold">
-                    {prog.schedule}
-                  </div>
+                  <div className="text-right text-sm text-secondary font-bold">{prog.schedule}</div>
                 </div>
               ))}
             </div>
             <Link href="/book">
-              <Button variant="outline" className="w-full border-secondary text-secondary hover:bg-secondary hover:text-white uppercase tracking-wider font-bold rounded-[10px] h-12">
+              <Button variant="outline" className="w-full border-secondary text-secondary hover:bg-secondary hover:text-white uppercase tracking-wider font-bold rounded-full h-12 transition-all duration-200">
                 Enroll Child
               </Button>
             </Link>
           </div>
-        </div>
+        </motion.div>
+
+        {/* ── Divider ── */}
+        <motion.div {...fadeUp()} className="text-center mb-16">
+          <span className="inline-block bg-primary/10 text-primary font-bold tracking-widest uppercase text-sm px-6 py-2 rounded-full">
+            Specialty Programmes
+          </span>
+          <h2 className="text-4xl font-serif font-bold text-secondary mt-4">Built for Every Goal</h2>
+        </motion.div>
+
+        {/* 70 Plus Club */}
+        <SpecialProgram
+          image={sevenPlusImg}
+          tag="70 Plus Club"
+          title="Ivory 70 Plus Club"
+          accent="gold"
+          body={
+            <p>
+              A platform designed to keep seniors thriving. We provide healthy, recreational, and fun activities — gentle exercise, dance, walks, yoga, interactive nutritional talks, and social activities — for individuals aged 70 and above.
+            </p>
+          }
+        />
+
+        {/* Weight Loss Challenge */}
+        <SpecialProgram
+          image={weightLossImg}
+          tag="Weight Loss"
+          title="Weight Loss Challenge"
+          reverse
+          body={
+            <>
+              <p>
+                A complete healthy lifestyle platform for everybody and every-body. We provide all the support for your weight-loss and fitness goals.
+              </p>
+              <p>
+                It's simple, affordable, effective… and <strong>FUN!</strong> Whether your goal is losing a few inches, staying active, or completely transforming yourself — we have everything you need.
+              </p>
+            </>
+          }
+        />
+
+        {/* Bond4Fitness */}
+        <SpecialProgram
+          image={bond4Img}
+          tag="Corporate Wellness"
+          title="Bond4Fitness"
+          accent="gold"
+          body={
+            <>
+              <p>
+                Improved employee productivity can have considerable impact on an organization's profitability. Our corporate wellness programs improve overall morale as participating teams develop a genuine team spirit.
+              </p>
+              <p>
+                As staff bond, fitness is promoted, accountability increases, and friendships form — creating a more energetic, positive, and productive workplace.
+              </p>
+            </>
+          }
+        />
+
+        {/* Fit2Live Bootcamp */}
+        <SpecialProgram
+          image={fit2LiveImg}
+          tag="Bootcamp"
+          title="Fit2Live (Bootcamp)"
+          reverse
+          body={
+            <>
+              <p>
+                <strong>FIT:</strong> A state of complete physical, social, and mental well-being — the ability to function effectively in all day-to-day activities and remain healthy.
+              </p>
+              <p>
+                <strong>LIVE:</strong> Two things that will never change — the will to change and the fear of change. Both are essential for well-being. Hurry to live and think that each day is, by itself, a life.
+              </p>
+            </>
+          }
+        />
+
+        {/* Personal Training */}
+        <SpecialProgram
+          image={personalTrainingImg}
+          tag="Personal Training"
+          title="Customised & Personal Training"
+          accent="gold"
+          body={
+            <p>
+              Personalized training services designed around your needs and goals, with a wide range of solutions to suit you. If there is one thing we should never stop doing, it is perfecting ourselves — <em>"Go the extra mile."</em> We can always be better, do better, live better.
+            </p>
+          }
+        />
+
+        {/* Boxing Class */}
+        <SpecialProgram
+          image={boxingImg}
+          tag="Boxing"
+          title="Boxing Class"
+          reverse
+          body={
+            <p>
+              This class is not intended to teach self-defence — it is designed to build fitness and conditioning, foster personal development and self-confidence, and give you a healthy way to blow off steam. A powerful workout unlike any other.
+            </p>
+          }
+        />
+
+        {/* Bottom CTA */}
+        <motion.div
+          {...fadeUp()}
+          className="mt-8 text-center bg-secondary rounded-2xl py-16 px-8"
+        >
+          <h3 className="text-3xl font-serif font-bold text-white mb-4">Ready to Start Your Journey?</h3>
+          <p className="text-white/70 mb-8 max-w-xl mx-auto">
+            Speak with one of our wellness advisors and find the programme that is right for you.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/book">
+              <Button className="bg-primary text-secondary hover:bg-primary/80 uppercase tracking-wider font-bold rounded-full px-10 h-12 hover:scale-105 transition-all duration-200">
+                Book a Session
+              </Button>
+            </Link>
+            <Link href="/contact">
+              <Button variant="outline" className="border-white text-white hover:bg-white hover:text-secondary uppercase tracking-wider font-bold rounded-full px-10 h-12 transition-all duration-200">
+                Speak to an Advisor
+              </Button>
+            </Link>
+          </div>
+        </motion.div>
 
       </div>
     </div>
