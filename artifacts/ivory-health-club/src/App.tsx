@@ -21,6 +21,8 @@ import BlogPost from '@/pages/blog-post';
 import Book from '@/pages/book';
 import Contact from '@/pages/contact';
 import About from '@/pages/about';
+import Restaurant from '@/pages/restaurant';
+import JuiceBar from '@/pages/juice-bar';
 
 // Admin Pages
 import AdminDashboard from '@/pages/admin/dashboard';
@@ -49,6 +51,8 @@ function MainRoutes() {
           <Route path="/book" component={Book} />
           <Route path="/contact" component={Contact} />
           <Route path="/about" component={About} />
+          <Route path="/restaurant" component={Restaurant} />
+          <Route path="/juice-bar" component={JuiceBar} />
           <Route component={NotFound} />
         </Switch>
       </AnimatePresence>
