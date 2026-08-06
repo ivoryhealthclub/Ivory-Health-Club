@@ -52,15 +52,20 @@ export function Navbar() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const navLinks = [
+  const navLinksLeft = [
     { label: "Home", href: "/" },
     { label: "Services", href: "/services" },
     { label: "Membership", href: "/membership" },
+  ];
+
+  const navLinksRight = [
     { label: "Programs", href: "/programs" },
     { label: "Gallery", href: "/gallery" },
     { label: "Blog", href: "/blog" },
     { label: "Contact", href: "/contact" },
   ];
+
+  const navLinks = [...navLinksLeft, ...navLinksRight];
 
   const isFoodActive = location === "/restaurant" || location === "/juice-bar";
   const linkBase = "text-sm font-semibold tracking-wide uppercase transition-colors hover:text-primary";
@@ -74,8 +79,8 @@ export function Navbar() {
         isScrolled ? "bg-white/95 backdrop-blur-sm shadow-sm py-4" : "bg-transparent py-6"
       )}
     >
-      <div className="container mx-auto px-6 max-w-7xl flex items-center justify-between">
-        <Link href="/" className="group flex items-center">
+      <div className="container mx-auto px-6 max-w-7xl flex items-center gap-6">
+        <Link href="/" className="group flex items-center shrink-0">
           <img
             src={logo}
             alt="Ivory Health Club"
@@ -83,9 +88,9 @@ export function Navbar() {
           />
         </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-8">
-          {navLinks.map((link) => (
+        {/* Desktop Nav — centered */}
+        <nav className="hidden lg:flex flex-1 items-center justify-center gap-6">
+          {navLinksLeft.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -95,7 +100,7 @@ export function Navbar() {
             </Link>
           ))}
 
-          {/* Food & Beverages dropdown */}
+          {/* Food & Beverages dropdown — right after Membership */}
           <div ref={dropdownRef} className="relative">
             <button
               onClick={() => setFoodOpen((o) => !o)}
@@ -119,7 +124,7 @@ export function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 8 }}
                   transition={{ duration: 0.18 }}
-                  className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-72 bg-white shadow-2xl border border-gray-100 overflow-hidden"
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-72 bg-white shadow-2xl border border-gray-100 rounded-xl overflow-hidden"
                 >
                   {foodItems.map((item) => (
                     <Link
@@ -143,25 +148,38 @@ export function Navbar() {
             </AnimatePresence>
           </div>
 
-          <div className="flex items-center gap-4 ml-4">
-            <Link href="/book">
-              <Button
-                variant={isScrolled ? "secondary" : "outline"}
-                className={cn(
-                  "uppercase tracking-wider rounded-none font-bold px-6",
-                  !isScrolled && "text-white border-white/50 hover:bg-white hover:text-secondary"
-                )}
-              >
-                Book Service
-              </Button>
+          {navLinksRight.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(linkBase, linkColor(location === link.href))}
+            >
+              {link.label}
             </Link>
-            <Link href="/enroll">
-              <Button className="uppercase tracking-wider rounded-none font-bold px-6 bg-primary text-secondary hover:bg-primary/90">
-                Join Now
-              </Button>
-            </Link>
-          </div>
+          ))}
         </nav>
+
+        {/* CTA Buttons */}
+        <div className="hidden lg:flex items-center gap-3 shrink-0">
+          <Link href="/book">
+            <Button
+              variant={isScrolled ? "secondary" : "outline"}
+              className={cn(
+                "uppercase tracking-wider rounded-full font-bold px-6 transition-all duration-200",
+                isScrolled
+                  ? "hover:bg-secondary hover:text-white"
+                  : "text-white border-white/50 hover:bg-white hover:text-secondary"
+              )}
+            >
+              Book Service
+            </Button>
+          </Link>
+          <Link href="/enroll">
+            <Button className="uppercase tracking-wider rounded-full font-bold px-6 bg-primary text-secondary hover:bg-primary/80 hover:scale-105 transition-all duration-200">
+              Join Now
+            </Button>
+          </Link>
+        </div>
 
         {/* Mobile Toggle */}
         <button
