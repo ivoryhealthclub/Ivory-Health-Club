@@ -23,7 +23,7 @@ export default function AdminGallery() {
 
   const handleDelete = (id: number) => {
     if (confirm("Are you sure you want to delete this image?")) {
-      deleteImage.mutate(id, {
+      deleteImage.mutate({ id }, {
         onSuccess: () => {
           toast({ title: "Image deleted" });
           queryClient.invalidateQueries({ queryKey: getListGalleryImagesQueryKey() });

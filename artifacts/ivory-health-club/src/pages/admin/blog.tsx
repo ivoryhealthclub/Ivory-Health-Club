@@ -25,7 +25,7 @@ export default function AdminBlog() {
 
   const handleDelete = (id: number) => {
     if (confirm("Are you sure you want to delete this post?")) {
-      deletePost.mutate(id, {
+      deletePost.mutate({ id }, {
         onSuccess: () => {
           toast({ title: "Post deleted" });
           queryClient.invalidateQueries({ queryKey: getListBlogPostsQueryKey() });

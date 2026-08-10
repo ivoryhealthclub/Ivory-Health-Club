@@ -80,7 +80,7 @@ function AdminRoutes() {
 function Router() {
   return (
     <Switch>
-      <Route path="/admin*" component={AdminRoutes} />
+      <Route path="/admin/*" component={AdminRoutes} />
       <Route path="/*" component={MainRoutes} />
     </Switch>
   );

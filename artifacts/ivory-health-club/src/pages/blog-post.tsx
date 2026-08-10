@@ -1,6 +1,6 @@
 import { useRoute, Link } from "wouter";
 import { format } from "date-fns";
-import { useGetBlogPost } from "@workspace/api-client-react";
+import { getGetBlogPostQueryKey, useGetBlogPost } from "@workspace/api-client-react";
 import { ArrowLeft, User, Calendar, Tag } from "lucide-react";
 import NotFound from "./not-found";
 
@@ -10,6 +10,7 @@ export default function BlogPost() {
   
   const { data: post, isLoading, isError } = useGetBlogPost(id, {
     query: {
+      queryKey: getGetBlogPostQueryKey(id),
       enabled: !!id
     }
   });
