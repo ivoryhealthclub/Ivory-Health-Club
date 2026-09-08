@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useSearch } from "wouter";
+import { useSearch } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -41,14 +41,13 @@ const enrollSchema = z.object({
 type EnrollFormValues = z.infer<typeof enrollSchema>;
 
 export default function Enroll() {
-  const [, setLocation] = useLocation();
   const search = useSearch();
   const { toast } = useToast();
   const [success, setSuccess] = useState(false);
   const [submittedPlanName, setSubmittedPlanName] = useState("");
   const [confirmationId, setConfirmationId] = useState<number | null>(null);
   
-  const { data: plans, isLoading: plansLoading } = useListMembershipPlans();
+  const { data: plans, isLoading: plansLoading, isError: plansError } = useListMembershipPlans();
   const createEnrollment = useCreateEnrollment();
 
   const planIdFromQuery = new URLSearchParams(search).get("plan");
@@ -70,7 +69,8 @@ export default function Enroll() {
   // Update form if planId in query changes after plans load
   useEffect(() => {
     if (planIdFromQuery && plans) {
-      form.setValue("planId", parseInt(planIdFromQuery));
+      const requestedPlanId = Number.parseInt(planIdFromQuery, 10);
+      form.setValue("planId", plans.some((plan) => plan.id === requestedPlanId) ? requestedPlanId : 0);
     }
   }, [planIdFromQuery, plans, form]);
 
@@ -78,6 +78,11 @@ export default function Enroll() {
   const selectedPlan = plans?.find(p => p.id === selectedPlanId);
 
   const onSubmit = (data: EnrollFormValues) => {
+    if (!selectedPlan) {
+      form.setError("planId", { message: "Please select a valid membership plan" });
+      return;
+    }
+
     createEnrollment.mutate(
       { data },
       {
@@ -161,7 +166,7 @@ export default function Enroll() {
                         <Select
                           onValueChange={(val) => field.onChange(parseInt(val))}
                           value={field.value ? field.value.toString() : ""}
-                          disabled={plansLoading}
+                         disabled={plansLoading || plansError || !plans?.length}
                         >
                           <FormControl>
                             <SelectTrigger className="h-12 rounded-none bg-gray-50">
@@ -176,6 +181,11 @@ export default function Enroll() {
                             ))}
                           </SelectContent>
                         </Select>
+                        {plansError && (
+                          <p className="text-sm text-red-600">
+                            Membership plans could not be loaded. Please refresh and try again.
+                          </p>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}

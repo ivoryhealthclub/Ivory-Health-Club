@@ -38,6 +38,16 @@ export default function Membership() {
             <h2 className="text-xl font-serif font-bold text-secondary">Membership plans are temporarily unavailable</h2>
             <p className="mt-2 text-gray-600">Please refresh the page or contact our concierge team for assistance.</p>
           </div>
+        ) : !plans?.length ? (
+          <div className="border border-gray-200 bg-gray-50 p-8 text-center">
+            <h2 className="text-xl font-serif font-bold text-secondary">Membership plans are being refreshed</h2>
+            <p className="mt-2 text-gray-600">Please check back shortly or contact our concierge team to begin your application.</p>
+            <Link href="/contact">
+              <Button className="mt-6 bg-secondary text-white hover:bg-primary hover:text-secondary uppercase tracking-wider font-bold">
+                Contact Concierge
+              </Button>
+            </Link>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {plans?.map((plan, index) => {
@@ -99,16 +109,16 @@ export default function Membership() {
                   
                   <div className="p-8 pt-0">
                     <Link href={`/enroll?plan=${plan.id}`}>
-                    <Button 
-                      className={`w-full uppercase tracking-[0.16em] rounded-[10px] font-bold h-12 group/cta ${
-                        isFeatured
-                          ? 'bg-primary text-secondary hover:bg-secondary hover:text-white' 
-                          : 'bg-secondary text-white hover:bg-primary hover:text-secondary'
-                      }`}
-                    >
-                      <span>Enroll Now</span>
-                      <ArrowRight size={16} className="ml-2 transition-transform group-hover/cta:translate-x-1" />
-                    </Button>
+                      <Button
+                        className={`w-full uppercase tracking-[0.16em] rounded-[10px] font-bold h-12 group/cta ${
+                          isFeatured
+                            ? 'bg-primary text-secondary hover:bg-secondary hover:text-white'
+                            : 'bg-secondary text-white hover:bg-primary hover:text-secondary'
+                        }`}
+                      >
+                        <span>Enroll Now</span>
+                        <ArrowRight size={16} className="ml-2 transition-transform group-hover/cta:translate-x-1" />
+                      </Button>
                     </Link>
                   </div>
                 </motion.div>
