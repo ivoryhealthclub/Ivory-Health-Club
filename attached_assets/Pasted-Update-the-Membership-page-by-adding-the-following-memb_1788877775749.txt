@@ -1,0 +1,95 @@
+Update the Membership page by adding the following membership plans.
+
+For each plan:
+- Display the plan name and benefits clearly.
+- Add an "ENROLL NOW" CTA button.
+- Clicking the button should open a dedicated enrollment form for that specific plan.
+- The selected membership plan should automatically appear in the form.
+- Include fields for full name, email, phone number, membership type, and any other necessary enrollment details.
+- Add form validation and a clear success message after submission.
+- Keep the existing website branding, layout, colors, and responsive design.
+
+MEMBERSHIP PLANS:
+
+1. SILVER SINGLE
+- Gym
+- Aerobics
+- Basketball
+- Steam Room
+- Sauna
+- 25% discount on guests
+- 10% discount on events
+
+2. SILVER FAMILY
+(Couple with four kids under 12)
+- Gym
+- Aerobics
+- Basketball
+- Steam Room
+- Sauna
+- 25% discount on guests
+- 10% discount on events
+
+3. GOLD SINGLE
+- Gym
+- Aerobics
+- Swimming
+- Squash
+- Basketball
+- Ping Pong
+- Volleyball
+- Steam Room
+- Sauna
+- 50% discount on guests
+- 15% discount on events
+
+4. GOLD FAMILY
+(Couple with four kids under 12)
+- Gym
+- Aerobics
+- Swimming
+- Squash
+- Basketball
+- Volleyball
+- Ping Pong
+- Steam Room
+- Sauna
+- 50% discount on guests
+- 15% discount on events
+
+5. GOLD PLUS
+(Three adults with five kids under 12)
+- Gym
+- Aerobics
+- Swimming
+- Squash
+- Basketball
+- Lawn Tennis
+- Volleyball
+- Ping Pong
+- Billiard
+- Steam Room
+- Sauna
+- Monthly free spa treatment for member and spouse each
+- 50% discount on guests
+- 15% discount on events
+
+6. DIAMOND
+Includes everything in Gold Plus, plus:
+- 2 monthly free spa treatments by appointment for member and spouse each
+- 20% discount on events
+
+7. 70 PLUS CLUB
+- Gym
+- Aerobics
+- Swimming
+- Squash
+- Basketball
+- Volleyball
+- Table Tennis
+- Steam Room
+- Sauna
+- Group fitness
+- Social and fun activities including dance, nutrition, games, etc.
+
+Make the membership cards visually attractive and consistent with the Ivory Health Club brand. Ensure all enrollment buttons and forms work correctly on desktop, tablet, and mobile.
