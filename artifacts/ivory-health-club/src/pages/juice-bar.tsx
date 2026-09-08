@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Droplets, Zap, Heart, Leaf } from "lucide-react";
 import spaImg from "@assets/generated_images/spa.jpg";
 import heroBg from "@assets/generated_images/hero-bg.jpg";
+import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 import programsImg from "@assets/generated_images/programs.jpg";
 
 const drinks = [
@@ -55,50 +56,19 @@ const benefits = [
 export default function JuiceBar() {
   return (
     <div className="overflow-hidden">
-      {/* Hero */}
-      <section className="relative h-[70vh] flex items-center justify-center overflow-hidden bg-secondary">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0d2b1a]/85 via-[#1a4a2e]/65 to-[#0d2b1a]/90 z-10" />
-          <img src={heroBg} alt="Ivory Juice Bar" className="w-full h-full object-cover opacity-60" />
-        </div>
-        <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-          <motion.h4
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="text-primary font-bold tracking-widest uppercase mb-4 text-sm"
-          >
-            Food & Beverages · Juice Bar
-          </motion.h4>
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-serif font-bold text-white leading-tight mb-6"
-          >
-            The Ivory Juice Bar
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-white/80 text-lg md:text-xl max-w-2xl mx-auto mb-10"
-          >
-            Pure. Cold-pressed. Crafted to fuel your performance — one glass at a time.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-          >
-            <a href="tel:+2348108897628">
-              <Button size="lg" className="px-10 h-14 text-lg bg-primary text-secondary hover:bg-white hover:text-secondary rounded-[10px] uppercase tracking-wider font-bold">
-                Order Now <ArrowRight size={18} className="ml-2" />
-              </Button>
-            </a>
-          </motion.div>
-        </div>
-      </section>
+      <AnimatedPageHero
+        eyebrow="Food & Beverages · Juice Bar"
+        title="The Ivory Juice Bar"
+        description="Pure. Cold-pressed. Crafted to fuel your performance — one glass at a time."
+        image={heroBg}
+        imageAlt="The Ivory Juice Bar"
+      >
+        <a href="tel:+2348108897628">
+          <Button size="lg" className="px-10 h-14 text-lg bg-primary text-secondary hover:bg-white hover:text-secondary rounded-[10px] uppercase tracking-wider font-bold">
+            Order Now <ArrowRight size={18} className="ml-2" />
+          </Button>
+        </a>
+      </AnimatedPageHero>
 
       {/* Story */}
       <section className="py-24 bg-white">

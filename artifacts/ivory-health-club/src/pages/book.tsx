@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCreateBooking } from "@workspace/api-client-react";
 import { CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
+import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 
 const bookingSchema = z.object({
   serviceType: z.enum(["gym", "spa", "entertainment", "restaurant", "juicebar", "event_hall", "fitness_program", "youth_program"]),
@@ -108,10 +109,13 @@ export default function Book() {
     <div className="pt-24 pb-20 bg-gray-50 min-h-screen">
       <div className="container mx-auto px-6 max-w-4xl">
         
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-serif text-secondary font-bold mb-4">Book an Experience</h1>
-          <p className="text-gray-600 text-lg">Reserve a service, treatment, or space.</p>
-        </div>
+        <AnimatedPageHero
+          eyebrow="The Ivory Concierge"
+          title="Book an Experience"
+          description="Reserve a service, treatment, or space."
+          compact
+          className="mb-12"
+        />
         
         <div className="bg-white p-8 md:p-12 shadow-sm rounded-sm border border-gray-100">
           <Form {...form}>

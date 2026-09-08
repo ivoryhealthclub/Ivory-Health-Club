@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useSubmitContact } from "@workspace/api-client-react";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -66,16 +67,12 @@ export default function Contact() {
 
   return (
     <div className="pt-24 pb-20 bg-white">
-      {/* Map/Header Area */}
-      <div className="h-[40vh] bg-secondary w-full relative flex items-center justify-center">
-         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1577223625816-7546f13df25d?q=80&w=2000')] bg-cover bg-center opacity-20 mix-blend-overlay"></div>
-         <div className="relative z-10 text-center text-white px-6">
-           <h1 className="text-5xl md:text-6xl font-serif font-bold mb-4">Contact Us</h1>
-           <p className="text-xl font-light opacity-90 max-w-2xl mx-auto">
-             Our concierge team is at your service. Let us know how we can assist you.
-           </p>
-         </div>
-      </div>
+      <AnimatedPageHero
+        eyebrow="The Ivory Concierge"
+        title="Contact Us"
+        description="Our concierge team is at your service. Let us know how we can assist you."
+        compact
+      />
 
       <div className="container mx-auto px-6 max-w-6xl -mt-16 relative z-20">
         <div className="flex flex-col lg:flex-row shadow-2xl bg-white">

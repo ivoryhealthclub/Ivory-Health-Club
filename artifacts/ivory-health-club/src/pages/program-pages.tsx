@@ -6,6 +6,7 @@ import programsImg from "@assets/generated_images/programs.jpg";
 import youthImg from "@assets/generated_images/youth.jpg";
 import gymImg from "@assets/generated_images/gym.jpg";
 import entertainmentImg from "@assets/generated_images/entertainment.jpg";
+import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
@@ -54,43 +55,26 @@ function ProgramPageShell({
 }) {
   return (
     <div className="pt-24 bg-gray-50 min-h-screen">
-      <section className="container mx-auto px-6 max-w-7xl pb-16">
-        <div className="grid lg:grid-cols-[1fr_0.85fr] gap-10 items-center py-12 lg:py-20">
-          <motion.div {...fadeUp()} className="max-w-2xl">
-            <p className="text-primary font-bold tracking-[0.2em] uppercase mb-4">{eyebrow}</p>
-            <motion.h1 {...fadeUp(0.08)} className="text-5xl md:text-6xl font-serif text-secondary font-bold mb-6">
-              {title}
-            </motion.h1>
-            <motion.p {...fadeUp(0.16)} className="text-xl text-gray-600 leading-relaxed">
-              {intro}
-            </motion.p>
-            <motion.div {...fadeUp(0.24)} className="mt-8 flex flex-wrap gap-4">
-              <Link href="/enroll">
-                <Button className="bg-secondary text-white hover:bg-primary hover:text-secondary uppercase tracking-wider font-bold rounded-full px-8 h-12">
-                  {ctaLabel}
-                </Button>
-              </Link>
-              <Link href="/contact">
-                <Button variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-white uppercase tracking-wider font-bold rounded-full px-8 h-12">
-                  Speak to an Advisor
-                </Button>
-              </Link>
-            </motion.div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7 }}
-            className="relative min-h-[320px] lg:min-h-[420px] rounded-2xl overflow-hidden shadow-xl"
-          >
-            <img src={image} alt={imageAlt} className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-secondary/75 via-secondary/10 to-transparent" />
-            <p className="absolute bottom-7 left-7 right-7 text-white text-2xl font-serif font-bold">
-              Designed around your goals.
-            </p>
-          </motion.div>
-        </div>
-        <div className="grid md:grid-cols-2 gap-6 pb-10">{children}</div>
+      <AnimatedPageHero
+        eyebrow={eyebrow}
+        title={title}
+        description={intro}
+        image={image}
+        imageAlt={imageAlt}
+      >
+        <Link href="/enroll">
+          <Button className="bg-primary text-secondary hover:bg-white hover:text-secondary uppercase tracking-wider font-bold rounded-full px-8 h-12">
+            {ctaLabel}
+          </Button>
+        </Link>
+        <Link href="/contact">
+          <Button variant="outline" className="border-white text-white hover:bg-white hover:text-secondary uppercase tracking-wider font-bold rounded-full px-8 h-12">
+            Speak to an Advisor
+          </Button>
+        </Link>
+      </AnimatedPageHero>
+      <section className="container mx-auto px-6 max-w-7xl pb-16 pt-16">
+        <div className="grid md:grid-cols-2 gap-6">{children}</div>
       </section>
     </div>
   );
@@ -249,14 +233,14 @@ const academies = [
 export function Academies() {
   return (
     <div className="pt-24 bg-gray-50 min-h-screen">
+      <AnimatedPageHero
+        eyebrow="Train With Purpose"
+        title="Our Academies"
+        description="Discover specialist sports programs where expert coaching, character, and a love of the game come together."
+        image={programsImg}
+        imageAlt="Ivory Health Club sports academy"
+      />
       <section className="container mx-auto px-6 max-w-7xl py-16 lg:py-24">
-        <motion.div {...fadeUp()} className="max-w-3xl mb-14">
-          <p className="text-primary font-bold tracking-[0.2em] uppercase mb-4">Train With Purpose</p>
-          <h1 className="text-5xl md:text-6xl font-serif text-secondary font-bold mb-6">Our Academies</h1>
-          <p className="text-xl text-gray-600 leading-relaxed">
-            Discover specialist sports programs where expert coaching, character, and a love of the game come together.
-          </p>
-        </motion.div>
         <div className="grid md:grid-cols-2 gap-7">
           {academies.map((academy, index) => (
             <motion.div

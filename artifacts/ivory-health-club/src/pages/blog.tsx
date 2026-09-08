@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { useListBlogPosts } from "@workspace/api-client-react";
 import { ChevronRight } from "lucide-react";
+import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 
 export default function BlogList() {
   const { data: posts, isLoading } = useListBlogPosts();
@@ -17,25 +18,14 @@ export default function BlogList() {
 
   return (
     <div className="pt-24 bg-gray-50 min-h-screen">
-      <div className="container mx-auto px-6 max-w-7xl pb-20">
-        
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <motion.h4 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-primary font-bold tracking-widest uppercase mb-4"
-          >
-            Insights & Lifestyle
-          </motion.h4>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl md:text-6xl font-serif text-secondary font-bold mb-6"
-          >
-            The Ivory Journal
-          </motion.h1>
-        </div>
+      <AnimatedPageHero
+        eyebrow="Insights & Lifestyle"
+        title="The Ivory Journal"
+        description="Thoughtful perspectives on movement, nourishment, recovery, and the art of living well."
+        compact
+      />
+
+      <div className="container mx-auto px-6 max-w-7xl pb-20 pt-16">
 
         {/* Filters */}
         <div className="flex flex-wrap justify-center gap-4 mb-16">

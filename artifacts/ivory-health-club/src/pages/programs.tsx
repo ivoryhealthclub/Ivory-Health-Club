@@ -9,6 +9,7 @@ import bond4Img from "@assets/generated_images/bond4fitness.jpg";
 import fit2LiveImg from "@assets/generated_images/fit2live-bootcamp.jpg";
 import personalTrainingImg from "@assets/generated_images/personal-training.jpg";
 import boxingImg from "@assets/generated_images/boxing-class.jpg";
+import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
@@ -91,27 +92,14 @@ export default function Programs() {
     <div className="pt-24 bg-gray-50 min-h-screen">
       <div className="container mx-auto px-6 max-w-7xl pb-24">
 
-        {/* Page Header */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <motion.h4
-            {...fadeUp()}
-            className="text-primary font-bold tracking-widest uppercase mb-4"
-          >
-            Group Fitness
-          </motion.h4>
-          <motion.h1
-            {...fadeUp(0.1)}
-            className="text-5xl md:text-6xl font-serif text-secondary font-bold mb-6"
-          >
-            Move Together
-          </motion.h1>
-          <motion.p
-            {...fadeUp(0.2)}
-            className="text-xl text-gray-600"
-          >
-            Experience the energy of our elite group classes led by master trainers in our specialized luxury studios.
-          </motion.p>
-        </div>
+        <AnimatedPageHero
+          eyebrow="Group Fitness"
+          title="Move Together"
+          description="Experience the energy of our elite group classes led by master trainers in our specialized luxury studios."
+          image={programsImg}
+          imageAlt="Ivory Health Club group fitness class"
+          className="mb-20"
+        />
 
         {/* Adult Fitness Classes */}
         <motion.div

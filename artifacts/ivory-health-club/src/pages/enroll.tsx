@@ -25,6 +25,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useListMembershipPlans, useCreateEnrollment } from "@workspace/api-client-react";
 import { CheckCircle2, ChevronRight, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
+import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 
 const enrollSchema = z.object({
   planId: z.coerce.number().min(1, "Please select a membership plan"),
@@ -120,6 +121,13 @@ export default function Enroll() {
   return (
     <div className="pt-24 pb-20 bg-gray-50 min-h-screen">
       <div className="container mx-auto px-6 max-w-6xl">
+        <AnimatedPageHero
+          eyebrow="Your Ivory Journey"
+          title="Membership Application"
+          description="Take the first step toward a healthier, more elevated lifestyle."
+          compact
+          className="mb-10"
+        />
         <Link href="/membership" className="inline-flex items-center text-secondary hover:text-primary mb-8 font-medium transition-colors">
           <ArrowLeft size={16} className="mr-2" /> Back to Plans
         </Link>
@@ -127,7 +135,6 @@ export default function Enroll() {
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Form Side */}
           <div className="lg:w-2/3 bg-white p-8 md:p-12 shadow-sm rounded-sm">
-            <h1 className="text-3xl font-serif text-secondary font-bold mb-2">Membership Application</h1>
             <p className="text-gray-500 mb-8">Please provide your details below to begin the enrollment process.</p>
             
             <Form {...form}>

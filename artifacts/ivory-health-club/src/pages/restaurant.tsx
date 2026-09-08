@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Utensils, Clock, Star, Leaf } from "lucide-react";
 import restImg from "@assets/generated_images/restaurant.jpg";
 import heroBg from "@assets/generated_images/hero-bg.jpg";
+import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 
 const dishes = [
   {
@@ -48,50 +49,19 @@ const features = [
 export default function Restaurant() {
   return (
     <div className="overflow-hidden">
-      {/* Hero */}
-      <section className="relative h-[70vh] flex items-center justify-center overflow-hidden bg-secondary">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#140A3A]/80 via-[#29166F]/60 to-[#140A3A]/90 z-10 mix-blend-multiply" />
-          <img src={heroBg} alt="Margaret's Bistro" className="w-full h-full object-cover opacity-70" />
-        </div>
-        <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-          <motion.h4
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="text-primary font-bold tracking-widest uppercase mb-4 text-sm"
-          >
-            Food & Beverages · Restaurant
-          </motion.h4>
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-serif font-bold text-white leading-tight mb-6"
-          >
-            Margaret's Bistro
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-white/80 text-lg md:text-xl max-w-2xl mx-auto mb-10"
-          >
-            Where nutrition meets artistry. A culinary experience designed around your wellness.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-          >
-            <a href="tel:+2348108897628">
-              <Button size="lg" className="px-10 h-14 text-lg bg-primary text-secondary hover:bg-white hover:text-secondary rounded-[10px] uppercase tracking-wider font-bold">
-                Reserve a Table <ArrowRight size={18} className="ml-2" />
-              </Button>
-            </a>
-          </motion.div>
-        </div>
-      </section>
+      <AnimatedPageHero
+        eyebrow="Food & Beverages · Restaurant"
+        title="Margaret's Bistro"
+        description="Where nutrition meets artistry. A culinary experience designed around your wellness."
+        image={heroBg}
+        imageAlt="Margaret's Bistro"
+      >
+        <a href="tel:+2348108897628">
+          <Button size="lg" className="px-10 h-14 text-lg bg-primary text-secondary hover:bg-white hover:text-secondary rounded-[10px] uppercase tracking-wider font-bold">
+            Reserve a Table <ArrowRight size={18} className="ml-2" />
+          </Button>
+        </a>
+      </AnimatedPageHero>
 
       {/* Story */}
       <section className="py-24 bg-white">

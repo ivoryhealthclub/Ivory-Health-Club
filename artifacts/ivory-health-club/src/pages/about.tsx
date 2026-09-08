@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Award, Heart, Shield, Zap } from "lucide-react";
 import gymImg from "@assets/generated_images/gym.jpg";
 import spaImg from "@assets/generated_images/spa.jpg";
-import heroBg from "@assets/generated_images/hero-bg.jpg";
+import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 
 const values = [
   {
@@ -40,32 +40,12 @@ const milestones = [
 export default function About() {
   return (
     <div className="overflow-hidden">
-      {/* Hero */}
-      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden bg-secondary">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#140A3A]/85 via-[#29166F]/65 to-[#140A3A]/90 z-10 mix-blend-multiply" />
-          <img src={heroBg} alt="About Ivory" className="w-full h-full object-cover opacity-70" />
-        </div>
-        <div className="relative z-10 text-center px-6 max-w-3xl mx-auto">
-          <motion.h4
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-primary font-bold tracking-widest uppercase mb-4 text-sm"
-          >
-            Our Philosophy
-          </motion.h4>
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.2 }}
-            className="text-5xl md:text-6xl font-serif font-bold text-white leading-tight mb-6"
-          >
-            More Than Fitness.<br />
-            <span className="text-primary italic font-light">A Way of Life.</span>
-          </motion.h1>
-        </div>
-      </section>
+      <AnimatedPageHero
+        eyebrow="Our Philosophy"
+        title={<>More Than Fitness.<br /><span className="text-primary italic font-light">A Way of Life.</span></>}
+        description="A sanctuary for executives, families, and high-performers who refuse to compromise."
+        imageAlt="Inside Ivory Health Club"
+      />
 
       {/* Mission */}
       <section className="py-24 bg-white">

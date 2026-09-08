@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Check, Star, Users, Trophy, Heart } from "lucide-react";
 import { useListMembershipPlans } from "@workspace/api-client-react";
+import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 
 export default function Membership() {
   const { data: plans, isLoading } = useListMembershipPlans();
@@ -17,27 +18,13 @@ export default function Membership() {
 
   return (
     <div className="pt-24 pb-20">
-      {/* Header */}
-      <section className="bg-secondary text-white py-20 mb-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1540497077202-7c8a3999166f')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
-        <div className="container mx-auto px-6 max-w-5xl relative z-10 text-center">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-6xl font-serif font-bold mb-6"
-          >
-            Membership <span className="text-primary italic">Plans</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto"
-          >
-            Join a community dedicated to excellence. Choose the tier that best suits your lifestyle and begin your wellness journey today.
-          </motion.p>
-        </div>
-      </section>
+      <AnimatedPageHero
+        eyebrow="Join The Elite"
+        title={<>Membership <span className="text-primary italic">Plans</span></>}
+        description="Join a community dedicated to excellence. Choose the tier that best suits your lifestyle and begin your wellness journey today."
+        compact
+        className="mb-20"
+      />
 
       {/* Plans Grid */}
       <section className="container mx-auto px-6 max-w-7xl">

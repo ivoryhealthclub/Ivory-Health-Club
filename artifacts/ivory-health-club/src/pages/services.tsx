@@ -5,6 +5,8 @@ import gymImg from "@assets/generated_images/gym.jpg";
 import spaImg from "@assets/generated_images/spa.jpg";
 import entertainmentImg from "@assets/generated_images/entertainment.jpg";
 import restImg from "@assets/generated_images/restaurant.jpg";
+import gymHeroImg from "@assets/generated_images/gym.jpg";
+import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 
 export default function Services() {
   const services = [
@@ -48,32 +50,14 @@ export default function Services() {
 
   return (
     <div className="pt-24 pb-0 bg-white">
-      {/* Header */}
-      <section className="text-center max-w-4xl mx-auto px-6 mb-24">
-        <motion.h4 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-primary font-bold tracking-widest uppercase mb-4"
-        >
-          Our Facilities
-        </motion.h4>
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-5xl md:text-6xl font-serif text-secondary font-bold mb-6"
-        >
-          Unrivaled <span className="italic font-light">Services</span>
-        </motion.h1>
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-xl text-gray-600 font-light"
-        >
-          Discover a holistic approach to wellness where every detail has been crafted to exceed your expectations.
-        </motion.p>
-      </section>
+      <AnimatedPageHero
+        eyebrow="Our Facilities"
+        title={<>Unrivaled <span className="text-primary italic font-light">Services</span></>}
+        description="Discover a holistic approach to wellness where every detail has been crafted to exceed your expectations."
+        image={gymHeroImg}
+        imageAlt="Ivory Health Club premium gym"
+        className="mb-24"
+      />
 
       {/* Services List */}
       <section className="flex flex-col">

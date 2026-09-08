@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useListGalleryImages } from "@workspace/api-client-react";
+import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 
 export default function Gallery() {
   const [activeCategory, setActiveCategory] = useState<string>("all");
@@ -14,25 +15,14 @@ export default function Gallery() {
 
   return (
     <div className="pt-24 bg-white min-h-screen">
-      <div className="container mx-auto px-6 max-w-7xl pb-20">
-        
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <motion.h4 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-primary font-bold tracking-widest uppercase mb-4"
-          >
-            Visual Journey
-          </motion.h4>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl md:text-6xl font-serif text-secondary font-bold mb-6"
-          >
-            The Gallery
-          </motion.h1>
-        </div>
+      <AnimatedPageHero
+        eyebrow="Visual Journey"
+        title="The Gallery"
+        description="Step inside the spaces, rituals, and moments that make Ivory Health Club feel like home."
+        compact
+      />
+
+      <div className="container mx-auto px-6 max-w-7xl pb-20 pt-16">
 
         {/* Filters */}
         <div className="flex flex-wrap justify-center gap-4 mb-12">

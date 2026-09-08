@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { getGetBlogPostQueryKey, useGetBlogPost } from "@workspace/api-client-react";
 import { ArrowLeft, User, Calendar, Tag } from "lucide-react";
 import NotFound from "./not-found";
+import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 
 export default function BlogPost() {
   const [, params] = useRoute("/blog/:id");
@@ -36,6 +37,13 @@ export default function BlogPost() {
 
   return (
     <article className="pt-24 pb-20 bg-white min-h-screen">
+      <AnimatedPageHero
+        eyebrow="The Ivory Journal"
+        title="Stories for a healthier life"
+        description="Ideas and inspiration from the Ivory Health Club community."
+        compact
+        className="mb-12"
+      />
       
       {/* Header */}
       <header className="container mx-auto px-6 max-w-4xl text-center mb-12">
