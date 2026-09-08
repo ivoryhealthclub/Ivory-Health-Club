@@ -3,7 +3,9 @@ import {
   useListBlogPosts,
   useDeleteBlogPost,
   useCreateBlogPost,
+  useUpdateBlogPost,
   useListGalleryImages,
+  type BlogPost,
 } from "@workspace/api-client-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -32,6 +34,7 @@ import {
   Tag,
   Trash2,
   Upload,
+  Pencil,
 } from "lucide-react";
 
 export default function AdminBlog() {
@@ -103,9 +106,10 @@ export default function AdminBlog() {
                       {format(new Date(post.createdAt), 'MMM d, yyyy')}
                     </td>
                     <td className="px-6 py-4 text-right space-x-2">
-                      <Button size="icon" variant="ghost" className="text-red-500 hover:bg-red-50 hover:text-red-600" onClick={() => handleDelete(post.id)}>
-                        <Trash2 size={16} />
-                      </Button>
+                        <AddPostDialog post={post} />
+                        <Button size="icon" variant="ghost" className="text-red-500 hover:bg-red-50 hover:text-red-600" onClick={() => handleDelete(post.id)} aria-label={`Delete ${post.title}`}>
+                          <Trash2 size={16} />
+                        </Button>
                     </td>
                   </tr>
                 ))
@@ -118,7 +122,7 @@ export default function AdminBlog() {
   );
 }
 
-function AddPostDialog() {
+function AddPostDialog({ post }: { post?: BlogPost }) {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("content");
   const [libraryOpen, setLibraryOpen] = useState(false);
@@ -127,6 +131,7 @@ function AddPostDialog() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const createPost = useCreateBlogPost();
+  const updatePost = useUpdateBlogPost();
   const { data: galleryImages } = useListGalleryImages();
 
   const emptyForm = {
@@ -146,6 +151,8 @@ function AddPostDialog() {
   };
 
   const [formData, setFormData] = useState(emptyForm);
+  const isEditing = Boolean(post);
+  const isPending = createPost.isPending || updatePost.isPending;
 
   const updateForm = <K extends keyof typeof formData>(
     key: K,
@@ -155,7 +162,24 @@ function AddPostDialog() {
   };
 
   const resetForm = () => {
-    setFormData(emptyForm);
+    setFormData(
+      post
+        ? {
+            title: post.title,
+            excerpt: post.excerpt ?? "",
+            content: post.content,
+            category: post.category,
+            imageUrl: post.imageUrl ?? "",
+            focusKeyword: post.focusKeyword ?? "",
+            metaDescription: post.metaDescription ?? "",
+            tags: post.tags?.join(", ") ?? "",
+            ogTitle: post.ogTitle ?? "",
+            ogDescription: post.ogDescription ?? "",
+            author: post.author ?? "Ivory Editorial",
+            published: post.published,
+          }
+        : emptyForm,
+    );
     setActiveTab("content");
     setLibraryOpen(false);
     setIsDragging(false);
@@ -221,27 +245,37 @@ function AddPostDialog() {
       .map((tag) => tag.trim())
       .filter(Boolean);
 
-    createPost.mutate(
-      { data: { ...formData, tags, published } },
-      {
-        onSuccess: () => {
-          toast({
-            title: published ? "Post published successfully" : "Draft saved",
-          });
-          queryClient.invalidateQueries({
-            queryKey: getListBlogPostsQueryKey(),
-          });
-          setOpen(false);
-          resetForm();
-        },
-        onError: () => {
-          toast({
-            title: "Error creating post",
-            variant: "destructive",
-          });
-        },
+    const data = { ...formData, tags, published };
+    const options = {
+      onSuccess: () => {
+        toast({
+          title: isEditing
+            ? published
+              ? "Post updated and published"
+              : "Post updated as a draft"
+            : published
+              ? "Post published successfully"
+              : "Draft saved",
+        });
+        queryClient.invalidateQueries({
+          queryKey: getListBlogPostsQueryKey(),
+        });
+        setOpen(false);
+        resetForm();
       },
-    );
+      onError: () => {
+        toast({
+          title: isEditing ? "Error updating post" : "Error creating post",
+          variant: "destructive",
+        });
+      },
+    };
+
+    if (post) {
+      updatePost.mutate({ id: post.id, data }, options);
+    } else {
+      createPost.mutate({ data }, options);
+    }
   };
 
   const handleSubmit = (event: FormEvent) => {
@@ -254,19 +288,25 @@ function AddPostDialog() {
       open={open}
       onOpenChange={(nextOpen) => {
         setOpen(nextOpen);
-        if (!nextOpen) resetForm();
+        if (nextOpen) resetForm();
+        else setIsDragging(false);
       }}
     >
       <DialogTrigger asChild>
-        <Button className="bg-secondary text-white hover:bg-primary">
-          <Plus size={16} className="mr-2" /> New Post
+        <Button
+          size={isEditing ? "icon" : "default"}
+          variant={isEditing ? "ghost" : "default"}
+          aria-label={isEditing ? `Edit ${post?.title ?? "post"}` : undefined}
+          className={isEditing ? "text-secondary hover:bg-primary/10" : "bg-secondary text-white hover:bg-primary"}
+        >
+          {isEditing ? <Pencil size={16} /> : <><Plus size={16} className="mr-2" /> New Post</>}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl gap-0 overflow-hidden rounded-[18px] border-0 bg-white p-0 shadow-2xl">
         <DialogHeader className="px-6 pb-3 pt-5">
           <DialogTitle className="flex items-center gap-2 text-[18px] font-semibold text-[#111827]">
             <BookOpen size={19} className="text-[#2f6fc7]" />
-            Create New Blog Post
+            {isEditing ? "Edit Blog Post" : "Create New Blog Post"}
           </DialogTitle>
         </DialogHeader>
 
@@ -586,7 +626,7 @@ function AddPostDialog() {
                 type="button"
                 variant="outline"
                 className="h-10 flex-1 rounded-full border-gray-100 bg-white text-[#20252d] shadow-sm hover:bg-gray-50"
-                disabled={createPost.isPending}
+                 disabled={isPending}
                 onClick={() => {
                   setOpen(false);
                   resetForm();
@@ -597,9 +637,9 @@ function AddPostDialog() {
               <Button
                 type="submit"
                 className="h-10 flex-1 rounded-full bg-[#299fe5] text-white shadow-sm hover:bg-[#168ed7]"
-                disabled={createPost.isPending}
+                 disabled={isPending}
               >
-                {createPost.isPending ? "Creating..." : "Create Post"}
+                 {isPending ? "Saving..." : isEditing ? "Save Changes" : "Create Post"}
               </Button>
             </div>
           </div>

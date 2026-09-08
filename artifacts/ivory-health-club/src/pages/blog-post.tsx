@@ -4,6 +4,7 @@ import { getGetBlogPostQueryKey, useGetBlogPost } from "@workspace/api-client-re
 import { ArrowLeft, User, Calendar, Tag } from "lucide-react";
 import NotFound from "./not-found";
 import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
+import { markdownToHtml } from "@/lib/markdown";
 
 export default function BlogPost() {
   const [, params] = useRoute("/blog/:id");
@@ -96,7 +97,7 @@ export default function BlogPost() {
         
         <div 
           className="prose prose-lg prose-headings:font-serif prose-headings:text-secondary prose-a:text-primary hover:prose-a:text-secondary prose-p:text-gray-600 prose-li:text-gray-600 max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br/>') }}
+          dangerouslySetInnerHTML={{ __html: markdownToHtml(post.content) }}
         />
         
         {/* Footer Share/Tags could go here */}
