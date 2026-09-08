@@ -1,0 +1,216 @@
+I need you to add a complete "Programs" navigation menu to my existing website.
+
+IMPORTANT:
+- Do NOT redesign or replace the existing website.
+- Do NOT change the existing header, logo, colors, fonts, page layout, footer, or other navigation items unless absolutely necessary.
+- Integrate the new Programs menu into the existing navigation system.
+- First inspect the existing codebase and determine the framework, routing system, CSS approach, and current navigation/header component.
+- Follow the existing project's coding conventions and styling.
+
+PROGRAMS MENU STRUCTURE
+
+Create a main navigation item called:
+
+PROGRAMS
+
+When the user hovers over or clicks "PROGRAMS", display a dropdown containing:
+
+1. FITNESS PROGRAMS
+
+2. KIDS/YOUTH PROGRAMS
+
+3. SUMMER CAMP AND FUN CLUB
+
+4. ACADEMIES
+
+Under ACADEMIES, create a second-level submenu containing:
+
+- IVORY SOCCER ACADEMY
+- IVORY TENNIS ACADEMY
+- IVORY SWIMMING CLUB
+- IVORY BASKETBALL ACADEMY
+
+MENU BEHAVIOR
+
+Desktop:
+- Programs should appear as a normal item in the existing website navigation.
+- On hover, show the first-level Programs dropdown.
+- The dropdown should be positioned directly beneath the Programs navigation item.
+- Use a clean multi-level mega/dropdown menu similar to the attached reference screenshot.
+- "ACADEMIES" should have a right-facing submenu indicator.
+- When hovering over "ACADEMIES", display its submenu to the right.
+- The submenu should contain the four academy options.
+- Add a subtle transition/fade effect when menus open and close.
+- Keep the menu stable when moving the mouse from the parent item to the submenu.
+- Make sure the submenu does not disappear unexpectedly because of small gaps between menu elements.
+
+Mobile:
+- Do NOT use hover-only navigation.
+- Make Programs expandable/collapsible when tapped.
+- Academies should also be expandable/collapsible.
+- Use touch-friendly menu items.
+- Ensure the entire menu works properly on phones and tablets.
+
+VISUAL DESIGN
+
+Match the existing website's design.
+
+Based on the reference screenshot:
+- Use a clean white/light dropdown background.
+- Use the existing website's dark purple/nav color where appropriate.
+- Use subtle borders between menu items.
+- Text should be uppercase where the existing navigation uses uppercase.
+- Use professional spacing and typography.
+- Add a subtle shadow around dropdown menus.
+- Keep the design elegant and suitable for a premium health, fitness, and sports organization.
+
+The reference menu visually follows this concept:
+
+PROGRAMS
+    ├── FITNESS PROGRAMS
+    ├── KIDS/YOUTH PROGRAMS
+    ├── SUMMER CAMP AND FUN CLUB
+    └── ACADEMIES >
+             ├── IVORY SOCCER ACADEMY
+             ├── IVORY TENNIS ACADEMY
+             ├── IVORY SWIMMING CLUB
+             └── IVORY BASKETBALL ACADEMY
+
+ROUTES / PAGES
+
+Create proper routes/pages for each program if the website architecture supports separate pages.
+
+Create these routes:
+
+/programs/fitness
+/programs/kids-youth
+/programs/summer-camp
+/programs/academies
+/programs/academies/soccer
+/programs/academies/tennis
+/programs/academies/swimming
+/programs/academies/basketball
+
+If the project already has a routing convention, follow that convention instead of blindly creating these exact paths.
+
+PROGRAM CONTENT
+
+Each page should have a professional structure.
+
+FITNESS PROGRAMS:
+- Page title: Fitness Programs
+- Short introduction
+- Program overview
+- Benefits
+- Available activities/classes
+- Call-to-action button: "Enroll Now"
+
+KIDS/YOUTH PROGRAMS:
+- Page title: Kids & Youth Programs
+- Introduction
+- Age groups
+- Activities
+- Benefits
+- Safety/community section
+- Call-to-action: "Enroll Now"
+
+SUMMER CAMP AND FUN CLUB:
+- Page title: Summer Camp & Fun Club
+- Introduction
+- Camp activities
+- Sports
+- Games
+- Creative activities
+- Age groups
+- Registration/enrollment CTA
+
+ACADEMIES:
+- Page title: Academies
+- Introduction explaining the sports academy programs
+- Display the four academies as attractive cards:
+  1. Ivory Soccer Academy
+  2. Ivory Tennis Academy
+  3. Ivory Swimming Club
+  4. Ivory Basketball Academy
+
+IVORY SOCCER ACADEMY:
+- Introduction
+- Training overview
+- Skills development
+- Age groups
+- Benefits
+- Enrollment CTA
+
+IVORY TENNIS ACADEMY:
+- Introduction
+- Training overview
+- Skills development
+- Age groups
+- Benefits
+- Enrollment CTA
+
+IVORY SWIMMING CLUB:
+- Introduction
+- Swimming programs
+- Skills development
+- Age groups
+- Safety information
+- Benefits
+- Enrollment CTA
+
+IVORY BASKETBALL ACADEMY:
+- Introduction
+- Training overview
+- Skills development
+- Age groups
+- Benefits
+- Enrollment CTA
+
+IMPORTANT UX REQUIREMENTS
+
+- Every menu item must be clickable.
+- Every route must work without a 404.
+- Do not use "#" as a fake link for actual pages.
+- Maintain accessibility.
+- Use semantic navigation elements.
+- Add appropriate aria-expanded and aria-haspopup attributes.
+- Keyboard users must be able to navigate the dropdown.
+- Escape should close an open dropdown where appropriate.
+- Clicking outside an open mobile menu should close it.
+- Ensure the menu works with both mouse and keyboard.
+- Do not introduce horizontal scrolling.
+- Do not allow dropdowns to overflow the viewport on smaller screens.
+
+IMPLEMENTATION
+
+1. Inspect the existing project.
+2. Locate the main header/navigation component.
+3. Add Programs to the existing navigation.
+4. Build the nested dropdown/submenu.
+5. Add the required pages/routes.
+6. Reuse existing components, buttons, typography, spacing, and design tokens wherever possible.
+7. Reuse the existing header and footer on all new pages.
+8. Make the pages responsive.
+9. Test desktop navigation.
+10. Test mobile navigation.
+11. Test keyboard navigation.
+12. Test every route.
+13. Fix any console errors or broken links.
+
+DO NOT:
+- Replace the existing website with a new template.
+- Remove existing navigation items.
+- Change the site's branding.
+- Add unnecessary libraries if the project already has suitable functionality.
+- Hard-code duplicated navigation markup in multiple places.
+- Break existing pages or routes.
+
+After implementation, give me a concise summary of:
+- Files/components changed
+- Routes created
+- Navigation behavior
+- Responsive behavior
+- Any dependencies added
+- Any issues that still need attention
+
+Finally, run the project and verify that the Programs dropdown and all program pages work correctly.
