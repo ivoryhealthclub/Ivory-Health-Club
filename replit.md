@@ -11,6 +11,8 @@ A full-stack luxury health and wellness club website for Ivory Health Club, Nige
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - Required env: `DATABASE_URL` — Postgres connection string
+- Admin portal: open `/admin`; development demo credentials are `admin@ivoryhealthclub.com` / `IvoryDemo!2026`
+- Set the `ADMIN_PASSWORD` Replit Secret for a non-demo password; it overrides the development fallback and is required in production
 
 ## Stack
 

@@ -14,3 +14,9 @@ Imported pnpm workspaces also need their lockfile dependencies installed before 
 **Why:** Artifact workflows may fail with misleading “vite not found” or missing-package errors after import, and package-level checks otherwise report cascading TS6305/implicit-any errors from absent generated declarations.
 
 **How to apply:** Run the repository’s frozen pnpm install, then `pnpm run typecheck:libs`, before validating the API and frontend workflows.
+
+Imported Wouter apps may need an explicit exact route for a protected root path such as `/admin` in addition to the `/admin/*` wildcard.
+
+**Why:** The wildcard route did not match the bare admin path in the preview, sending users to the public 404 page even though nested admin routes were configured.
+
+**How to apply:** When validating a root dashboard URL after import, test the exact path and add an explicit route before relying on a wildcard-only match.
