@@ -87,9 +87,10 @@ export default function Contact() {
                 <div>
                   <h4 className="font-bold text-lg mb-1">Address</h4>
                   <p className="text-white/70 leading-relaxed">
-                    12 Luxury Avenue,<br />
-                    Victoria Island,<br />
-                    Lagos, Nigeria
+                    4, Ogundana Street,<br />
+                    off Allen Avenue,<br />
+                    Ikeja, Lagos State,<br />
+                    Nigeria
                   </p>
                 </div>
               </div>
@@ -98,8 +99,10 @@ export default function Contact() {
                 <Phone className="text-primary mt-1 shrink-0" />
                 <div>
                   <h4 className="font-bold text-lg mb-1">Phone</h4>
-                  <p className="text-white/70">+234 800 IVORY CLUB</p>
-                  <p className="text-white/70">+234 801 234 5678</p>
+                  <a href="tel:+2348108897628" className="block text-white/70 hover:text-primary transition-colors">+234 810 889 7628</a>
+                  <a href="tel:+2348108897631" className="block text-white/70 hover:text-primary transition-colors">+234 810 889 7631</a>
+                  <a href="tel:+2348108897650" className="block text-white/70 hover:text-primary transition-colors">+234 810 889 7650</a>
+                  <a href="tel:+2348108897652" className="block text-white/70 hover:text-primary transition-colors">+234 810 889 7652</a>
                 </div>
               </div>
               
@@ -107,8 +110,7 @@ export default function Contact() {
                 <Mail className="text-primary mt-1 shrink-0" />
                 <div>
                   <h4 className="font-bold text-lg mb-1">Email</h4>
-                  <p className="text-white/70">concierge@ivoryhealth.club</p>
-                  <p className="text-white/70">memberships@ivoryhealth.club</p>
+                  <a href="mailto:Info@ihc-ng.com" className="block text-white/70 hover:text-primary transition-colors">Info@ihc-ng.com</a>
                 </div>
               </div>
               
