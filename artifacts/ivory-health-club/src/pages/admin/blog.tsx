@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type DragEvent, type FormEvent } from "react";
 import {
   useListBlogPosts,
   useDeleteBlogPost,
@@ -122,6 +122,8 @@ function AddPostDialog() {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("content");
   const [libraryOpen, setLibraryOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const createPost = useCreateBlogPost();
@@ -156,6 +158,61 @@ function AddPostDialog() {
     setFormData(emptyForm);
     setActiveTab("content");
     setLibraryOpen(false);
+    setIsDragging(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const readImageFile = (file: File) => {
+    const acceptedTypes = ["image/png", "image/jpeg", "image/webp"];
+    const maxFileSize = 5 * 1024 * 1024;
+
+    if (!acceptedTypes.includes(file.type)) {
+      toast({
+        title: "Unsupported image type",
+        description: "Choose a PNG, JPG, or WebP image.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > maxFileSize) {
+      toast({
+        title: "Image is too large",
+        description: "Cover images must be 5 MB or smaller.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        updateForm("imageUrl", reader.result);
+      }
+    };
+    reader.onerror = () => {
+      toast({
+        title: "Could not read image",
+        description: "Try selecting the image again.",
+        variant: "destructive",
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) readImageFile(file);
+    event.target.value = "";
+  };
+
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDragging(false);
+    const file = event.dataTransfer.files?.[0];
+    if (file) readImageFile(file);
   };
 
   const submitPost = (published: boolean) => {
@@ -379,17 +436,52 @@ function AddPostDialog() {
                   <p className="text-[11px] text-[#9aa3af]">Unsplash, imgur, or any CDN URL — persists through every deploy.</p>
                 </div>
 
-                <div className="flex min-h-24 items-center justify-center rounded-2xl border border-dashed border-[#d7dbe1] bg-white p-5 text-center">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={handleFileChange}
+                  className="sr-only"
+                  tabIndex={-1}
+                />
+                <div
+                  role="button"
+                  tabIndex={0}
+                  aria-label={formData.imageUrl ? "Replace cover image" : "Upload cover image"}
+                  onClick={() => fileInputRef.current?.click()}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      fileInputRef.current?.click();
+                    }
+                  }}
+                  onDragOver={(event) => {
+                    event.preventDefault();
+                    setIsDragging(true);
+                  }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={handleDrop}
+                  className={`flex min-h-24 cursor-pointer items-center justify-center rounded-2xl border border-dashed p-5 text-center transition-colors focus:outline-none focus:ring-2 focus:ring-[#299fe5] ${
+                    isDragging
+                      ? "border-[#299fe5] bg-[#eff8ff]"
+                      : "border-[#d7dbe1] bg-white hover:border-[#299fe5] hover:bg-[#f8fbff]"
+                  }`}
+                >
                   {formData.imageUrl ? (
-                    <img
-                      src={formData.imageUrl}
-                      alt="Cover preview"
-                      className="max-h-32 w-full rounded-xl object-cover"
-                    />
+                    <div className="relative w-full">
+                      <img
+                        src={formData.imageUrl}
+                        alt="Cover preview"
+                        className="max-h-32 w-full rounded-xl object-cover"
+                      />
+                      <span className="absolute inset-x-0 bottom-2 mx-auto w-fit rounded-full bg-black/65 px-3 py-1 text-[11px] font-medium text-white">
+                        Click or drag to replace
+                      </span>
+                    </div>
                   ) : (
                     <div className="space-y-1 text-[#a0a9b6]">
                       <Upload className="mx-auto text-[#c5ccd6]" size={24} />
-                      <p className="text-[12px]">Click or drag image here</p>
+                      <p className="text-[12px] font-medium">Click or drag image here</p>
                       <p className="text-[11px]">PNG, JPG, WebP up to 5 MB — saved with the post</p>
                     </div>
                   )}

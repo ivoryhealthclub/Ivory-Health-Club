@@ -28,7 +28,9 @@ app.use(
 );
 app.use(cors());
 app.use(cookieParser());
-app.use(express.json());
+// Cover images are stored as bounded data URLs in the blog record until
+// persistent object storage is available for this imported project.
+app.use(express.json({ limit: "8mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
