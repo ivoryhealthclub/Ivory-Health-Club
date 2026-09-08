@@ -25,9 +25,10 @@ interface SpecialProgramProps {
   body: React.ReactNode;
   reverse?: boolean;
   accent?: "gold" | "navy";
+  programKey: string;
 }
 
-function SpecialProgram({ image, tag, title, body, reverse, accent = "navy" }: SpecialProgramProps) {
+function SpecialProgram({ image, tag, title, body, reverse, accent = "navy", programKey }: SpecialProgramProps) {
   const overlayClass =
     accent === "gold"
       ? reverse
@@ -63,9 +64,9 @@ function SpecialProgram({ image, tag, title, body, reverse, accent = "navy" }: S
       <div className="lg:w-1/2 p-10 lg:p-14 flex flex-col justify-center">
         <h3 className="text-3xl font-serif font-bold text-secondary mb-5">{title}</h3>
         <div className="text-gray-600 leading-relaxed space-y-3 mb-8">{body}</div>
-        <Link href="/book">
+        <Link href={`/program-enroll?program=${programKey}`}>
           <Button className="self-start uppercase tracking-wider rounded-full font-bold px-8 bg-secondary text-white hover:bg-primary hover:text-secondary transition-all duration-200">
-            Get Started
+            Enroll Now
           </Button>
         </Link>
       </div>
@@ -75,17 +76,17 @@ function SpecialProgram({ image, tag, title, body, reverse, accent = "navy" }: S
 
 export default function Programs() {
   const adultPrograms = [
-    { title: "HIIT Intensity", schedule: "Mon, Wed, Fri — 6:00 AM", trainer: "Alex M." },
-    { title: "Vinyasa Flow Yoga", schedule: "Tue, Thu — 7:00 AM", trainer: "Sarah K." },
-    { title: "Pilates Core", schedule: "Mon, Wed — 6:00 PM", trainer: "Sarah K." },
-    { title: "Spin & Burn", schedule: "Daily — 5:30 PM", trainer: "David J." },
-    { title: "Strength & Conditioning", schedule: "Tue, Thu, Sat — 8:00 AM", trainer: "Marcus T." },
+    { title: "HIIT Intensity", schedule: "Mon, Wed, Fri — 6:00 AM", trainer: "Alex M.", programKey: "adult-fitness" },
+    { title: "Vinyasa Flow Yoga", schedule: "Tue, Thu — 7:00 AM", trainer: "Sarah K.", programKey: "adult-fitness" },
+    { title: "Pilates Core", schedule: "Mon, Wed — 6:00 PM", trainer: "Sarah K.", programKey: "adult-fitness" },
+    { title: "Spin & Burn", schedule: "Daily — 5:30 PM", trainer: "David J.", programKey: "adult-fitness" },
+    { title: "Strength & Conditioning", schedule: "Tue, Thu, Sat — 8:00 AM", trainer: "Marcus T.", programKey: "adult-fitness" },
   ];
 
   const youthPrograms = [
-    { title: "Kids Karate", age: "6–12 Years", schedule: "Sat — 10:00 AM" },
-    { title: "Teen Functional Fitness", age: "13–17 Years", schedule: "Wed — 4:30 PM" },
-    { title: "Youth Swim Club", age: "8–14 Years", schedule: "Sun — 9:00 AM" },
+    { title: "Kids Karate", age: "6–12 Years", schedule: "Sat — 10:00 AM", programKey: "kids-youth" },
+    { title: "Teen Functional Fitness", age: "13–17 Years", schedule: "Wed — 4:30 PM", programKey: "kids-youth" },
+    { title: "Youth Swim Club", age: "8–14 Years", schedule: "Sun — 9:00 AM", programKey: "kids-youth" },
   ];
 
   return (
@@ -118,18 +119,25 @@ export default function Programs() {
             <h3 className="text-2xl font-serif font-bold text-secondary mb-6 border-b border-gray-100 pb-4">Adult Fitness Classes</h3>
             <div className="space-y-4 mb-8">
               {adultPrograms.map((prog, i) => (
-                <div key={i} className="flex justify-between items-center p-4 hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100 rounded-lg">
+                <div key={i} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 p-4 hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100 rounded-lg">
                   <div>
                     <h4 className="font-bold text-secondary">{prog.title}</h4>
                     <p className="text-sm text-gray-500">{prog.trainer}</p>
                   </div>
-                  <div className="text-right text-sm text-primary font-bold">{prog.schedule}</div>
+                  <div className="flex flex-col sm:items-end gap-2">
+                    <div className="text-sm text-primary font-bold">{prog.schedule}</div>
+                    <Link href={`/program-enroll?program=${prog.programKey}`}>
+                      <Button size="sm" className="bg-secondary text-white hover:bg-primary hover:text-secondary uppercase tracking-wider font-bold rounded-full">
+                        Enroll Now
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
-            <Link href="/book">
+            <Link href="/program-enroll?program=adult-fitness">
               <Button className="w-full bg-secondary text-white hover:bg-primary hover:text-secondary uppercase tracking-wider font-bold rounded-full h-12 transition-all duration-200">
-                Book a Class
+                Enroll Now
               </Button>
             </Link>
           </div>
@@ -153,18 +161,25 @@ export default function Programs() {
             </p>
             <div className="space-y-4 mb-8">
               {youthPrograms.map((prog, i) => (
-                <div key={i} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg border border-gray-100">
+                <div key={i} className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
                   <div>
                     <h4 className="font-bold text-secondary">{prog.title}</h4>
                     <p className="text-sm text-gray-500">Ages: {prog.age}</p>
                   </div>
-                  <div className="text-right text-sm text-secondary font-bold">{prog.schedule}</div>
+                  <div className="flex flex-col sm:items-end gap-2">
+                    <div className="text-sm text-secondary font-bold">{prog.schedule}</div>
+                    <Link href={`/program-enroll?program=${prog.programKey}`}>
+                      <Button size="sm" variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-white uppercase tracking-wider font-bold rounded-full">
+                        Enroll Now
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
-            <Link href="/book">
+            <Link href="/program-enroll?program=kids-youth">
               <Button variant="outline" className="w-full border-secondary text-secondary hover:bg-secondary hover:text-white uppercase tracking-wider font-bold rounded-full h-12 transition-all duration-200">
-                Enroll Child
+                Enroll Now
               </Button>
             </Link>
           </div>
@@ -184,6 +199,7 @@ export default function Programs() {
           tag="70 Plus Club"
           title="Ivory 70 Plus Club"
           accent="gold"
+         programKey="70-plus-club"
           body={
             <p>
               A platform designed to keep seniors thriving. We provide healthy, recreational, and fun activities — gentle exercise, dance, walks, yoga, interactive nutritional talks, and social activities — for individuals aged 70 and above.
@@ -197,6 +213,7 @@ export default function Programs() {
           tag="Weight Loss"
           title="Weight Loss Challenge"
           reverse
+         programKey="weight-loss-challenge"
           body={
             <>
               <p>
@@ -215,6 +232,7 @@ export default function Programs() {
           tag="Corporate Wellness"
           title="Bond4Fitness"
           accent="gold"
+         programKey="bond4fitness"
           body={
             <>
               <p>
@@ -233,6 +251,7 @@ export default function Programs() {
           tag="Bootcamp"
           title="Fit2Live (Bootcamp)"
           reverse
+         programKey="fit2live-bootcamp"
           body={
             <>
               <p>
@@ -251,6 +270,7 @@ export default function Programs() {
           tag="Personal Training"
           title="Customised & Personal Training"
           accent="gold"
+         programKey="personal-training"
           body={
             <p>
               Personalized training services designed around your needs and goals, with a wide range of solutions to suit you. If there is one thing we should never stop doing, it is perfecting ourselves — <em>"Go the extra mile."</em> We can always be better, do better, live better.
@@ -264,6 +284,7 @@ export default function Programs() {
           tag="Boxing"
           title="Boxing Class"
           reverse
+         programKey="boxing-class"
           body={
             <p>
               This class is not intended to teach self-defence — it is designed to build fitness and conditioning, foster personal development and self-confidence, and give you a healthy way to blow off steam. A powerful workout unlike any other.
@@ -281,9 +302,9 @@ export default function Programs() {
             Speak with one of our wellness advisors and find the programme that is right for you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/book">
+            <Link href="/program-enroll?program=adult-fitness">
               <Button className="bg-primary text-secondary hover:bg-primary/80 uppercase tracking-wider font-bold rounded-full px-10 h-12 hover:scale-105 transition-all duration-200">
-                Book a Session
+                Enroll Now
               </Button>
             </Link>
             <Link href="/contact">

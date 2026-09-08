@@ -14,6 +14,7 @@ import Home from '@/pages/home';
 import Services from '@/pages/services';
 import Membership from '@/pages/membership';
 import Enroll from '@/pages/enroll';
+import ProgramEnroll from '@/pages/program-enroll';
 import Programs from '@/pages/programs';
 import Gallery from '@/pages/gallery';
 import BlogList from '@/pages/blog';
@@ -51,6 +52,7 @@ function MainRoutes() {
           <Route path="/services" component={Services} />
           <Route path="/membership" component={Membership} />
           <Route path="/enroll" component={Enroll} />
+          <Route path="/program-enroll" component={ProgramEnroll} />
           <Route path="/programs" component={Programs} />
           <Route path="/programs/fitness" component={FitnessPrograms} />
           <Route path="/programs/kids-youth" component={KidsYouthPrograms} />

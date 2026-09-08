@@ -1,1 +1,2 @@
 - [Imported preview setup](imported-preview-setup.md) — full-stack imports may need explicit workflows, dev schema setup, and a Vite API proxy.
+- [Program enrollment storage](program-enrollment-storage.md) — program signups reuse pending bookings; preserve the selected program and details in the booking request notes.

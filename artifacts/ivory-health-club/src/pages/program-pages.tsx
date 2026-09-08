@@ -43,6 +43,7 @@ function ProgramPageShell({
   image,
   imageAlt,
   children,
+  programKey,
   ctaLabel = "Enroll Now",
 }: {
   eyebrow: string;
@@ -51,6 +52,7 @@ function ProgramPageShell({
   image: string;
   imageAlt: string;
   children: React.ReactNode;
+  programKey: string;
   ctaLabel?: string;
 }) {
   return (
@@ -64,7 +66,7 @@ function ProgramPageShell({
           imageAlt={imageAlt}
           program
         >
-          <Link href="/enroll">
+          <Link href={`/program-enroll?program=${programKey}`}>
             <Button className="bg-primary text-secondary hover:bg-white hover:text-secondary uppercase tracking-wider font-bold rounded-full px-8 h-12">
               {ctaLabel}
             </Button>
@@ -91,6 +93,7 @@ export function FitnessPrograms() {
       intro="Build strength, energy, and confidence with expert-led programs created for every level, from first session to long-term performance."
       image={programsImg}
       imageAlt="Members training together in a fitness class"
+      programKey="adult-fitness"
     >
       <ListSection
         title="Program Overview"
@@ -135,6 +138,7 @@ export function KidsYouthPrograms() {
       intro="Give young people a positive relationship with movement through joyful, age-appropriate activities led by caring youth fitness specialists."
       image={youthImg}
       imageAlt="Young members enjoying a youth fitness activity"
+      programKey="kids-youth"
     >
       <ListSection
         title="Age Groups"
@@ -176,6 +180,7 @@ export function SummerCamp() {
       intro="A vibrant holiday experience where children can move, make friends, discover new sports, and fill their days with memorable adventures."
       image={entertainmentImg}
       imageAlt="Children enjoying a fun club activity"
+      programKey="summer-camp"
       ctaLabel="Register Now"
     >
       <ListSection
@@ -210,24 +215,28 @@ const academies = [
   {
     title: "Ivory Soccer Academy",
     href: "/programs/academies/soccer",
+    programKey: "soccer-academy",
     image: programsImg,
     description: "Technical training, game intelligence, and teamwork for every stage of the journey.",
   },
   {
     title: "Ivory Tennis Academy",
     href: "/programs/academies/tennis",
+    programKey: "tennis-academy",
     image: gymImg,
     description: "Build a confident all-court game with focused coaching and purposeful practice.",
   },
   {
     title: "Ivory Swimming Club",
     href: "/programs/academies/swimming",
+    programKey: "swimming-club",
     image: youthImg,
     description: "Water confidence, stroke development, and safe progression in a supportive club.",
   },
   {
     title: "Ivory Basketball Academy",
     href: "/programs/academies/basketball",
+    programKey: "basketball-academy",
     image: entertainmentImg,
     description: "Develop fundamentals, athleticism, and court awareness through energetic sessions.",
   },
@@ -258,9 +267,16 @@ export function Academies() {
               </div>
               <div className="p-7">
                 <p className="text-gray-600 leading-relaxed mb-6">{academy.description}</p>
-                <Link href={academy.href} className="inline-flex items-center gap-2 text-secondary font-bold uppercase tracking-wider text-sm hover:text-primary transition-colors">
-                  Explore Academy <ArrowRight size={17} />
-                </Link>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                  <Link href={academy.href} className="inline-flex items-center gap-2 text-secondary font-bold uppercase tracking-wider text-sm hover:text-primary transition-colors">
+                    Explore Academy <ArrowRight size={17} />
+                  </Link>
+                  <Link href={`/program-enroll?program=${academy.programKey}`}>
+                    <Button className="w-full sm:w-auto bg-secondary text-white hover:bg-primary hover:text-secondary uppercase tracking-wider font-bold rounded-full px-5">
+                      Enroll Now
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </motion.div>
           ))}
@@ -325,6 +341,7 @@ const academyDetails: Record<AcademyKey, AcademyDetailData> = {
 
 export function AcademyDetail({ academy }: { academy: AcademyKey }) {
   const details = academyDetails[academy];
+  const programKey = academy === "swimming" ? "swimming-club" : `${academy}-academy`;
 
   return (
     <ProgramPageShell
@@ -333,6 +350,7 @@ export function AcademyDetail({ academy }: { academy: AcademyKey }) {
       intro={details.intro}
       image={details.image}
       imageAlt={`${details.title} training session`}
+      programKey={programKey}
     >
       <ListSection title="Training Overview" items={details.overview} icon={Dumbbell} />
       <ListSection title="Skills Development" items={details.skills} icon={Trophy} />
