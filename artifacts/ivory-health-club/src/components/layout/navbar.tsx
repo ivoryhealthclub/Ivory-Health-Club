@@ -106,18 +106,18 @@ export function Navbar() {
 
   const isFoodActive = location === "/restaurant" || location === "/juice-bar";
   const isProgramsActive = location === "/programs" || location.startsWith("/programs/");
-  const linkBase = "text-sm font-semibold tracking-wide uppercase transition-colors hover:text-primary";
+  const linkBase = "text-[11px] font-semibold tracking-[0.12em] uppercase leading-tight transition-colors hover:text-primary";
   const linkColor = (active: boolean) =>
-    active ? "text-primary" : isScrolled ? "text-foreground" : "text-white/90";
+    active ? "text-primary" : "text-secondary";
 
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled ? "bg-white/95 backdrop-blur-sm shadow-sm py-4" : "bg-transparent py-6"
+        "fixed top-0 left-0 right-0 z-50 border-b border-gray-100/80 bg-white/95 backdrop-blur-md transition-all duration-300",
+        isScrolled ? "shadow-md py-3" : "shadow-sm py-4"
       )}
     >
-      <div className="container mx-auto px-6 max-w-7xl flex items-center gap-6">
+      <div className="container mx-auto flex max-w-7xl items-center gap-4 px-6 lg:gap-6">
         <Link href="/" className="group flex items-center shrink-0">
           <img
             src={logo}
@@ -127,7 +127,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Nav — centered */}
-        <nav className="hidden lg:flex flex-1 items-center justify-center gap-6">
+        <nav aria-label="Primary navigation" className="hidden min-w-0 flex-1 items-center justify-center gap-4 xl:flex xl:gap-5">
           {navLinksLeft.map((link) => (
             <Link
               key={link.href}
@@ -137,54 +137,6 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-
-          {/* Food & Beverages dropdown — right after Membership */}
-          <div ref={dropdownRef} className="relative">
-            <button
-              onClick={() => setFoodOpen((o) => !o)}
-              className={cn(
-                linkBase,
-                "flex items-center gap-1",
-                linkColor(isFoodActive)
-              )}
-            >
-              Food & Beverages
-              <ChevronDown
-                size={14}
-                className={cn("transition-transform duration-200", foodOpen && "rotate-180")}
-              />
-            </button>
-
-            <AnimatePresence>
-              {foodOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.18 }}
-                  className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-72 bg-white shadow-2xl border border-gray-100 rounded-xl overflow-hidden"
-                >
-                  {foodItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className="flex items-start gap-4 px-5 py-4 hover:bg-gray-50 transition-colors group border-b border-gray-50 last:border-0"
-                    >
-                      <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-primary group-hover:text-secondary transition-colors">
-                        <item.icon size={16} className="text-primary group-hover:text-secondary transition-colors" />
-                      </div>
-                      <div>
-                        <p className="font-bold text-secondary text-sm group-hover:text-primary transition-colors uppercase tracking-wide">
-                          {item.label}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-0.5 leading-snug">{item.desc}</p>
-                      </div>
-                    </Link>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
 
           {/* Programs dropdown */}
           <div
@@ -312,25 +264,71 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
+
+          {/* Food & Beverages dropdown */}
+          <div ref={dropdownRef} className="relative">
+            <button
+              onClick={() => setFoodOpen((o) => !o)}
+              className={cn(
+                linkBase,
+                "flex max-w-[82px] items-center justify-center gap-1 text-center",
+                linkColor(isFoodActive)
+              )}
+            >
+              Food & Beverages
+              <ChevronDown
+                size={12}
+                className={cn("shrink-0 transition-transform duration-200", foodOpen && "rotate-180")}
+              />
+            </button>
+
+            <AnimatePresence>
+              {foodOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.18 }}
+                  className="absolute left-1/2 top-full z-50 mt-3 w-72 -translate-x-1/2 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-2xl"
+                >
+                  {foodItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="group flex items-start gap-4 border-b border-gray-50 px-5 py-4 transition-colors hover:bg-gray-50 last:border-0"
+                    >
+                      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary group-hover:text-secondary">
+                        <item.icon size={16} className="text-primary transition-colors group-hover:text-secondary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold uppercase tracking-wide text-secondary transition-colors group-hover:text-primary">
+                          {item.label}
+                        </p>
+                        <p className="mt-0.5 text-xs leading-snug text-gray-500">{item.desc}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </nav>
 
         {/* CTA Buttons */}
-        <div className="hidden lg:flex items-center gap-3 shrink-0">
+        <div className="hidden shrink-0 items-center gap-3 xl:flex">
           <Link href="/book">
             <Button
-              variant={isScrolled ? "secondary" : "outline"}
+              variant="secondary"
               className={cn(
-                "uppercase tracking-wider rounded-full font-bold px-6 transition-all duration-200",
-                isScrolled
-                  ? "hover:bg-secondary hover:text-white"
-                  : "text-white border-white/50 hover:bg-white hover:text-secondary"
+                "rounded-full px-5 text-[11px] font-bold uppercase tracking-[0.12em] transition-all duration-200",
+                "bg-secondary text-white hover:bg-secondary/90"
               )}
             >
               Book Service
             </Button>
           </Link>
           <Link href="/enroll">
-            <Button className="uppercase tracking-wider rounded-full font-bold px-6 bg-primary text-secondary hover:bg-primary/80 hover:scale-105 transition-all duration-200">
+            <Button className="rounded-full bg-primary px-5 text-[11px] font-bold uppercase tracking-[0.12em] text-secondary transition-all duration-200 hover:scale-105 hover:bg-primary/80">
               Join Now
             </Button>
           </Link>
@@ -338,7 +336,8 @@ export function Navbar() {
 
         {/* Mobile Toggle */}
         <button
-          className={cn("lg:hidden p-2 -mr-2", isScrolled ? "text-secondary" : "text-white")}
+          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          className="p-2 text-secondary xl:hidden"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
@@ -352,7 +351,7 @@ export function Navbar() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-full left-0 right-0 bg-white shadow-xl border-t lg:hidden"
+            className="absolute left-0 right-0 top-full border-t bg-white shadow-xl xl:hidden"
           >
             <div className="flex flex-col p-6 gap-4">
               {navLinksLeft.map((link) => (
@@ -360,7 +359,7 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "text-lg font-serif py-2 border-b border-gray-100",
+                    "text-base font-serif py-2 border-b border-gray-100",
                     location === link.href ? "text-primary font-bold" : "text-secondary"
                   )}
                 >
@@ -374,7 +373,7 @@ export function Navbar() {
                   <Link
                     href="/programs"
                     className={cn(
-                      "flex-1 text-lg font-serif py-2",
+                      "flex-1 text-base font-serif py-2",
                       isProgramsActive ? "text-primary font-bold" : "text-secondary"
                     )}
                   >
@@ -478,7 +477,7 @@ export function Navbar() {
                 <button
                   onClick={() => setMobileFoodOpen((o) => !o)}
                   className={cn(
-                    "w-full flex items-center justify-between text-lg font-serif py-2",
+                    "w-full flex items-center justify-between text-base font-serif py-2",
                     isFoodActive ? "text-primary font-bold" : "text-secondary"
                   )}
                 >
@@ -514,12 +513,12 @@ export function Navbar() {
 
               <div className="flex flex-col gap-4 mt-4">
                 <Link href="/book">
-                  <Button variant="secondary" className="w-full uppercase tracking-wider rounded-none">
+                  <Button variant="secondary" className="w-full text-sm uppercase tracking-wider rounded-none">
                     Book Service
                   </Button>
                 </Link>
                 <Link href="/enroll">
-                  <Button className="w-full uppercase tracking-wider rounded-none bg-primary text-secondary">
+                  <Button className="w-full text-sm uppercase tracking-wider rounded-none bg-primary text-secondary">
                     Join Now
                   </Button>
                 </Link>
