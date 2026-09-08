@@ -141,7 +141,7 @@ export function Navbar() {
           {/* Programs dropdown */}
           <div
             ref={programsRef}
-            className="relative"
+            className="relative order-2"
             onMouseEnter={() => setProgramsOpen(true)}
             onMouseLeave={() => {
               setProgramsOpen(false);
@@ -259,14 +259,14 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className={cn(linkBase, linkColor(location === link.href))}
+              className={cn(linkBase, linkColor(location === link.href), "order-3")}
             >
               {link.label}
             </Link>
           ))}
 
           {/* Food & Beverages dropdown */}
-          <div ref={dropdownRef} className="relative">
+          <div ref={dropdownRef} className="relative order-1">
             <button
               onClick={() => setFoodOpen((o) => !o)}
               className={cn(
@@ -337,7 +337,7 @@ export function Navbar() {
         {/* Mobile Toggle */}
         <button
           aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-          className="p-2 text-secondary xl:hidden"
+          className="ml-auto p-2 text-secondary xl:hidden"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
@@ -368,7 +368,7 @@ export function Navbar() {
               ))}
 
               {/* Mobile Programs accordion */}
-              <div className="border-b border-gray-100">
+              <div className="order-2 border-b border-gray-100">
                 <div className="flex items-center justify-between">
                   <Link
                     href="/programs"
@@ -464,7 +464,7 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "text-lg font-serif py-2 border-b border-gray-100",
+                    "order-3 border-b border-gray-100 py-2 text-lg font-serif",
                     location === link.href ? "text-primary font-bold" : "text-secondary"
                   )}
                 >
@@ -473,7 +473,7 @@ export function Navbar() {
               ))}
 
               {/* Mobile Food & Beverages accordion */}
-              <div className="border-b border-gray-100">
+              <div className="order-1 border-b border-gray-100">
                 <button
                   onClick={() => setMobileFoodOpen((o) => !o)}
                   className={cn(
@@ -511,7 +511,7 @@ export function Navbar() {
                 </AnimatePresence>
               </div>
 
-              <div className="flex flex-col gap-4 mt-4">
+              <div className="order-4 mt-4 flex flex-col gap-4">
                 <Link href="/book">
                   <Button variant="secondary" className="w-full text-sm uppercase tracking-wider rounded-none">
                     Book Service

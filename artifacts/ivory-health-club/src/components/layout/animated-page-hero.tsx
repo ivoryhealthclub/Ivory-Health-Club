@@ -11,6 +11,7 @@ type AnimatedPageHeroProps = {
   imageAlt?: string;
   children?: ReactNode;
   compact?: boolean;
+  program?: boolean;
   className?: string;
 };
 
@@ -22,6 +23,7 @@ export function AnimatedPageHero({
   imageAlt = "Ivory Health Club",
   children,
   compact = false,
+  program = false,
   className = "",
 }: AnimatedPageHeroProps) {
   const heroRef = useRef<HTMLElement>(null);
@@ -36,8 +38,14 @@ export function AnimatedPageHero({
   return (
     <section
       ref={heroRef}
-      className={`relative isolate flex min-h-[460px] items-center justify-center overflow-hidden bg-secondary ${
-        compact ? "min-h-[360px]" : "h-[min(70vh,680px)]"
+      className={`relative isolate flex items-center justify-center overflow-hidden bg-secondary ${
+        compact
+          ? "min-h-[360px]"
+          : program
+            ? children
+              ? "h-[560px] min-h-0 sm:h-[500px] lg:h-[390px]"
+              : "h-[430px] min-h-0 sm:h-[400px] lg:h-[360px] xl:h-[390px]"
+            : "min-h-[460px] h-[min(70vh,680px)]"
       } ${className}`}
     >
       <motion.div

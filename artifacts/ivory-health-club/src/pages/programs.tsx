@@ -89,8 +89,8 @@ export default function Programs() {
   ];
 
   return (
-    <div className="pt-24 bg-gray-50 min-h-screen">
-      <div className="container mx-auto px-6 max-w-7xl pb-24">
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container mx-auto max-w-7xl px-6 pb-24 pt-20">
 
         <AnimatedPageHero
           eyebrow="Group Fitness"
@@ -98,6 +98,7 @@ export default function Programs() {
           description="Experience the energy of our elite group classes led by master trainers in our specialized luxury studios."
           image={programsImg}
           imageAlt="Ivory Health Club group fitness class"
+          program
           className="mb-20"
         />
 

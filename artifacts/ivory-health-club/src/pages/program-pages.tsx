@@ -54,27 +54,28 @@ function ProgramPageShell({
   ctaLabel?: string;
 }) {
   return (
-    <div className="pt-24 bg-gray-50 min-h-screen">
-      <AnimatedPageHero
-        eyebrow={eyebrow}
-        title={title}
-        description={intro}
-        image={image}
-        imageAlt={imageAlt}
-      >
-        <Link href="/enroll">
-          <Button className="bg-primary text-secondary hover:bg-white hover:text-secondary uppercase tracking-wider font-bold rounded-full px-8 h-12">
-            {ctaLabel}
-          </Button>
-        </Link>
-        <Link href="/contact">
-          <Button variant="outline" className="border-white text-white hover:bg-white hover:text-secondary uppercase tracking-wider font-bold rounded-full px-8 h-12">
-            Speak to an Advisor
-          </Button>
-        </Link>
-      </AnimatedPageHero>
-      <section className="container mx-auto px-6 max-w-7xl pb-16 pt-16">
-        <div className="grid md:grid-cols-2 gap-6">{children}</div>
+    <div className="bg-gray-50 min-h-screen">
+      <section className="container mx-auto max-w-7xl px-6 pb-16 pt-20">
+        <AnimatedPageHero
+          eyebrow={eyebrow}
+          title={title}
+          description={intro}
+          image={image}
+          imageAlt={imageAlt}
+          program
+        >
+          <Link href="/enroll">
+            <Button className="bg-primary text-secondary hover:bg-white hover:text-secondary uppercase tracking-wider font-bold rounded-full px-8 h-12">
+              {ctaLabel}
+            </Button>
+          </Link>
+          <Link href="/contact">
+            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-secondary uppercase tracking-wider font-bold rounded-full px-8 h-12">
+              Speak to an Advisor
+            </Button>
+          </Link>
+        </AnimatedPageHero>
+        <div className="grid md:grid-cols-2 gap-6 pt-16">{children}</div>
       </section>
     </div>
   );
