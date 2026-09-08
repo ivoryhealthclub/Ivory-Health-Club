@@ -45,6 +45,8 @@ export default function Enroll() {
   const search = useSearch();
   const { toast } = useToast();
   const [success, setSuccess] = useState(false);
+  const [submittedPlanName, setSubmittedPlanName] = useState("");
+  const [confirmationId, setConfirmationId] = useState<number | null>(null);
   
   const { data: plans, isLoading: plansLoading } = useListMembershipPlans();
   const createEnrollment = useCreateEnrollment();
@@ -79,7 +81,9 @@ export default function Enroll() {
     createEnrollment.mutate(
       { data },
       {
-        onSuccess: () => {
+        onSuccess: (enrollment) => {
+          setSubmittedPlanName(selectedPlan?.name ?? "your selected membership");
+          setConfirmationId(enrollment.id);
           setSuccess(true);
           window.scrollTo(0, 0);
         },
@@ -101,11 +105,17 @@ export default function Enroll() {
           <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8">
             <CheckCircle2 size={48} />
           </div>
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary mb-3">Welcome to Ivory</p>
           <h2 className="text-4xl font-serif text-secondary font-bold mb-4">Application Received</h2>
           <p className="text-gray-600 text-lg mb-8">
-            Thank you for applying to Ivory Health Club. Our concierge team is reviewing your application 
-            and will contact you shortly with payment details to activate your membership.
+            Thank you for applying for <strong>{submittedPlanName}</strong>. Our concierge team is reviewing your application
+            and will contact you shortly with membership rates and next steps.
           </p>
+          {confirmationId && (
+            <p className="mb-8 text-sm text-gray-500">
+              Application reference: <span className="font-bold text-secondary">IHC-{confirmationId.toString().padStart(5, "0")}</span>
+            </p>
+          )}
           <div className="flex justify-center gap-4">
             <Link href="/">
               <Button variant="outline" className="border-secondary text-secondary rounded-[10px] uppercase tracking-wider font-bold">
@@ -161,7 +171,7 @@ export default function Enroll() {
                           <SelectContent>
                             {plans?.map((plan) => (
                               <SelectItem key={plan.id} value={plan.id.toString()}>
-                                {plan.name} - ₦{plan.price.toLocaleString()} / {plan.pricePeriod}
+                                {plan.name} — membership rate on request
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -173,7 +183,7 @@ export default function Enroll() {
                 </div>
 
                 <div className="space-y-4 pt-4">
-                  <h3 className="text-lg font-bold text-secondary border-b pb-2">Personal Details</h3>
+                    <h3 className="text-lg font-bold text-secondary border-b pb-2">Personal Details</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -307,11 +317,8 @@ export default function Enroll() {
                   </div>
                   
                   <div className="mb-8">
-                    <p className="text-white/70 text-sm mb-1">Price</p>
-                    <p className="text-3xl font-bold text-primary">
-                      ₦{selectedPlan.price.toLocaleString()}
-                      <span className="text-sm font-normal text-white/70 ml-1">/ {selectedPlan.pricePeriod}</span>
-                    </p>
+                     <p className="text-white/70 text-sm mb-1">Membership rate</p>
+                     <p className="text-xl font-bold text-primary">Available on request</p>
                   </div>
                   
                   <div className="space-y-3 mb-8">

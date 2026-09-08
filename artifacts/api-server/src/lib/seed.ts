@@ -1,0 +1,157 @@
+import { db, membershipPlansTable } from "@workspace/db";
+
+const membershipPlans = [
+  {
+    name: "Silver Single",
+    tier: "silver_single",
+    description: "A focused membership for individuals building a stronger, healthier routine.",
+    price: 0,
+    pricePeriod: "monthly",
+    perks: [
+      "Gym",
+      "Aerobics",
+      "Basketball",
+      "Steam Room",
+      "Sauna",
+      "25% discount on guests",
+      "10% discount on events",
+    ],
+    discounts: "25% off guests · 10% off events",
+    maxMembers: 1,
+  },
+  {
+    name: "Silver Family",
+    tier: "silver_family",
+    description: "A shared wellness membership for a couple and four children under 12.",
+    price: 0,
+    pricePeriod: "monthly",
+    perks: [
+      "Gym",
+      "Aerobics",
+      "Basketball",
+      "Steam Room",
+      "Sauna",
+      "25% discount on guests",
+      "10% discount on events",
+    ],
+    discounts: "25% off guests · 10% off events",
+    maxMembers: 6,
+  },
+  {
+    name: "Gold Single",
+    tier: "gold_single",
+    description: "An elevated individual membership with access to our full active lifestyle.",
+    price: 0,
+    pricePeriod: "monthly",
+    perks: [
+      "Gym",
+      "Aerobics",
+      "Swimming",
+      "Squash",
+      "Basketball",
+      "Ping Pong",
+      "Volleyball",
+      "Steam Room",
+      "Sauna",
+      "50% discount on guests",
+      "15% discount on events",
+    ],
+    discounts: "50% off guests · 15% off events",
+    maxMembers: 1,
+  },
+  {
+    name: "Gold Family",
+    tier: "gold_family",
+    description: "A premium family membership for a couple and four children under 12.",
+    price: 0,
+    pricePeriod: "monthly",
+    perks: [
+      "Gym",
+      "Aerobics",
+      "Swimming",
+      "Squash",
+      "Basketball",
+      "Volleyball",
+      "Ping Pong",
+      "Steam Room",
+      "Sauna",
+      "50% discount on guests",
+      "15% discount on events",
+    ],
+    discounts: "50% off guests · 15% off events",
+    maxMembers: 6,
+  },
+  {
+    name: "Gold Plus",
+    tier: "gold_plus",
+    description: "A generous family membership for three adults and five children under 12.",
+    price: 0,
+    pricePeriod: "monthly",
+    perks: [
+      "Gym",
+      "Aerobics",
+      "Swimming",
+      "Squash",
+      "Basketball",
+      "Lawn Tennis",
+      "Volleyball",
+      "Ping Pong",
+      "Billiard",
+      "Steam Room",
+      "Sauna",
+      "Monthly free spa treatment for member and spouse each",
+      "50% discount on guests",
+      "15% discount on events",
+    ],
+    discounts: "50% off guests · 15% off events",
+    maxMembers: 8,
+  },
+  {
+    name: "Diamond",
+    tier: "diamond",
+    description: "Our most complete membership, with everything in Gold Plus and more.",
+    price: 0,
+    pricePeriod: "monthly",
+    perks: [
+      "Everything in Gold Plus",
+      "2 monthly free spa treatments by appointment for member and spouse each",
+      "20% discount on events",
+    ],
+    discounts: "50% off guests · 20% off events",
+    maxMembers: 8,
+  },
+  {
+    name: "70 Plus Club",
+    tier: "seventy_plus",
+    description: "A welcoming club experience with movement, connection, and joyful activities.",
+    price: 0,
+    pricePeriod: "monthly",
+    perks: [
+      "Gym",
+      "Aerobics",
+      "Swimming",
+      "Squash",
+      "Basketball",
+      "Volleyball",
+      "Table Tennis",
+      "Steam Room",
+      "Sauna",
+      "Group fitness",
+      "Social and fun activities including dance, nutrition, games, and more",
+    ],
+    discounts: undefined,
+    maxMembers: undefined,
+  },
+];
+
+export async function seedMembershipPlans() {
+  const existing = await db
+    .select({ tier: membershipPlansTable.tier })
+    .from(membershipPlansTable);
+  const existingTiers = new Set(existing.map((plan) => plan.tier));
+  const missing = membershipPlans.filter((plan) => !existingTiers.has(plan.tier));
+
+  if (missing.length > 0) {
+    await db.insert(membershipPlansTable).values(missing);
+  }
+}
