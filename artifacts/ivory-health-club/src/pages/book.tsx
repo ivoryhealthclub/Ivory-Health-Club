@@ -107,16 +107,15 @@ export default function Book() {
 
   return (
     <div className="pt-24 pb-20 bg-gray-50 min-h-screen">
+      <AnimatedPageHero
+        eyebrow="The Ivory Concierge"
+        title="Book an Experience"
+        description="Reserve a service, treatment, or space."
+        compact
+        className="mb-12"
+      />
+
       <div className="container mx-auto px-6 max-w-4xl">
-        
-        <AnimatedPageHero
-          eyebrow="The Ivory Concierge"
-          title="Book an Experience"
-          description="Reserve a service, treatment, or space."
-          compact
-          className="mb-12"
-        />
-        
         <div className="bg-white p-8 md:p-12 shadow-sm rounded-sm border border-gray-100">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
