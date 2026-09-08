@@ -90,8 +90,7 @@ export default function Programs() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <div className="container mx-auto max-w-7xl px-6 pb-24 pt-20">
-
+      <div className="pt-20">
         <AnimatedPageHero
           eyebrow="Group Fitness"
           title="Move Together"
@@ -99,8 +98,10 @@ export default function Programs() {
           image={programsImg}
           imageAlt="Ivory Health Club group fitness class"
           program
-          className="mb-20"
         />
+      </div>
+
+      <div className="container mx-auto max-w-7xl px-6 pb-24 pt-20">
 
         {/* Adult Fitness Classes */}
         <motion.div

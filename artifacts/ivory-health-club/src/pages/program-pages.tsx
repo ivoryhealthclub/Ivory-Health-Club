@@ -55,7 +55,7 @@ function ProgramPageShell({
 }) {
   return (
     <div className="bg-gray-50 min-h-screen">
-      <section className="container mx-auto max-w-7xl px-6 pb-16 pt-20">
+      <div className="pt-20">
         <AnimatedPageHero
           eyebrow={eyebrow}
           title={title}
@@ -75,7 +75,9 @@ function ProgramPageShell({
             </Button>
           </Link>
         </AnimatedPageHero>
-        <div className="grid md:grid-cols-2 gap-6 pt-16">{children}</div>
+      </div>
+      <section className="container mx-auto max-w-7xl px-6 pb-16 pt-16">
+        <div className="grid md:grid-cols-2 gap-6">{children}</div>
       </section>
     </div>
   );
