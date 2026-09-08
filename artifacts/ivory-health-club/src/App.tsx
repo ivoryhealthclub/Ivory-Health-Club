@@ -23,6 +23,13 @@ import Contact from '@/pages/contact';
 import About from '@/pages/about';
 import Restaurant from '@/pages/restaurant';
 import JuiceBar from '@/pages/juice-bar';
+import {
+  Academies,
+  AcademyDetail,
+  FitnessPrograms,
+  KidsYouthPrograms,
+  SummerCamp,
+} from '@/pages/program-pages';
 
 // Admin Pages
 import AdminDashboard from '@/pages/admin/dashboard';
@@ -45,6 +52,22 @@ function MainRoutes() {
           <Route path="/membership" component={Membership} />
           <Route path="/enroll" component={Enroll} />
           <Route path="/programs" component={Programs} />
+          <Route path="/programs/fitness" component={FitnessPrograms} />
+          <Route path="/programs/kids-youth" component={KidsYouthPrograms} />
+          <Route path="/programs/summer-camp" component={SummerCamp} />
+          <Route path="/programs/academies" component={Academies} />
+          <Route path="/programs/academies/soccer">
+            <AcademyDetail academy="soccer" />
+          </Route>
+          <Route path="/programs/academies/tennis">
+            <AcademyDetail academy="tennis" />
+          </Route>
+          <Route path="/programs/academies/swimming">
+            <AcademyDetail academy="swimming" />
+          </Route>
+          <Route path="/programs/academies/basketball">
+            <AcademyDetail academy="basketball" />
+          </Route>
           <Route path="/gallery" component={Gallery} />
           <Route path="/blog" component={BlogList} />
           <Route path="/blog/:id" component={BlogPost} />
