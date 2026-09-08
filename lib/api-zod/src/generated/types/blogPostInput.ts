@@ -12,6 +12,11 @@ export interface BlogPostInput {
   content: string;
   category: string;
   imageUrl?: string;
+  focusKeyword?: string;
+  metaDescription?: string;
+  tags?: string[];
+  ogTitle?: string;
+  ogDescription?: string;
   author: string;
   published?: boolean;
 }

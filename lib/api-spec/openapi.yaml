@@ -715,6 +715,18 @@ components:
           type: string
         imageUrl:
           type: ["string", "null"]
+        focusKeyword:
+          type: ["string", "null"]
+        metaDescription:
+          type: ["string", "null"]
+        tags:
+          type: array
+          items:
+            type: string
+        ogTitle:
+          type: ["string", "null"]
+        ogDescription:
+          type: ["string", "null"]
         author:
           type: string
         published:
@@ -736,6 +748,18 @@ components:
           type: string
         imageUrl:
           type: string
+        focusKeyword:
+          type: string
+        metaDescription:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        ogTitle:
+          type: string
+        ogDescription:
+          type: string
         author:
           type: string
         published:
@@ -753,6 +777,18 @@ components:
         category:
           type: string
         imageUrl:
+          type: string
+        focusKeyword:
+          type: string
+        metaDescription:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        ogTitle:
+          type: string
+        ogDescription:
           type: string
         author:
           type: string

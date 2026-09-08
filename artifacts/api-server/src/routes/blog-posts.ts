@@ -64,6 +64,11 @@ router.post("/blog-posts", adminAuthMiddleware, async (req, res): Promise<void> 
       content: parsed.data.content,
       category: parsed.data.category,
       imageUrl: parsed.data.imageUrl ?? null,
+      focusKeyword: parsed.data.focusKeyword ?? null,
+      metaDescription: parsed.data.metaDescription ?? null,
+      tags: parsed.data.tags ?? [],
+      ogTitle: parsed.data.ogTitle ?? null,
+      ogDescription: parsed.data.ogDescription ?? null,
       author: parsed.data.author,
       published: parsed.data.published ?? false,
     })
@@ -115,6 +120,11 @@ router.patch("/blog-posts/:id", adminAuthMiddleware, async (req, res): Promise<v
       ...(body.data.content !== undefined && { content: body.data.content }),
       ...(body.data.category !== undefined && { category: body.data.category }),
       ...(body.data.imageUrl !== undefined && { imageUrl: body.data.imageUrl }),
+      ...(body.data.focusKeyword !== undefined && { focusKeyword: body.data.focusKeyword }),
+      ...(body.data.metaDescription !== undefined && { metaDescription: body.data.metaDescription }),
+      ...(body.data.tags !== undefined && { tags: body.data.tags }),
+      ...(body.data.ogTitle !== undefined && { ogTitle: body.data.ogTitle }),
+      ...(body.data.ogDescription !== undefined && { ogDescription: body.data.ogDescription }),
       ...(body.data.author !== undefined && { author: body.data.author }),
       ...(body.data.published !== undefined && { published: body.data.published }),
     })

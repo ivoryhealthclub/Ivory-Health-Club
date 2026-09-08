@@ -16,6 +16,15 @@ export interface BlogPost {
   category: string;
   /** @nullable */
   imageUrl?: string | null;
+  /** @nullable */
+  focusKeyword?: string | null;
+  /** @nullable */
+  metaDescription?: string | null;
+  tags?: string[];
+  /** @nullable */
+  ogTitle?: string | null;
+  /** @nullable */
+  ogDescription?: string | null;
   author?: string;
   published: boolean;
   createdAt: string;

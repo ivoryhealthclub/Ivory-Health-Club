@@ -193,6 +193,15 @@ export interface BlogPost {
   category: string;
   /** @nullable */
   imageUrl?: string | null;
+  /** @nullable */
+  focusKeyword?: string | null;
+  /** @nullable */
+  metaDescription?: string | null;
+  tags?: string[];
+  /** @nullable */
+  ogTitle?: string | null;
+  /** @nullable */
+  ogDescription?: string | null;
   author?: string;
   published: boolean;
   createdAt: string;
@@ -204,6 +213,11 @@ export interface BlogPostInput {
   content: string;
   category: string;
   imageUrl?: string;
+  focusKeyword?: string;
+  metaDescription?: string;
+  tags?: string[];
+  ogTitle?: string;
+  ogDescription?: string;
   author: string;
   published?: boolean;
 }
@@ -214,6 +228,11 @@ export interface BlogPostPatch {
   content?: string;
   category?: string;
   imageUrl?: string;
+  focusKeyword?: string;
+  metaDescription?: string;
+  tags?: string[];
+  ogTitle?: string;
+  ogDescription?: string;
   author?: string;
   published?: boolean;
 }

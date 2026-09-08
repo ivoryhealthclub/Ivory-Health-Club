@@ -296,6 +296,11 @@ export const ListBlogPostsResponseItem = zod.object({
   "content": zod.string(),
   "category": zod.string(),
   "imageUrl": zod.string().nullish(),
+  "focusKeyword": zod.string().nullish(),
+  "metaDescription": zod.string().nullish(),
+  "tags": zod.array(zod.string()).optional(),
+  "ogTitle": zod.string().nullish(),
+  "ogDescription": zod.string().nullish(),
   "author": zod.string().optional(),
   "published": zod.boolean(),
   "createdAt": zod.string()
@@ -312,6 +317,11 @@ export const CreateBlogPostBody = zod.object({
   "content": zod.string(),
   "category": zod.string(),
   "imageUrl": zod.string().optional(),
+  "focusKeyword": zod.string().optional(),
+  "metaDescription": zod.string().optional(),
+  "tags": zod.array(zod.string()).optional(),
+  "ogTitle": zod.string().optional(),
+  "ogDescription": zod.string().optional(),
   "author": zod.string(),
   "published": zod.boolean().optional()
 })
@@ -324,6 +334,11 @@ export const CreateBlogPostResponse = zod.object({
   "content": zod.string(),
   "category": zod.string(),
   "imageUrl": zod.string().nullish(),
+  "focusKeyword": zod.string().nullish(),
+  "metaDescription": zod.string().nullish(),
+  "tags": zod.array(zod.string()).optional(),
+  "ogTitle": zod.string().nullish(),
+  "ogDescription": zod.string().nullish(),
   "author": zod.string().optional(),
   "published": zod.boolean(),
   "createdAt": zod.string()
@@ -345,6 +360,11 @@ export const GetBlogPostResponse = zod.object({
   "content": zod.string(),
   "category": zod.string(),
   "imageUrl": zod.string().nullish(),
+  "focusKeyword": zod.string().nullish(),
+  "metaDescription": zod.string().nullish(),
+  "tags": zod.array(zod.string()).optional(),
+  "ogTitle": zod.string().nullish(),
+  "ogDescription": zod.string().nullish(),
   "author": zod.string().optional(),
   "published": zod.boolean(),
   "createdAt": zod.string()
@@ -364,6 +384,11 @@ export const UpdateBlogPostBody = zod.object({
   "content": zod.string().optional(),
   "category": zod.string().optional(),
   "imageUrl": zod.string().optional(),
+  "focusKeyword": zod.string().optional(),
+  "metaDescription": zod.string().optional(),
+  "tags": zod.array(zod.string()).optional(),
+  "ogTitle": zod.string().optional(),
+  "ogDescription": zod.string().optional(),
   "author": zod.string().optional(),
   "published": zod.boolean().optional()
 })
@@ -376,6 +401,11 @@ export const UpdateBlogPostResponse = zod.object({
   "content": zod.string(),
   "category": zod.string(),
   "imageUrl": zod.string().nullish(),
+  "focusKeyword": zod.string().nullish(),
+  "metaDescription": zod.string().nullish(),
+  "tags": zod.array(zod.string()).optional(),
+  "ogTitle": zod.string().nullish(),
+  "ogDescription": zod.string().nullish(),
   "author": zod.string().optional(),
   "published": zod.boolean(),
   "createdAt": zod.string()

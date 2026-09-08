@@ -1,5 +1,10 @@
-import { useState } from "react";
-import { useListBlogPosts, useDeleteBlogPost, useCreateBlogPost } from "@workspace/api-client-react";
+import { useState, type FormEvent } from "react";
+import {
+  useListBlogPosts,
+  useDeleteBlogPost,
+  useCreateBlogPost,
+  useListGalleryImages,
+} from "@workspace/api-client-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,8 +28,10 @@ import {
   Globe2,
   Image as ImageIcon,
   Plus,
+  Search,
   Tag,
   Trash2,
+  Upload,
 } from "lucide-react";
 
 export default function AdminBlog() {
@@ -114,9 +121,11 @@ export default function AdminBlog() {
 function AddPostDialog() {
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("content");
+  const [libraryOpen, setLibraryOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const createPost = useCreateBlogPost();
+  const { data: galleryImages } = useListGalleryImages();
 
   const emptyForm = {
     title: "",
@@ -125,6 +134,11 @@ function AddPostDialog() {
       "# Introduction\n\nWrite your content here using Markdown...\n\n## Subheading\n\nParagraph text with **bold** and *italic*.\n\n- List item\n- Another item",
     category: "Wellness",
     imageUrl: "",
+    focusKeyword: "",
+    metaDescription: "",
+    tags: "",
+    ogTitle: "",
+    ogDescription: "",
     author: "Ivory Editorial",
     published: true,
   };
@@ -141,11 +155,17 @@ function AddPostDialog() {
   const resetForm = () => {
     setFormData(emptyForm);
     setActiveTab("content");
+    setLibraryOpen(false);
   };
 
   const submitPost = (published: boolean) => {
+    const tags = formData.tags
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean);
+
     createPost.mutate(
-      { data: { ...formData, published } },
+      { data: { ...formData, tags, published } },
       {
         onSuccess: () => {
           toast({
@@ -167,7 +187,7 @@ function AddPostDialog() {
     );
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     submitPost(formData.published);
   };
@@ -185,10 +205,10 @@ function AddPostDialog() {
           <Plus size={16} className="mr-2" /> New Post
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl gap-0 overflow-hidden rounded-2xl p-0">
-        <DialogHeader className="border-b border-border/70 px-6 pb-4 pt-6">
-          <DialogTitle className="flex items-center gap-2 text-xl text-secondary">
-            <BookOpen size={19} className="text-secondary" />
+      <DialogContent className="max-w-4xl gap-0 overflow-hidden rounded-[18px] border-0 bg-white p-0 shadow-2xl">
+        <DialogHeader className="px-6 pb-3 pt-5">
+          <DialogTitle className="flex items-center gap-2 text-[18px] font-semibold text-[#111827]">
+            <BookOpen size={19} className="text-[#2f6fc7]" />
             Create New Blog Post
           </DialogTitle>
         </DialogHeader>
@@ -199,32 +219,32 @@ function AddPostDialog() {
             onValueChange={setActiveTab}
             className="flex min-h-0 flex-1 flex-col"
           >
-            <div className="px-6 pt-5">
-              <TabsList className="grid h-auto w-full grid-cols-2 gap-1 rounded-full bg-muted p-1 sm:grid-cols-4">
+            <div className="px-6 pt-1">
+              <TabsList className="grid h-[38px] w-full grid-cols-2 gap-1 rounded-full bg-[#e5e5e6] p-1 sm:grid-cols-4">
                 <TabsTrigger
                   value="content"
-                  className="gap-1.5 rounded-full px-2 py-2 text-xs data-[state=active]:bg-white data-[state=active]:text-secondary data-[state=active]:shadow-sm"
+                  className="gap-1.5 rounded-full px-2 py-2 text-xs font-medium text-[#141414] data-[state=active]:bg-white data-[state=active]:text-[#141414] data-[state=active]:shadow-sm"
                 >
                   <FileText size={14} />
                   Content
                 </TabsTrigger>
                 <TabsTrigger
                   value="cover"
-                  className="gap-1.5 rounded-full px-2 py-2 text-xs data-[state=active]:bg-white data-[state=active]:text-secondary data-[state=active]:shadow-sm"
+                  className="gap-1.5 rounded-full px-2 py-2 text-xs font-medium text-[#141414] data-[state=active]:bg-white data-[state=active]:text-[#141414] data-[state=active]:shadow-sm data-[state=active]:ring-2 data-[state=active]:ring-[#27a1e8]"
                 >
                   <ImageIcon size={14} />
                   Cover Image
                 </TabsTrigger>
                 <TabsTrigger
                   value="seo"
-                  className="gap-1.5 rounded-full px-2 py-2 text-xs data-[state=active]:bg-white data-[state=active]:text-secondary data-[state=active]:shadow-sm"
+                  className="gap-1.5 rounded-full px-2 py-2 text-xs font-medium text-[#141414] data-[state=active]:bg-white data-[state=active]:text-[#141414] data-[state=active]:shadow-sm data-[state=active]:ring-2 data-[state=active]:ring-[#27a1e8]"
                 >
                   <Globe2 size={14} />
                   SEO
                 </TabsTrigger>
                 <TabsTrigger
                   value="social"
-                  className="gap-1.5 rounded-full px-2 py-2 text-xs data-[state=active]:bg-white data-[state=active]:text-secondary data-[state=active]:shadow-sm"
+                  className="gap-1.5 rounded-full px-2 py-2 text-xs font-medium text-[#141414] data-[state=active]:bg-white data-[state=active]:text-[#141414] data-[state=active]:shadow-sm data-[state=active]:ring-2 data-[state=active]:ring-[#27a1e8]"
                 >
                   <Tag size={14} />
                   Social & Tags
@@ -279,64 +299,8 @@ function AddPostDialog() {
                     className="min-h-64 resize-y rounded-xl border-border/80 bg-white font-mono text-sm leading-6"
                   />
                 </div>
-              </TabsContent>
 
-              <TabsContent value="cover" className="space-y-5 pt-5">
-                <div className="space-y-2">
-                  <label htmlFor="blog-image-url" className="text-sm font-semibold text-secondary">
-                    Cover image URL
-                  </label>
-                  <Input
-                    id="blog-image-url"
-                    type="url"
-                    value={formData.imageUrl}
-                    onChange={(event) => updateForm("imageUrl", event.target.value)}
-                    placeholder="https://images.example.com/wellness.jpg"
-                    className="h-11 rounded-xl border-border/80 bg-white"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Use a wide image with a clear subject for the blog listing preview.
-                  </p>
-                </div>
-                <div className="flex min-h-56 items-center justify-center rounded-2xl border border-dashed border-border bg-muted/40 p-6 text-center">
-                  {formData.imageUrl ? (
-                    <img
-                      src={formData.imageUrl}
-                      alt="Cover preview"
-                      className="max-h-64 w-full rounded-xl object-cover"
-                    />
-                  ) : (
-                    <div className="space-y-2 text-muted-foreground">
-                      <ImageIcon className="mx-auto" size={28} />
-                      <p className="text-sm">Your cover image preview will appear here.</p>
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
-
-              <TabsContent value="seo" className="space-y-5 pt-5">
-                <div className="rounded-2xl border border-border/70 bg-muted/35 p-4">
-                  <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-secondary">
-                    <Globe2 size={16} />
-                    Search preview
-                  </div>
-                  <div className="space-y-1 rounded-xl bg-white p-4 shadow-sm">
-                    <p className="truncate text-base text-[#1a0dab]">
-                      {formData.title || "Your blog post title"}
-                    </p>
-                    <p className="text-xs text-green-700">ivoryhealthclub.com/blog</p>
-                    <p className="line-clamp-2 text-xs text-muted-foreground">
-                      {formData.excerpt || "Your excerpt will appear as the search description."}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-sm leading-6 text-muted-foreground">
-                  Search metadata is generated from the title, excerpt, and cover image when the post is published.
-                </p>
-              </TabsContent>
-
-              <TabsContent value="social" className="space-y-5 pt-5">
-                <div className="grid gap-5 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <label htmlFor="blog-category" className="text-sm font-semibold text-secondary">
                       Category <span className="text-primary">*</span>
@@ -364,49 +328,186 @@ function AddPostDialog() {
                     />
                   </div>
                 </div>
-                <div className="rounded-2xl border border-border/70 bg-muted/35 p-4">
-                  <label className="flex cursor-pointer items-start gap-3">
-                    <input
-                      type="checkbox"
-                      checked={formData.published}
-                      onChange={(event) => updateForm("published", event.target.checked)}
-                      className="mt-0.5 h-4 w-4 accent-[#29166F]"
+              </TabsContent>
+
+              <TabsContent value="cover" className="space-y-5 pt-5">
+                <p className="text-[13px] leading-5 text-[#718096]">
+                  Upload or link a cover image for this blog post. This image appears in post listings, social shares, and at the top of the post.
+                </p>
+
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-[#20252d]">Cover Image</label>
+                  <button
+                    type="button"
+                    onClick={() => setLibraryOpen((current) => !current)}
+                    className="flex items-center gap-2 text-[12px] font-medium text-[#2e69c5] hover:underline"
+                  >
+                    <ImageIcon size={15} />
+                    Pick from image library ({galleryImages?.length ?? 0} images)
+                  </button>
+
+                  {libraryOpen && (
+                    <div className="grid grid-cols-3 gap-2 rounded-xl border border-[#d8e3f0] bg-[#f8fbff] p-3 sm:grid-cols-5">
+                      {galleryImages?.length ? galleryImages.map((image) => (
+                        <button
+                          key={image.id}
+                          type="button"
+                          onClick={() => {
+                            updateForm("imageUrl", image.url);
+                            setLibraryOpen(false);
+                          }}
+                          className="group overflow-hidden rounded-lg border border-transparent bg-white text-left hover:border-[#2e69c5]"
+                        >
+                          <img src={image.url} alt={image.title} className="aspect-square w-full object-cover" />
+                          <span className="block truncate px-2 py-1 text-[10px] text-gray-600">{image.title}</span>
+                        </button>
+                      )) : (
+                        <p className="col-span-full py-4 text-center text-xs text-gray-500">No gallery images available yet.</p>
+                      )}
+                    </div>
+                  )}
+
+                  <p className="text-sm text-[#20252d]">Or paste an image URL <span className="text-[12px] text-[#208b59]">(external links always work)</span></p>
+                  <Input
+                    id="blog-image-url"
+                    type="url"
+                    value={formData.imageUrl}
+                    onChange={(event) => updateForm("imageUrl", event.target.value)}
+                    placeholder="https://images.unsplash.com/photo-... or any public image URL"
+                    className="h-11 rounded-full border-gray-100 bg-white px-4 shadow-sm"
+                  />
+                  <p className="text-[11px] text-[#9aa3af]">Unsplash, imgur, or any CDN URL — persists through every deploy.</p>
+                </div>
+
+                <div className="flex min-h-24 items-center justify-center rounded-2xl border border-dashed border-[#d7dbe1] bg-white p-5 text-center">
+                  {formData.imageUrl ? (
+                    <img
+                      src={formData.imageUrl}
+                      alt="Cover preview"
+                      className="max-h-32 w-full rounded-xl object-cover"
                     />
-                    <span>
-                      <span className="block text-sm font-semibold text-secondary">
-                        Publish immediately
-                      </span>
-                      <span className="mt-1 block text-xs text-muted-foreground">
-                        Turn this off to save the post as a draft.
-                      </span>
-                    </span>
+                  ) : (
+                    <div className="space-y-1 text-[#a0a9b6]">
+                      <Upload className="mx-auto text-[#c5ccd6]" size={24} />
+                      <p className="text-[12px]">Click or drag image here</p>
+                      <p className="text-[11px]">PNG, JPG, WebP up to 5 MB — saved with the post</p>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="seo" className="space-y-5 pt-5">
+                <div className="rounded-2xl border border-[#c7d9ec] bg-[#eff6ff] px-4 py-3 text-[13px] leading-5 text-[#315a8e]">
+                  <strong>SEO Tips:</strong> Meta description should be 120–160 characters. Use your focus keyword in the title, first paragraph, and headings.
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="blog-focus-keyword" className="flex items-center gap-2 text-sm font-medium text-[#20252d]">
+                    <Search size={15} className="text-[#8a96a5]" />
+                    Focus Keyword
                   </label>
+                  <Input
+                    id="blog-focus-keyword"
+                    value={formData.focusKeyword}
+                    onChange={(event) => updateForm("focusKeyword", event.target.value)}
+                    placeholder="e.g. customs clearance Nigeria"
+                    className="h-11 rounded-full border-gray-100 bg-white px-4 shadow-sm"
+                  />
+                  <p className="text-[11px] text-[#7d8794]">The main search term you want the post to rank for</p>
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="blog-meta-description" className="text-sm font-medium text-[#20252d]">Meta Description</label>
+                  <Textarea
+                    id="blog-meta-description"
+                    maxLength={160}
+                    value={formData.metaDescription}
+                    onChange={(event) => updateForm("metaDescription", event.target.value)}
+                    placeholder="Brief summary for search engines (120–160 characters recommended)"
+                    className="min-h-24 resize-y rounded-2xl border-gray-100 bg-white px-4 py-3 shadow-sm"
+                  />
+                  <p className="text-[11px] font-medium text-[#e4a927]">{formData.metaDescription.length}/160</p>
+                </div>
+
+                <div className="rounded-2xl border border-[#dfe3e8] bg-[#f8fafc] p-4">
+                  <p className="mb-2 text-[11px] uppercase tracking-wide text-[#7d8794]">Google Search Preview</p>
+                  <p className="truncate text-sm font-medium text-[#2f6fc7]">{formData.title || "Post Title"}</p>
+                  <p className="text-[11px] text-[#429b68]">easyblogspot.com/blog/...</p>
+                  <p className="mt-1 truncate text-[12px] text-[#687384]">
+                    {formData.metaDescription || "Meta description will appear here..."}
+                  </p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="social" className="space-y-5 pt-5">
+                <div className="rounded-2xl border border-[#dfe3e8] bg-[#f8fafc] px-4 py-3 text-[13px] leading-5 text-[#566171]">
+                  <strong className="text-[#2b3441]">Open Graph</strong> controls how this post looks when shared on WhatsApp, Facebook, LinkedIn, Twitter.
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="blog-tags" className="flex items-center gap-2 text-sm font-medium text-[#20252d]">
+                    <Tag size={15} />
+                    Tags (comma-separated)
+                  </label>
+                  <Input
+                    id="blog-tags"
+                    value={formData.tags}
+                    onChange={(event) => updateForm("tags", event.target.value)}
+                    placeholder="e.g. customs, Nigeria, freight, import"
+                    className="h-11 rounded-full border-gray-100 bg-white px-4 shadow-sm"
+                  />
+                  <p className="text-[11px] text-[#7d8794]">Separate multiple tags with commas</p>
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="blog-og-title" className="text-sm font-medium text-[#20252d]">OG Title</label>
+                  <Input
+                    id="blog-og-title"
+                    maxLength={60}
+                    value={formData.ogTitle}
+                    onChange={(event) => updateForm("ogTitle", event.target.value)}
+                    placeholder="Social share title (leave blank to use post title)"
+                    className="h-11 rounded-full border-gray-100 bg-white px-4 shadow-sm"
+                  />
+                  <p className="text-[11px] text-[#7d8794]">{formData.ogTitle.length}/60</p>
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="blog-og-description" className="text-sm font-medium text-[#20252d]">OG Description</label>
+                  <Textarea
+                    id="blog-og-description"
+                    maxLength={160}
+                    value={formData.ogDescription}
+                    onChange={(event) => updateForm("ogDescription", event.target.value)}
+                    placeholder="Social share description (leave blank to use meta description)"
+                    className="min-h-20 resize-y rounded-2xl border-gray-100 bg-white px-4 py-3 shadow-sm"
+                  />
+                  <p className="text-[11px] text-[#7d8794]">{formData.ogDescription.length}/160</p>
                 </div>
               </TabsContent>
             </div>
           </Tabs>
 
-          <div className="flex flex-col-reverse gap-3 border-t border-border/70 bg-white px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs text-muted-foreground">
-              <span className="text-primary">*</span> Required fields
-            </p>
-            <div className="flex gap-2 sm:justify-end">
+          <div className="flex gap-3 border-t border-[#eef0f2] bg-white px-6 py-3">
+            <div className="flex w-full gap-3">
               <Button
                 type="button"
                 variant="outline"
-                className="rounded-xl"
+                className="h-10 flex-1 rounded-full border-gray-100 bg-white text-[#20252d] shadow-sm hover:bg-gray-50"
                 disabled={createPost.isPending}
-                onClick={() => submitPost(false)}
+                onClick={() => {
+                  setOpen(false);
+                  resetForm();
+                }}
               >
-                Save draft
+                Cancel
               </Button>
               <Button
                 type="submit"
-                className="rounded-xl bg-secondary text-white hover:bg-primary"
+                className="h-10 flex-1 rounded-full bg-[#299fe5] text-white shadow-sm hover:bg-[#168ed7]"
                 disabled={createPost.isPending}
               >
-                <Check size={16} className="mr-2" />
-                {createPost.isPending ? "Saving..." : "Publish post"}
+                {createPost.isPending ? "Creating..." : "Create Post"}
               </Button>
             </div>
           </div>
