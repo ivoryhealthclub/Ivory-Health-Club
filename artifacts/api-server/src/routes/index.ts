@@ -7,6 +7,7 @@ import bookingsRouter from "./bookings";
 import blogPostsRouter from "./blog-posts";
 import galleryRouter from "./gallery";
 import contactRouter from "./contact";
+import blogCommentsRouter from "./blog-comments";
 import adminRouter from "./admin";
 
 const router: IRouter = Router();
@@ -17,6 +18,7 @@ router.use(membershipPlansRouter);
 router.use(enrollmentsRouter);
 router.use(bookingsRouter);
 router.use(blogPostsRouter);
+router.use(blogCommentsRouter);
 router.use(galleryRouter);
 router.use(contactRouter);
 router.use(adminRouter);

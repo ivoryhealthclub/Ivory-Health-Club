@@ -237,6 +237,31 @@ export interface BlogPostPatch {
   published?: boolean;
 }
 
+export interface BlogComment {
+  id: number;
+  blogPostId: number;
+  name: string;
+  /** @nullable */
+  email?: string | null;
+  content: string;
+  createdAt: string;
+}
+
+export interface BlogCommentInput {
+  /**
+     * @minLength 2
+     * @maxLength 80
+     */
+  name: string;
+  /** @maxLength 254 */
+  email?: string;
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  content: string;
+}
+
 export interface GalleryImage {
   id: number;
   url: string;

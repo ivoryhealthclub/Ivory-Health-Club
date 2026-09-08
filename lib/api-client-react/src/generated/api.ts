@@ -22,6 +22,8 @@ import type {
 import type {
   ActivityItem,
   AdminStats,
+  BlogComment,
+  BlogCommentInput,
   BlogPost,
   BlogPostInput,
   BlogPostPatch,
@@ -1286,6 +1288,155 @@ export const useDeleteBlogPost = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getDeleteBlogPostMutationOptions(options));
+    }
+
+export const getListBlogCommentsUrl = (id: number,) => {
+
+
+
+
+  return `/api/blog-posts/${id}/comments`
+}
+
+/**
+ * @summary List comments for a published blog post
+ */
+export const listBlogComments = async (id: number, options?: Parameters<typeof customFetch>[1]): Promise<BlogComment[]> => {
+
+  return customFetch<BlogComment[]>(getListBlogCommentsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListBlogCommentsQueryKey = (id: number,) => {
+    return [
+    `/api/blog-posts/${id}/comments`
+    ] as const;
+    }
+
+
+export const getListBlogCommentsQueryOptions = <TData = Awaited<ReturnType<typeof listBlogComments>>, TError = ErrorType<void>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listBlogComments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListBlogCommentsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listBlogComments>>> = ({ signal }) => listBlogComments(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listBlogComments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListBlogCommentsQueryResult = NonNullable<Awaited<ReturnType<typeof listBlogComments>>>
+export type ListBlogCommentsQueryError = ErrorType<void>
+
+
+/**
+ * @summary List comments for a published blog post
+ */
+
+export function useListBlogComments<TData = Awaited<ReturnType<typeof listBlogComments>>, TError = ErrorType<void>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listBlogComments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListBlogCommentsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateBlogCommentUrl = (id: number,) => {
+
+
+
+
+  return `/api/blog-posts/${id}/comments`
+}
+
+/**
+ * @summary Add a comment to a published blog post
+ */
+export const createBlogComment = async (id: number,
+    blogCommentInput: BlogCommentInput, options?: Parameters<typeof customFetch>[1]): Promise<BlogComment> => {
+
+  return customFetch<BlogComment>(getCreateBlogCommentUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(blogCommentInput)
+  }
+);}
+
+
+
+
+
+export const getCreateBlogCommentMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBlogComment>>, TError,{id: number;data: BodyType<BlogCommentInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createBlogComment>>, TError,{id: number;data: BodyType<BlogCommentInput>}, TContext> => {
+
+const mutationKey = ['createBlogComment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createBlogComment>>, {id: number;data: BodyType<BlogCommentInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  createBlogComment(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateBlogCommentMutationResult = NonNullable<Awaited<ReturnType<typeof createBlogComment>>>
+    export type CreateBlogCommentMutationBody = BodyType<BlogCommentInput>
+    export type CreateBlogCommentMutationError = ErrorType<void>
+
+    /**
+ * @summary Add a comment to a published blog post
+ */
+export const useCreateBlogComment = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBlogComment>>, TError,{id: number;data: BodyType<BlogCommentInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createBlogComment>>,
+        TError,
+        {id: number;data: BodyType<BlogCommentInput>},
+        TContext
+      > => {
+      return useMutation(getCreateBlogCommentMutationOptions(options));
     }
 
 export const getListGalleryImagesUrl = (params?: ListGalleryImagesParams,) => {

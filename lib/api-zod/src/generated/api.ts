@@ -423,6 +423,56 @@ export const DeleteBlogPostResponse = zod.void()
 
 
 /**
+ * @summary List comments for a published blog post
+ */
+export const ListBlogCommentsParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ListBlogCommentsResponseItem = zod.object({
+  "id": zod.number(),
+  "blogPostId": zod.number(),
+  "name": zod.string(),
+  "email": zod.string().nullish(),
+  "content": zod.string(),
+  "createdAt": zod.string()
+})
+export const ListBlogCommentsResponse = zod.array(ListBlogCommentsResponseItem)
+
+
+/**
+ * @summary Add a comment to a published blog post
+ */
+export const CreateBlogCommentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const createBlogCommentBodyNameMin = 2;
+export const createBlogCommentBodyNameMax = 80;
+
+export const createBlogCommentBodyEmailMax = 254;
+
+export const createBlogCommentBodyContentMax = 2000;
+
+
+
+export const CreateBlogCommentBody = zod.object({
+  "name": zod.string().min(createBlogCommentBodyNameMin).max(createBlogCommentBodyNameMax),
+  "email": zod.string().max(createBlogCommentBodyEmailMax).optional(),
+  "content": zod.string().min(1).max(createBlogCommentBodyContentMax)
+})
+
+export const CreateBlogCommentResponse = zod.object({
+  "id": zod.number(),
+  "blogPostId": zod.number(),
+  "name": zod.string(),
+  "email": zod.string().nullish(),
+  "content": zod.string(),
+  "createdAt": zod.string()
+})
+
+
+/**
  * @summary List gallery images
  */
 export const ListGalleryImagesQueryParams = zod.object({
