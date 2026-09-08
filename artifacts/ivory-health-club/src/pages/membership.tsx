@@ -90,7 +90,12 @@ export default function Membership() {
                   </div>
                   
                   <div className="mx-8 mb-6 border-y border-gray-100 py-4">
-                    <p className="text-sm font-semibold text-secondary">Membership rate available on request</p>
+                    <p className="text-2xl font-bold text-secondary">
+                      ₦{plan.price.toLocaleString("en-NG")}
+                      <span className="ml-1 text-xs font-medium uppercase tracking-wider text-gray-500">
+                        / {plan.pricePeriod === "monthly" ? "month" : plan.pricePeriod}
+                      </span>
+                    </p>
                     {plan.discounts && (
                       <p className="text-xs text-green-700 font-medium mt-2">{plan.discounts}</p>
                     )}

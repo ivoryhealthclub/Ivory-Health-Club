@@ -176,7 +176,7 @@ export default function Enroll() {
                           <SelectContent>
                             {plans?.map((plan) => (
                               <SelectItem key={plan.id} value={plan.id.toString()}>
-                                {plan.name} — membership rate on request
+                                {plan.name} — ₦{plan.price.toLocaleString("en-NG")} / {plan.pricePeriod === "monthly" ? "month" : plan.pricePeriod}
                               </SelectItem>
                             ))}
                           </SelectContent>

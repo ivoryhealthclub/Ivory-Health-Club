@@ -5,7 +5,7 @@ const membershipPlans = [
     name: "Silver Single",
     tier: "silver_single",
     description: "A focused membership for individuals building a stronger, healthier routine.",
-    price: 0,
+    price: 300000,
     pricePeriod: "monthly",
     perks: [
       "Gym",
@@ -23,7 +23,7 @@ const membershipPlans = [
     name: "Silver Family",
     tier: "silver_family",
     description: "A shared wellness membership for a couple and four children under 12.",
-    price: 0,
+    price: 450000,
     pricePeriod: "monthly",
     perks: [
       "Gym",
@@ -41,7 +41,7 @@ const membershipPlans = [
     name: "Gold Single",
     tier: "gold_single",
     description: "An elevated individual membership with access to our full active lifestyle.",
-    price: 0,
+    price: 600000,
     pricePeriod: "monthly",
     perks: [
       "Gym",
@@ -63,7 +63,7 @@ const membershipPlans = [
     name: "Gold Family",
     tier: "gold_family",
     description: "A premium family membership for a couple and four children under 12.",
-    price: 0,
+    price: 900000,
     pricePeriod: "monthly",
     perks: [
       "Gym",
@@ -85,7 +85,7 @@ const membershipPlans = [
     name: "Gold Plus",
     tier: "gold_plus",
     description: "A generous family membership for three adults and five children under 12.",
-    price: 0,
+    price: 1200000,
     pricePeriod: "monthly",
     perks: [
       "Gym",
@@ -110,7 +110,7 @@ const membershipPlans = [
     name: "Diamond",
     tier: "diamond",
     description: "Our most complete membership, with everything in Gold Plus and more.",
-    price: 0,
+    price: 1500000,
     pricePeriod: "monthly",
     perks: [
       "Everything in Gold Plus",
@@ -124,7 +124,7 @@ const membershipPlans = [
     name: "70 Plus Club",
     tier: "seventy_plus",
     description: "A welcoming club experience with movement, connection, and joyful activities.",
-    price: 0,
+    price: 300000,
     pricePeriod: "monthly",
     perks: [
       "Gym",
