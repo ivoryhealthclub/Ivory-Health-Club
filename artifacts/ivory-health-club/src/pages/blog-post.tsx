@@ -1,10 +1,19 @@
 import { useRoute, Link } from "wouter";
 import { format } from "date-fns";
 import { getGetBlogPostQueryKey, useGetBlogPost } from "@workspace/api-client-react";
-import { ArrowLeft, User, Calendar, Tag } from "lucide-react";
+import { ArrowLeft, User, Calendar, Tag, Facebook, Instagram, MessageCircle, Music2, Send, Link2 } from "lucide-react";
 import NotFound from "./not-found";
 import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 import { markdownToHtml } from "@/lib/markdown";
+import { useToast } from "@/hooks/use-toast";
+
+const shareButtonStyles = {
+  facebook: "border-[#dbe5ff] bg-[#f4f7ff] text-[#1877f2] hover:bg-[#e9efff]",
+  telegram: "border-[#d8efff] bg-[#f2fbff] text-[#229ed9] hover:bg-[#e6f7ff]",
+  whatsapp: "border-[#d9f4e5] bg-[#f2fcf6] text-[#25d366] hover:bg-[#e6f8ed]",
+  tiktok: "border-[#e5e5e5] bg-[#fafafa] text-[#111111] hover:bg-[#f0f0f0]",
+  instagram: "border-[#f4dcea] bg-[#fff7fc] text-[#c13584] hover:bg-[#fff0f8]",
+} as const;
 
 export default function BlogPost() {
   const [, params] = useRoute("/blog/:id");
@@ -16,6 +25,59 @@ export default function BlogPost() {
       enabled: !!id
     }
   });
+  const { toast } = useToast();
+
+  const copyPostLink = async () => {
+    const shareUrl = window.location.href;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast({
+        title: "Link copied",
+        description: "The article link is ready to share.",
+      });
+    } catch {
+      toast({
+        title: "Copy unavailable",
+        description: "Copy the article URL from your browser address bar.",
+      });
+    }
+  };
+
+  const shareWithDevice = async () => {
+    const shareUrl = window.location.href;
+    const shareText = post ? `${post.title}${post.excerpt ? ` — ${post.excerpt}` : ""}` : "";
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: post?.title,
+          text: shareText,
+          url: shareUrl,
+        });
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+      }
+    }
+
+    await copyPostLink();
+  };
+
+  const openSocialShare = (platform: "facebook" | "telegram" | "whatsapp") => {
+    const shareUrl = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent(post?.title ?? "");
+    const shareLinks = {
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`,
+      telegram: `https://t.me/share/url?url=${shareUrl}&text=${title}`,
+      whatsapp: `https://api.whatsapp.com/send?text=${title}%20${shareUrl}`,
+    };
+
+    window.open(
+      shareLinks[platform],
+      "_blank",
+      "noopener,noreferrer,width=640,height=620",
+    );
+  };
 
   if (isLoading) {
     return (
@@ -100,11 +162,69 @@ export default function BlogPost() {
           dangerouslySetInnerHTML={{ __html: markdownToHtml(post.content) }}
         />
         
-        {/* Footer Share/Tags could go here */}
-        <div className="mt-16 pt-8 border-t border-gray-200 text-center">
-          <Link href="/blog" className="inline-block bg-gray-100 hover:bg-primary hover:text-secondary text-secondary font-bold uppercase tracking-wider text-sm px-8 py-4 transition-colors">
+        <div className="mt-16 border-t border-gray-200 pt-8">
+          <div className="text-center">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Share this article</p>
+            <h2 className="mb-6 font-serif text-2xl font-bold text-secondary">Pass it on</h2>
+            <div className="flex flex-wrap justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => openSocialShare("facebook")}
+                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold transition-colors ${shareButtonStyles.facebook}`}
+                aria-label="Share on Facebook"
+              >
+                <Facebook size={16} /> Facebook
+              </button>
+              <button
+                type="button"
+                onClick={() => openSocialShare("telegram")}
+                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold transition-colors ${shareButtonStyles.telegram}`}
+                aria-label="Share on Telegram"
+              >
+                <Send size={16} /> Telegram
+              </button>
+              <button
+                type="button"
+                onClick={() => openSocialShare("whatsapp")}
+                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold transition-colors ${shareButtonStyles.whatsapp}`}
+                aria-label="Share on WhatsApp"
+              >
+                <MessageCircle size={16} /> WhatsApp
+              </button>
+              <button
+                type="button"
+                onClick={shareWithDevice}
+                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold transition-colors ${shareButtonStyles.tiktok}`}
+                aria-label="Share on TikTok"
+              >
+                <Music2 size={16} /> TikTok
+              </button>
+              <button
+                type="button"
+                onClick={shareWithDevice}
+                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold transition-colors ${shareButtonStyles.instagram}`}
+                aria-label="Share on Instagram"
+              >
+                <Instagram size={16} /> Instagram
+              </button>
+              <button
+                type="button"
+                onClick={copyPostLink}
+                className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50"
+                aria-label="Copy article link"
+              >
+                <Link2 size={16} /> Copy link
+              </button>
+            </div>
+            <p className="mx-auto mt-4 max-w-xl text-xs leading-5 text-gray-400">
+              TikTok and Instagram use your device share menu when supported. Otherwise, the article link is copied for you to paste into the app.
+            </p>
+          </div>
+          <div className="mt-8 text-center">
+            <Link href="/blog" className="inline-block bg-gray-100 px-8 py-4 text-sm font-bold uppercase tracking-wider text-secondary transition-colors hover:bg-primary hover:text-secondary">
             Read More Articles
-          </Link>
+            </Link>
+          </div>
         </div>
       </div>
     </article>
