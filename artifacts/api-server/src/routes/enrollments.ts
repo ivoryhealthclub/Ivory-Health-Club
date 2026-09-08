@@ -12,10 +12,11 @@ import {
   ConfirmPaymentBody,
   ConfirmPaymentResponse,
 } from "@workspace/api-zod";
+import { adminAuthMiddleware } from "../lib/admin-auth";
 
 const router: IRouter = Router();
 
-router.get("/enrollments", async (req, res): Promise<void> => {
+router.get("/enrollments", adminAuthMiddleware, async (req, res): Promise<void> => {
   const query = ListEnrollmentsQueryParams.safeParse(req.query);
   if (!query.success) {
     res.status(400).json({ error: query.error.message });
@@ -104,7 +105,7 @@ router.post("/enrollments", async (req, res): Promise<void> => {
   res.status(201).json(CreateEnrollmentResponse.parse({ ...row, createdAt: row.createdAt.toISOString() }));
 });
 
-router.get("/enrollments/:id", async (req, res): Promise<void> => {
+router.get("/enrollments/:id", adminAuthMiddleware, async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const params = GetEnrollmentParams.safeParse({ id: Number(raw) });
   if (!params.success) {
@@ -141,7 +142,7 @@ router.get("/enrollments/:id", async (req, res): Promise<void> => {
   res.json(GetEnrollmentResponse.parse({ ...row, createdAt: row.createdAt.toISOString() }));
 });
 
-router.patch("/enrollments/:id/confirm-payment", async (req, res): Promise<void> => {
+router.patch("/enrollments/:id/confirm-payment", adminAuthMiddleware, async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const params = ConfirmPaymentParams.safeParse({ id: Number(raw) });
   if (!params.success) {

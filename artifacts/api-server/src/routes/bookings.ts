@@ -12,6 +12,7 @@ import {
   UpdateBookingStatusBody,
   UpdateBookingStatusResponse,
 } from "@workspace/api-zod";
+import { adminAuthMiddleware } from "../lib/admin-auth";
 
 const router: IRouter = Router();
 
@@ -20,7 +21,7 @@ const toBooking = (r: typeof bookingsTable.$inferSelect) => ({
   createdAt: r.createdAt.toISOString(),
 });
 
-router.get("/bookings", async (req, res): Promise<void> => {
+router.get("/bookings", adminAuthMiddleware, async (req, res): Promise<void> => {
   const query = ListBookingsQueryParams.safeParse(req.query);
   if (!query.success) {
     res.status(400).json({ error: query.error.message });
@@ -66,7 +67,7 @@ router.post("/bookings", async (req, res): Promise<void> => {
   res.status(201).json(CreateBookingResponse.parse(toBooking(booking)));
 });
 
-router.get("/bookings/:id", async (req, res): Promise<void> => {
+router.get("/bookings/:id", adminAuthMiddleware, async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const params = GetBookingParams.safeParse({ id: Number(raw) });
   if (!params.success) {
@@ -87,7 +88,7 @@ router.get("/bookings/:id", async (req, res): Promise<void> => {
   res.json(GetBookingResponse.parse(toBooking(booking)));
 });
 
-router.patch("/bookings/:id", async (req, res): Promise<void> => {
+router.patch("/bookings/:id", adminAuthMiddleware, async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const params = UpdateBookingStatusParams.safeParse({ id: Number(raw) });
   if (!params.success) {

@@ -14,7 +14,13 @@ import {
 } from "lucide-react";
 import logo from "@assets/Logo_IHC_1785932659433.png";
 
-export function AdminLayout({ children }: { children: ReactNode }) {
+export function AdminLayout({
+  children,
+  onSignOut,
+}: {
+  children: ReactNode;
+  onSignOut: () => void;
+}) {
   const [location] = useLocation();
 
   const links = [
@@ -66,7 +72,11 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             <ChevronLeft size={18} />
             Back to Website
           </Link>
-          <button className="w-full mt-2 flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors">
+          <button
+            type="button"
+            onClick={onSignOut}
+            className="w-full mt-2 flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors"
+          >
             <LogOut size={18} />
             Sign Out
           </button>

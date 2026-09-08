@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "web", "bash", "postgresql-16", "python-base-3.13"]
+modules = ["nodejs-20", "web", "bash"]
 
 [deployment]
 router = "application"
@@ -20,3 +20,8 @@ timeoutMs = 20000
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+ADMIN_EMAIL = "admin@ivoryhealthclub.com"

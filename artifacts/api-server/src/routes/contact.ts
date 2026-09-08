@@ -10,6 +10,7 @@ import {
   MarkContactReadBody,
   MarkContactReadResponse,
 } from "@workspace/api-zod";
+import { adminAuthMiddleware } from "../lib/admin-auth";
 
 const router: IRouter = Router();
 
@@ -40,7 +41,7 @@ router.post("/contact", async (req, res): Promise<void> => {
   res.status(201).json(SubmitContactResponse.parse(toMsg(msg)));
 });
 
-router.get("/contact-messages", async (req, res): Promise<void> => {
+router.get("/contact-messages", adminAuthMiddleware, async (req, res): Promise<void> => {
   const query = ListContactMessagesQueryParams.safeParse(req.query);
   if (!query.success) {
     res.status(400).json({ error: query.error.message });
@@ -60,7 +61,7 @@ router.get("/contact-messages", async (req, res): Promise<void> => {
   res.json(ListContactMessagesResponse.parse(rows.map(toMsg)));
 });
 
-router.patch("/contact-messages/:id/read", async (req, res): Promise<void> => {
+router.patch("/contact-messages/:id/read", adminAuthMiddleware, async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const params = MarkContactReadParams.safeParse({ id: Number(raw) });
   if (!params.success) {

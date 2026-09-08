@@ -8,6 +8,7 @@ import {
   CreateGalleryImageResponse,
   DeleteGalleryImageParams,
 } from "@workspace/api-zod";
+import { adminAuthMiddleware } from "../lib/admin-auth";
 
 const router: IRouter = Router();
 
@@ -32,7 +33,7 @@ router.get("/gallery", async (req, res): Promise<void> => {
   res.json(ListGalleryImagesResponse.parse(rows.map(toImage)));
 });
 
-router.post("/gallery", async (req, res): Promise<void> => {
+router.post("/gallery", adminAuthMiddleware, async (req, res): Promise<void> => {
   const parsed = CreateGalleryImageBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -52,7 +53,7 @@ router.post("/gallery", async (req, res): Promise<void> => {
   res.status(201).json(CreateGalleryImageResponse.parse(toImage(image)));
 });
 
-router.delete("/gallery/:id", async (req, res): Promise<void> => {
+router.delete("/gallery/:id", adminAuthMiddleware, async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const params = DeleteGalleryImageParams.safeParse({ id: Number(raw) });
   if (!params.success) {

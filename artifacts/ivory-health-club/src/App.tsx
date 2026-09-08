@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -40,6 +41,7 @@ import AdminMessages from '@/pages/admin/messages';
 import AdminBlog from '@/pages/admin/blog';
 import AdminGallery from '@/pages/admin/gallery';
 import AdminMemberships from '@/pages/admin/memberships';
+import AdminLogin from '@/pages/admin/login';
 
 const queryClient = new QueryClient();
 
@@ -86,8 +88,49 @@ function MainRoutes() {
 }
 
 function AdminRoutes() {
+  const [authState, setAuthState] = useState<
+    'checking' | 'authenticated' | 'signed-out'
+  >('checking');
+
+  useEffect(() => {
+    let isCurrent = true;
+    fetch('/api/auth/admin/session', { credentials: 'include' })
+      .then((response) => {
+        if (isCurrent) {
+          setAuthState(response.ok ? 'authenticated' : 'signed-out');
+        }
+      })
+      .catch(() => {
+        if (isCurrent) setAuthState('signed-out');
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, []);
+
+  if (authState === 'checking') {
+    return (
+      <div className="min-h-[100dvh] bg-secondary flex items-center justify-center text-primary">
+        Checking admin session…
+      </div>
+    );
+  }
+
+  if (authState === 'signed-out') {
+    return <AdminLogin onSuccess={() => setAuthState('authenticated')} />;
+  }
+
+  async function handleSignOut() {
+    await fetch('/api/auth/admin/logout', {
+      method: 'POST',
+      credentials: 'include',
+    });
+    setAuthState('signed-out');
+  }
+
   return (
-    <AdminLayout>
+    <AdminLayout onSignOut={handleSignOut}>
       <Switch>
         <Route path="/admin" component={AdminDashboard} />
         <Route path="/admin/enrollments" component={AdminEnrollments} />

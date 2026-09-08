@@ -13,6 +13,7 @@ import {
   UpdateBlogPostResponse,
   DeleteBlogPostParams,
 } from "@workspace/api-zod";
+import { adminAuthMiddleware } from "../lib/admin-auth";
 
 const router: IRouter = Router();
 
@@ -41,7 +42,7 @@ router.get("/blog-posts", async (req, res): Promise<void> => {
   res.json(ListBlogPostsResponse.parse(rows.map(toPost)));
 });
 
-router.post("/blog-posts", async (req, res): Promise<void> => {
+router.post("/blog-posts", adminAuthMiddleware, async (req, res): Promise<void> => {
   const parsed = CreateBlogPostBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -92,7 +93,7 @@ router.get("/blog-posts/:id", async (req, res): Promise<void> => {
   res.json(GetBlogPostResponse.parse(toPost(post)));
 });
 
-router.patch("/blog-posts/:id", async (req, res): Promise<void> => {
+router.patch("/blog-posts/:id", adminAuthMiddleware, async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const params = UpdateBlogPostParams.safeParse({ id: Number(raw) });
   if (!params.success) {
@@ -128,7 +129,7 @@ router.patch("/blog-posts/:id", async (req, res): Promise<void> => {
   res.json(UpdateBlogPostResponse.parse(toPost(updated)));
 });
 
-router.delete("/blog-posts/:id", async (req, res): Promise<void> => {
+router.delete("/blog-posts/:id", adminAuthMiddleware, async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const params = DeleteBlogPostParams.safeParse({ id: Number(raw) });
   if (!params.success) {

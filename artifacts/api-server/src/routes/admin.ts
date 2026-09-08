@@ -7,8 +7,10 @@ import {
   GetRecentActivityResponse,
   GetMembershipBreakdownResponse,
 } from "@workspace/api-zod";
+import { adminAuthMiddleware } from "../lib/admin-auth";
 
 const router: IRouter = Router();
+router.use(adminAuthMiddleware);
 
 router.get("/admin/stats", async (_req, res): Promise<void> => {
   const [enrollmentCounts] = await db
