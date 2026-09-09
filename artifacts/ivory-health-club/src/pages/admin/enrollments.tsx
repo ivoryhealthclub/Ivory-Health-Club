@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { useListEnrollments, useConfirmPayment } from "@workspace/api-client-react";
+import {
+  useListEnrollments,
+  useConfirmPayment,
+  useListBookings,
+  useUpdateBookingStatus,
+  type Booking,
+  type BookingStatusUpdateStatus,
+} from "@workspace/api-client-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,16 +20,68 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { getListEnrollmentsQueryKey } from "@workspace/api-client-react";
+import { getListBookingsQueryKey, getListEnrollmentsQueryKey } from "@workspace/api-client-react";
+
+const PROGRAM_SERVICE_TYPES = new Set(["fitness_program", "youth_program"]);
+
+function getProgramName(booking: Booking) {
+  const programLine = booking.specialRequests?.split("\n").find((line) => line.startsWith("Program:"));
+  return programLine?.replace(/^Program:\s*/, "") || (
+    booking.serviceType === "youth_program" ? "Youth Program" : "Fitness Program"
+  );
+}
+
+function getProgramEnrollmentStatus(status: Booking["status"]) {
+  if (status === "confirmed") return "active";
+  return status;
+}
 
 export default function AdminEnrollments() {
   const [filter, setFilter] = useState("all");
   const { data: enrollments, isLoading } = useListEnrollments();
+  const { data: bookings, isLoading: bookingsLoading } = useListBookings(undefined, {
+    query: {
+      // Program enrollments are submitted by public users, so refresh this
+      // queue periodically while an admin has the page open.
+      queryKey: getListBookingsQueryKey(),
+      refetchInterval: 15000,
+    },
+  });
   const confirmPayment = useConfirmPayment();
+  const updateBookingStatus = useUpdateBookingStatus();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const filtered = enrollments?.filter(e => filter === "all" || e.status === filter) || [];
+  const programEnrollments = bookings?.filter((booking) => PROGRAM_SERVICE_TYPES.has(booking.serviceType)) || [];
+  const rows = [
+    ...(enrollments || []).map((enrollment) => ({
+      kind: "membership" as const,
+      id: enrollment.id,
+      firstName: enrollment.firstName,
+      lastName: enrollment.lastName,
+      email: enrollment.email,
+      phone: enrollment.phone,
+      label: enrollment.planName || `Plan #${enrollment.planId}`,
+      status: enrollment.status,
+      paymentStatus: enrollment.paymentStatus,
+      createdAt: enrollment.createdAt,
+    })),
+    ...programEnrollments.map((booking) => ({
+      kind: "program" as const,
+      id: booking.id,
+      firstName: booking.firstName,
+      lastName: booking.lastName,
+      email: booking.email,
+      phone: booking.phone,
+      label: getProgramName(booking),
+      status: getProgramEnrollmentStatus(booking.status),
+      paymentStatus: null,
+      createdAt: booking.createdAt,
+      booking,
+    })),
+  ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  const filtered = rows.filter((row) => filter === "all" || row.status === filter);
 
   const handleConfirmPayment = (id: number, ref: string) => {
     confirmPayment.mutate({ id, data: { paymentReference: ref } }, {
@@ -36,12 +95,27 @@ export default function AdminEnrollments() {
     });
   };
 
+  const handleProgramStatusUpdate = (booking: Booking, status: BookingStatusUpdateStatus) => {
+    updateBookingStatus.mutate({ id: booking.id, data: { status } }, {
+      onSuccess: () => {
+        toast({ title: `Program enrollment marked as ${status}` });
+        queryClient.invalidateQueries({ queryKey: getListBookingsQueryKey() });
+      },
+      onError: () => {
+        toast({ title: "Error updating program enrollment", variant: "destructive" });
+      },
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-3xl font-serif font-bold text-secondary">Enrollments</h1>
+        <div>
+          <h1 className="text-3xl font-serif font-bold text-secondary">Enrollments</h1>
+          <p className="text-sm text-gray-500 mt-1">Membership applications and programme enrollment requests.</p>
+        </div>
         <div className="flex gap-2">
-          {["all", "pending", "active"].map(f => (
+          {["all", "pending", "active", "cancelled"].map(f => (
             <Button 
               key={f} 
               variant={filter === f ? "default" : "outline"}
@@ -61,7 +135,7 @@ export default function AdminEnrollments() {
             <thead className="bg-gray-50 text-gray-500 uppercase font-medium border-b border-gray-100">
               <tr>
                 <th className="px-6 py-4">Applicant</th>
-                <th className="px-6 py-4">Plan</th>
+                <th className="px-6 py-4">Plan / Program</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Payment</th>
                 <th className="px-6 py-4">Date</th>
@@ -69,7 +143,7 @@ export default function AdminEnrollments() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {isLoading ? (
+              {isLoading || bookingsLoading ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-8 text-center text-gray-500">Loading...</td>
                 </tr>
@@ -78,14 +152,19 @@ export default function AdminEnrollments() {
                   <td colSpan={6} className="px-6 py-8 text-center text-gray-500">No enrollments found.</td>
                 </tr>
               ) : (
-                filtered.map(enroll => (
-                  <tr key={enroll.id} className="hover:bg-gray-50">
+                filtered.map((enroll) => (
+                  <tr key={`${enroll.kind}-${enroll.id}`} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <div className="font-bold text-gray-900">{enroll.firstName} {enroll.lastName}</div>
                       <div className="text-gray-500 text-xs">{enroll.email}</div>
                       <div className="text-gray-500 text-xs">{enroll.phone}</div>
                     </td>
-                    <td className="px-6 py-4 font-medium">{enroll.planName || `Plan #${enroll.planId}`}</td>
+                    <td className="px-6 py-4">
+                      <div className="font-medium">{enroll.label}</div>
+                      <div className="text-xs text-gray-500">
+                        {enroll.kind === "program" ? "Program enrollment" : "Membership"}
+                      </div>
+                    </td>
                     <td className="px-6 py-4">
                       <Badge variant={enroll.status === 'active' ? 'default' : 'secondary'} className={
                         enroll.status === 'active' ? 'bg-green-100 text-green-800 hover:bg-green-100' : 
@@ -95,18 +174,44 @@ export default function AdminEnrollments() {
                       </Badge>
                     </td>
                     <td className="px-6 py-4">
-                      <Badge variant="outline" className={
-                        enroll.paymentStatus === 'paid' ? 'border-green-200 text-green-700' : 'border-red-200 text-red-700'
-                      }>
-                        {enroll.paymentStatus}
-                      </Badge>
+                      {enroll.kind === "program" ? (
+                        <Badge variant="outline" className="border-primary/30 text-secondary">Not applicable</Badge>
+                      ) : (
+                        <Badge variant="outline" className={
+                          enroll.paymentStatus === 'paid' ? 'border-green-200 text-green-700' : 'border-red-200 text-red-700'
+                        }>
+                          {enroll.paymentStatus}
+                        </Badge>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-gray-500">
                       {format(new Date(enroll.createdAt), 'MMM d, yyyy')}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      {enroll.status === 'pending' && enroll.paymentStatus === 'unpaid' && (
+                      {enroll.kind === "membership" && enroll.status === 'pending' && enroll.paymentStatus === 'unpaid' && (
                         <PaymentDialog onSubmit={(ref) => handleConfirmPayment(enroll.id, ref)} />
+                      )}
+                      {enroll.kind === "program" && enroll.status === "pending" && (
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-green-600 border-green-200 hover:bg-green-50"
+                            onClick={() => handleProgramStatusUpdate(enroll.booking, "confirmed")}
+                            disabled={updateBookingStatus.isPending}
+                          >
+                            Confirm
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-red-600 border-red-200 hover:bg-red-50"
+                            onClick={() => handleProgramStatusUpdate(enroll.booking, "cancelled")}
+                            disabled={updateBookingStatus.isPending}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
                       )}
                     </td>
                   </tr>
