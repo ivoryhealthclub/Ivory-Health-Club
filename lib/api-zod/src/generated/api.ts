@@ -22,7 +22,7 @@ export const HealthCheckResponse = zod.object({
 export const ListMembershipPlansResponseItem = zod.object({
   "id": zod.number(),
   "name": zod.string(),
-  "tier": zod.enum(['silver_single', 'silver_family', 'gold_single', 'gold_family', 'gold_plus', 'diamond', 'seventy_plus']),
+  "tier": zod.string(),
   "description": zod.string(),
   "price": zod.number(),
   "pricePeriod": zod.enum(['monthly', 'annual']).optional(),
@@ -31,6 +31,48 @@ export const ListMembershipPlansResponseItem = zod.object({
   "maxMembers": zod.number().nullish()
 })
 export const ListMembershipPlansResponse = zod.array(ListMembershipPlansResponseItem)
+
+
+/**
+ * @summary Add a membership plan (admin)
+ */
+export const createMembershipPlanBodyNameMin = 2;
+export const createMembershipPlanBodyNameMax = 120;
+
+export const createMembershipPlanBodyTierMin = 2;
+export const createMembershipPlanBodyTierMax = 60;
+
+export const createMembershipPlanBodyDescriptionMax = 500;
+
+export const createMembershipPlanBodyPriceMin = 0;
+
+export const createMembershipPlanBodyDiscountsMax = 255;
+
+
+
+
+export const CreateMembershipPlanBody = zod.object({
+  "name": zod.string().min(createMembershipPlanBodyNameMin).max(createMembershipPlanBodyNameMax),
+  "tier": zod.string().min(createMembershipPlanBodyTierMin).max(createMembershipPlanBodyTierMax),
+  "description": zod.string().max(createMembershipPlanBodyDescriptionMax).optional(),
+  "price": zod.number().min(createMembershipPlanBodyPriceMin),
+  "pricePeriod": zod.enum(['monthly', 'annual']).optional(),
+  "perks": zod.array(zod.string()).optional(),
+  "discounts": zod.string().max(createMembershipPlanBodyDiscountsMax).optional(),
+  "maxMembers": zod.number().min(1).optional()
+})
+
+export const CreateMembershipPlanResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "tier": zod.string(),
+  "description": zod.string(),
+  "price": zod.number(),
+  "pricePeriod": zod.enum(['monthly', 'annual']).optional(),
+  "perks": zod.array(zod.string()),
+  "discounts": zod.string().optional(),
+  "maxMembers": zod.number().nullish()
+})
 
 
 /**
@@ -43,7 +85,36 @@ export const GetMembershipPlanParams = zod.object({
 export const GetMembershipPlanResponse = zod.object({
   "id": zod.number(),
   "name": zod.string(),
-  "tier": zod.enum(['silver_single', 'silver_family', 'gold_single', 'gold_family', 'gold_plus', 'diamond', 'seventy_plus']),
+  "tier": zod.string(),
+  "description": zod.string(),
+  "price": zod.number(),
+  "pricePeriod": zod.enum(['monthly', 'annual']).optional(),
+  "perks": zod.array(zod.string()),
+  "discounts": zod.string().optional(),
+  "maxMembers": zod.number().nullish()
+})
+
+
+/**
+ * @summary Update a membership plan price (admin)
+ */
+export const UpdateMembershipPlanParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const updateMembershipPlanBodyPriceMin = 0;
+
+
+
+export const UpdateMembershipPlanBody = zod.object({
+  "price": zod.number().min(updateMembershipPlanBodyPriceMin),
+  "pricePeriod": zod.enum(['monthly', 'annual']).optional()
+})
+
+export const UpdateMembershipPlanResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "tier": zod.string(),
   "description": zod.string(),
   "price": zod.number(),
   "pricePeriod": zod.enum(['monthly', 'annual']).optional(),

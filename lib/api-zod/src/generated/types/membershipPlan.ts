@@ -6,12 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { MembershipPlanPricePeriod } from './membershipPlanPricePeriod';
-import type { MembershipPlanTier } from './membershipPlanTier';
 
 export interface MembershipPlan {
   id: number;
   name: string;
-  tier: MembershipPlanTier;
+  tier: string;
   description: string;
   price: number;
   pricePeriod?: MembershipPlanPricePeriod;

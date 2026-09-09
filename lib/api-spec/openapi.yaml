@@ -52,6 +52,25 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/MembershipPlan"
+    post:
+      operationId: createMembershipPlan
+      tags: [memberships]
+      summary: Add a membership plan (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MembershipPlanInput"
+      responses:
+        "201":
+          description: Membership plan created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MembershipPlan"
+        "409":
+          description: A plan with this tier already exists
 
   /membership-plans/{id}:
     get:
@@ -67,6 +86,31 @@ paths:
       responses:
         "200":
           description: Membership plan details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MembershipPlan"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateMembershipPlan
+      tags: [memberships]
+      summary: Update a membership plan price (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MembershipPlanPatch"
+      responses:
+        "200":
+          description: Membership plan updated
           content:
             application/json:
               schema:
@@ -596,7 +640,6 @@ components:
           type: string
         tier:
           type: string
-          enum: [silver_single, silver_family, gold_single, gold_family, gold_plus, diamond, seventy_plus]
         description:
           type: string
         price:
@@ -612,6 +655,49 @@ components:
           type: string
         maxMembers:
           type: ["number", "null"]
+
+    MembershipPlanInput:
+      type: object
+      required: [name, tier, price]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 120
+        tier:
+          type: string
+          minLength: 2
+          maxLength: 60
+        description:
+          type: string
+          maxLength: 500
+        price:
+          type: number
+          minimum: 0
+        pricePeriod:
+          type: string
+          enum: [monthly, annual]
+        perks:
+          type: array
+          items:
+            type: string
+        discounts:
+          type: string
+          maxLength: 255
+        maxMembers:
+          type: number
+          minimum: 1
+
+    MembershipPlanPatch:
+      type: object
+      required: [price]
+      properties:
+        price:
+          type: number
+          minimum: 0
+        pricePeriod:
+          type: string
+          enum: [monthly, annual]
 
     Enrollment:
       type: object

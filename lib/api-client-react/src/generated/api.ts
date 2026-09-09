@@ -46,6 +46,8 @@ import type {
   MarkReadInput,
   MembershipBreakdownItem,
   MembershipPlan,
+  MembershipPlanInput,
+  MembershipPlanPatch,
   PaymentConfirmation
 } from './api.schemas';
 
@@ -230,6 +232,77 @@ export function useListMembershipPlans<TData = Awaited<ReturnType<typeof listMem
 
 
 
+export const getCreateMembershipPlanUrl = () => {
+
+
+
+
+  return `/api/membership-plans`
+}
+
+/**
+ * @summary Add a membership plan (admin)
+ */
+export const createMembershipPlan = async (membershipPlanInput: MembershipPlanInput, options?: Parameters<typeof customFetch>[1]): Promise<MembershipPlan> => {
+
+  return customFetch<MembershipPlan>(getCreateMembershipPlanUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(membershipPlanInput)
+  }
+);}
+
+
+
+
+
+export const getCreateMembershipPlanMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMembershipPlan>>, TError,{data: BodyType<MembershipPlanInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createMembershipPlan>>, TError,{data: BodyType<MembershipPlanInput>}, TContext> => {
+
+const mutationKey = ['createMembershipPlan'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createMembershipPlan>>, {data: BodyType<MembershipPlanInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createMembershipPlan(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateMembershipPlanMutationResult = NonNullable<Awaited<ReturnType<typeof createMembershipPlan>>>
+    export type CreateMembershipPlanMutationBody = BodyType<MembershipPlanInput>
+    export type CreateMembershipPlanMutationError = ErrorType<void>
+
+    /**
+ * @summary Add a membership plan (admin)
+ */
+export const useCreateMembershipPlan = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMembershipPlan>>, TError,{data: BodyType<MembershipPlanInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createMembershipPlan>>,
+        TError,
+        {data: BodyType<MembershipPlanInput>},
+        TContext
+      > => {
+      return useMutation(getCreateMembershipPlanMutationOptions(options));
+    }
+
 export const getGetMembershipPlanUrl = (id: number,) => {
 
 
@@ -306,6 +379,78 @@ export function useGetMembershipPlan<TData = Awaited<ReturnType<typeof getMember
 
 
 
+
+export const getUpdateMembershipPlanUrl = (id: number,) => {
+
+
+
+
+  return `/api/membership-plans/${id}`
+}
+
+/**
+ * @summary Update a membership plan price (admin)
+ */
+export const updateMembershipPlan = async (id: number,
+    membershipPlanPatch: MembershipPlanPatch, options?: Parameters<typeof customFetch>[1]): Promise<MembershipPlan> => {
+
+  return customFetch<MembershipPlan>(getUpdateMembershipPlanUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(membershipPlanPatch)
+  }
+);}
+
+
+
+
+
+export const getUpdateMembershipPlanMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMembershipPlan>>, TError,{id: number;data: BodyType<MembershipPlanPatch>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateMembershipPlan>>, TError,{id: number;data: BodyType<MembershipPlanPatch>}, TContext> => {
+
+const mutationKey = ['updateMembershipPlan'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMembershipPlan>>, {id: number;data: BodyType<MembershipPlanPatch>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateMembershipPlan(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateMembershipPlanMutationResult = NonNullable<Awaited<ReturnType<typeof updateMembershipPlan>>>
+    export type UpdateMembershipPlanMutationBody = BodyType<MembershipPlanPatch>
+    export type UpdateMembershipPlanMutationError = ErrorType<void>
+
+    /**
+ * @summary Update a membership plan price (admin)
+ */
+export const useUpdateMembershipPlan = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMembershipPlan>>, TError,{id: number;data: BodyType<MembershipPlanPatch>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateMembershipPlan>>,
+        TError,
+        {id: number;data: BodyType<MembershipPlanPatch>},
+        TContext
+      > => {
+      return useMutation(getUpdateMembershipPlanMutationOptions(options));
+    }
 
 export const getListEnrollmentsUrl = (params?: ListEnrollmentsParams,) => {
   const normalizedParams = new URLSearchParams();

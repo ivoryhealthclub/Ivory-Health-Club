@@ -9,19 +9,6 @@ export interface HealthStatus {
   status: string;
 }
 
-export type MembershipPlanTier = typeof MembershipPlanTier[keyof typeof MembershipPlanTier];
-
-
-export const MembershipPlanTier = {
-  silver_single: 'silver_single',
-  silver_family: 'silver_family',
-  gold_single: 'gold_single',
-  gold_family: 'gold_family',
-  gold_plus: 'gold_plus',
-  diamond: 'diamond',
-  seventy_plus: 'seventy_plus',
-} as const;
-
 export type MembershipPlanPricePeriod = typeof MembershipPlanPricePeriod[keyof typeof MembershipPlanPricePeriod];
 
 
@@ -33,7 +20,7 @@ export const MembershipPlanPricePeriod = {
 export interface MembershipPlan {
   id: number;
   name: string;
-  tier: MembershipPlanTier;
+  tier: string;
   description: string;
   price: number;
   pricePeriod?: MembershipPlanPricePeriod;
@@ -41,6 +28,51 @@ export interface MembershipPlan {
   discounts?: string;
   /** @nullable */
   maxMembers?: number | null;
+}
+
+export type MembershipPlanInputPricePeriod = typeof MembershipPlanInputPricePeriod[keyof typeof MembershipPlanInputPricePeriod];
+
+
+export const MembershipPlanInputPricePeriod = {
+  monthly: 'monthly',
+  annual: 'annual',
+} as const;
+
+export interface MembershipPlanInput {
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  name: string;
+  /**
+     * @minLength 2
+     * @maxLength 60
+     */
+  tier: string;
+  /** @maxLength 500 */
+  description?: string;
+  /** @minimum 0 */
+  price: number;
+  pricePeriod?: MembershipPlanInputPricePeriod;
+  perks?: string[];
+  /** @maxLength 255 */
+  discounts?: string;
+  /** @minimum 1 */
+  maxMembers?: number;
+}
+
+export type MembershipPlanPatchPricePeriod = typeof MembershipPlanPatchPricePeriod[keyof typeof MembershipPlanPatchPricePeriod];
+
+
+export const MembershipPlanPatchPricePeriod = {
+  monthly: 'monthly',
+  annual: 'annual',
+} as const;
+
+export interface MembershipPlanPatch {
+  /** @minimum 0 */
+  price: number;
+  pricePeriod?: MembershipPlanPatchPricePeriod;
 }
 
 export type EnrollmentStatus = typeof EnrollmentStatus[keyof typeof EnrollmentStatus];
