@@ -14,11 +14,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Calendar, CheckCircle2, Clock3, Mail, Phone, UserRound, Users } from "lucide-react";
+import { Calendar, CheckCircle2, Clock3, Copy, Mail, Phone, UserRound, Users } from "lucide-react";
 
 export default function AdminBookings() {
   const [filter, setFilter] = useState<string>("all");
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [confirmationBooking, setConfirmationBooking] = useState<Booking | null>(null);
   const { data: bookings, isLoading } = useListBookings();
   const updateStatus = useUpdateBookingStatus();
   const { toast } = useToast();
@@ -28,9 +29,12 @@ export default function AdminBookings() {
 
   const handleStatusUpdate = (id: number, status: BookingStatusUpdateStatus) => {
     updateStatus.mutate({ id, data: { status } }, {
-      onSuccess: () => {
+      onSuccess: (updatedBooking) => {
         toast({ title: `Booking marked as ${status}` });
         queryClient.invalidateQueries({ queryKey: getListBookingsQueryKey() });
+        if (status === "confirmed") {
+          setConfirmationBooking(updatedBooking);
+        }
       },
       onError: () => {
         toast({ title: "Error updating status", variant: "destructive" });
@@ -48,6 +52,19 @@ export default function AdminBookings() {
     if (!selectedBooking) return;
     handleStatusUpdate(selectedBooking.id, status);
     setSelectedBooking(null);
+  };
+
+  const getConfirmationMessage = (booking: Booking) =>
+    `Hello ${booking.firstName},\n\nYour ${getServiceLabel(booking.serviceType)} booking at Ivory Health Club has been confirmed.\n\nDate: ${format(new Date(booking.bookingDate), "MMMM d, yyyy")}\nTime: ${booking.bookingTime || "To be arranged"}${booking.numberOfGuests ? `\nGuests: ${booking.numberOfGuests}` : ""}\n\nWe look forward to welcoming you.\n\nIvory Health Club`;
+
+  const copyConfirmationMessage = async () => {
+    if (!confirmationBooking) return;
+    try {
+      await navigator.clipboard.writeText(getConfirmationMessage(confirmationBooking));
+      toast({ title: "Confirmation copied", description: "The message is ready to send to the client." });
+    } catch {
+      toast({ title: "Copy unavailable", description: "Select and copy the message manually.", variant: "destructive" });
+    }
   };
 
   return (
@@ -221,6 +238,43 @@ export default function AdminBookings() {
                 </Button>
               </DialogFooter>
             )}
+          </DialogContent>
+        )}
+      </Dialog>
+
+      <Dialog open={!!confirmationBooking} onOpenChange={(open) => !open && setConfirmationBooking(null)}>
+        {confirmationBooking && (
+          <DialogContent className="sm:max-w-xl">
+            <DialogHeader>
+              <DialogTitle className="font-serif text-2xl text-secondary">Booking confirmed</DialogTitle>
+              <DialogDescription>
+                Automatic delivery is not connected. Use one of the options below to send this confirmation to the client.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="rounded-md border border-gray-200 bg-gray-50 p-4">
+              <p className="whitespace-pre-wrap text-sm leading-6 text-gray-700">
+                {getConfirmationMessage(confirmationBooking)}
+              </p>
+            </div>
+            <DialogFooter className="gap-2 sm:gap-2">
+              <Button variant="outline" onClick={copyConfirmationMessage}>
+                <Copy /> Copy message
+              </Button>
+              <Button variant="outline" asChild>
+                <a
+                  href={`mailto:${confirmationBooking.email}?subject=${encodeURIComponent("Your Ivory Health Club booking is confirmed")}&body=${encodeURIComponent(getConfirmationMessage(confirmationBooking))}`}
+                >
+                  <Mail /> Open email
+                </a>
+              </Button>
+              <Button variant="outline" asChild>
+                <a
+                  href={`sms:${confirmationBooking.phone}?body=${encodeURIComponent(getConfirmationMessage(confirmationBooking))}`}
+                >
+                  <Phone /> Open SMS
+                </a>
+              </Button>
+            </DialogFooter>
           </DialogContent>
         )}
       </Dialog>
