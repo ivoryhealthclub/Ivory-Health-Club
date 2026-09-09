@@ -1,14 +1,24 @@
 import { useState } from "react";
-import { useListBookings, useUpdateBookingStatus, BookingStatusUpdateStatus } from "@workspace/api-client-react";
+import { useListBookings, useUpdateBookingStatus, BookingStatusUpdateStatus, type Booking } from "@workspace/api-client-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { getListBookingsQueryKey } from "@workspace/api-client-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Calendar, CheckCircle2, Clock3, Mail, Phone, UserRound, Users } from "lucide-react";
 
 export default function AdminBookings() {
   const [filter, setFilter] = useState<string>("all");
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const { data: bookings, isLoading } = useListBookings();
   const updateStatus = useUpdateBookingStatus();
   const { toast } = useToast();
@@ -30,6 +40,14 @@ export default function AdminBookings() {
 
   const getServiceLabel = (type: string) => {
     return type.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  };
+
+  const openBooking = (booking: Booking) => setSelectedBooking(booking);
+
+  const reviewStatusUpdate = (status: BookingStatusUpdateStatus) => {
+    if (!selectedBooking) return;
+    handleStatusUpdate(selectedBooking.id, status);
+    setSelectedBooking(null);
   };
 
   return (
@@ -74,7 +92,7 @@ export default function AdminBookings() {
                 </tr>
               ) : (
                 filtered.map(booking => (
-                  <tr key={booking.id} className="hover:bg-gray-50">
+                  <tr key={booking.id} className="cursor-pointer hover:bg-gray-50" onClick={() => openBooking(booking)}>
                     <td className="px-6 py-4">
                       <div className="font-bold text-gray-900">{booking.firstName} {booking.lastName}</div>
                       <div className="text-gray-500 text-xs">{booking.email} • {booking.phone}</div>
@@ -101,14 +119,17 @@ export default function AdminBookings() {
                     <td className="px-6 py-4 text-right space-x-2">
                       {booking.status === 'pending' && (
                         <>
-                          <Button size="sm" variant="outline" className="text-green-600 border-green-200 hover:bg-green-50" onClick={() => handleStatusUpdate(booking.id, "confirmed")}>
+                          <Button size="sm" variant="outline" className="text-green-600 border-green-200 hover:bg-green-50" onClick={(event) => { event.stopPropagation(); handleStatusUpdate(booking.id, "confirmed"); }}>
                             Confirm
                           </Button>
-                          <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => handleStatusUpdate(booking.id, "cancelled")}>
+                          <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={(event) => { event.stopPropagation(); handleStatusUpdate(booking.id, "cancelled"); }}>
                             Cancel
                           </Button>
                         </>
                       )}
+                      <Button size="sm" variant="ghost" onClick={(event) => { event.stopPropagation(); openBooking(booking); }}>
+                        View
+                      </Button>
                     </td>
                   </tr>
                 ))
@@ -117,6 +138,92 @@ export default function AdminBookings() {
           </table>
         </div>
       </div>
+
+      <Dialog open={!!selectedBooking} onOpenChange={(open) => !open && setSelectedBooking(null)}>
+        {selectedBooking && (
+          <DialogContent className="sm:max-w-xl">
+            <DialogHeader>
+              <DialogTitle className="font-serif text-2xl text-secondary">Booking details</DialogTitle>
+              <DialogDescription>
+                Review the client request before confirming or cancelling it.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="grid gap-4 rounded-md bg-gray-50 p-5 text-sm">
+              <div className="flex items-start gap-3">
+                <UserRound className="mt-0.5 h-4 w-4 text-primary" />
+                <div>
+                  <p className="font-semibold text-gray-900">{selectedBooking.firstName} {selectedBooking.lastName}</p>
+                  <p className="text-gray-500">Client</p>
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="flex items-start gap-3">
+                  <Mail className="mt-0.5 h-4 w-4 text-primary" />
+                  <div>
+                    <p className="font-medium text-gray-900 break-all">{selectedBooking.email}</p>
+                    <p className="text-gray-500">Email</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Phone className="mt-0.5 h-4 w-4 text-primary" />
+                  <div>
+                    <p className="font-medium text-gray-900">{selectedBooking.phone}</p>
+                    <p className="text-gray-500">Phone</p>
+                  </div>
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="flex items-start gap-3">
+                  <Calendar className="mt-0.5 h-4 w-4 text-primary" />
+                  <div>
+                    <p className="font-medium text-gray-900">{getServiceLabel(selectedBooking.serviceType)}</p>
+                    <p className="text-gray-500">Service</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Clock3 className="mt-0.5 h-4 w-4 text-primary" />
+                  <div>
+                    <p className="font-medium text-gray-900">{format(new Date(selectedBooking.bookingDate), 'MMMM d, yyyy')}</p>
+                    <p className="text-gray-500">{selectedBooking.bookingTime || 'No specific time'}</p>
+                  </div>
+                </div>
+              </div>
+              {selectedBooking.numberOfGuests && (
+                <div className="flex items-start gap-3">
+                  <Users className="mt-0.5 h-4 w-4 text-primary" />
+                  <div>
+                    <p className="font-medium text-gray-900">{selectedBooking.numberOfGuests}</p>
+                    <p className="text-gray-500">Number of guests</p>
+                  </div>
+                </div>
+              )}
+              {selectedBooking.specialRequests && (
+                <div className="border-t border-gray-200 pt-4">
+                  <p className="mb-1 font-semibold text-gray-900">Special requests</p>
+                  <p className="whitespace-pre-wrap leading-6 text-gray-600">{selectedBooking.specialRequests}</p>
+                </div>
+              )}
+              <div className="flex items-center gap-2 border-t border-gray-200 pt-4">
+                <span className="font-semibold text-gray-900">Status</span>
+                <Badge variant="outline">{selectedBooking.status}</Badge>
+              </div>
+            </div>
+
+            {selectedBooking.status === "pending" && (
+              <DialogFooter>
+                <Button variant="outline" className="text-red-600" onClick={() => reviewStatusUpdate("cancelled")} disabled={updateStatus.isPending}>
+                  Cancel booking
+                </Button>
+                <Button onClick={() => reviewStatusUpdate("confirmed")} disabled={updateStatus.isPending}>
+                  <CheckCircle2 />
+                  {updateStatus.isPending ? "Confirming..." : "Confirm booking"}
+                </Button>
+              </DialogFooter>
+            )}
+          </DialogContent>
+        )}
+      </Dialog>
     </div>
   );
 }
