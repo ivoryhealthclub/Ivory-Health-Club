@@ -1,11 +1,22 @@
+import { useState, type FormEvent } from "react";
 import { useRoute, Link } from "wouter";
 import { format } from "date-fns";
-import { getGetBlogPostQueryKey, useGetBlogPost } from "@workspace/api-client-react";
-import { ArrowLeft, User, Calendar, Tag, Facebook, Instagram, MessageCircle, Music2, Send, Link2 } from "lucide-react";
+import {
+  getGetBlogPostQueryKey,
+  getListBlogCommentsQueryKey,
+  useCreateBlogComment,
+  useGetBlogPost,
+  useListBlogComments,
+} from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, User, Calendar, Tag, Facebook, Instagram, MessageCircle, Music2, Send, Link2, MessageSquare } from "lucide-react";
 import NotFound from "./not-found";
 import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 import { markdownToHtml } from "@/lib/markdown";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const shareButtonStyles = {
   facebook: "border-[#dbe5ff] bg-[#f4f7ff] text-[#1877f2] hover:bg-[#e9efff]",
@@ -18,13 +29,24 @@ const shareButtonStyles = {
 export default function BlogPost() {
   const [, params] = useRoute("/blog/:id");
   const id = params?.id ? parseInt(params.id) : 0;
-  
+
   const { data: post, isLoading, isError } = useGetBlogPost(id, {
     query: {
       queryKey: getGetBlogPostQueryKey(id),
       enabled: !!id
     }
   });
+  const { data: comments = [], isLoading: commentsLoading } = useListBlogComments(id, {
+    query: {
+      queryKey: getListBlogCommentsQueryKey(id),
+      enabled: !!id && !!post,
+    },
+  });
+  const queryClient = useQueryClient();
+  const createComment = useCreateBlogComment();
+  const [commenterName, setCommenterName] = useState("");
+  const [commenterEmail, setCommenterEmail] = useState("");
+  const [commentContent, setCommentContent] = useState("");
   const { toast } = useToast();
 
   const copyPostLink = async () => {
@@ -76,6 +98,40 @@ export default function BlogPost() {
       shareLinks[platform],
       "_blank",
       "noopener,noreferrer,width=640,height=620",
+    );
+  };
+
+  const submitComment = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    createComment.mutate(
+      {
+        id,
+        data: {
+          name: commenterName.trim(),
+          email: commenterEmail.trim() || undefined,
+          content: commentContent.trim(),
+        },
+      },
+      {
+        onSuccess: () => {
+          setCommenterName("");
+          setCommenterEmail("");
+          setCommentContent("");
+          queryClient.invalidateQueries({ queryKey: getListBlogCommentsQueryKey(id) });
+          toast({
+            title: "Comment posted",
+            description: "Thank you for joining the conversation.",
+          });
+        },
+        onError: () => {
+          toast({
+            title: "Comment could not be posted",
+            description: "Please check your details and try again.",
+            variant: "destructive",
+          });
+        },
+      },
     );
   };
 
@@ -161,6 +217,95 @@ export default function BlogPost() {
           className="prose prose-lg prose-headings:font-serif prose-headings:text-secondary prose-a:text-primary hover:prose-a:text-secondary prose-p:text-gray-600 prose-li:text-gray-600 max-w-none"
           dangerouslySetInnerHTML={{ __html: markdownToHtml(post.content) }}
         />
+
+        <section className="mt-16 border-t border-gray-200 pt-10" aria-labelledby="comments-heading">
+          <div className="mb-8">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-primary">Join the conversation</p>
+            <h2 id="comments-heading" className="font-serif text-3xl font-bold text-secondary">
+              {comments.length === 1 ? "1 comment" : `${comments.length} comments`}
+            </h2>
+          </div>
+
+          <div className="mb-12 rounded-sm bg-[#f8f7f3] p-6 md:p-8">
+            <h3 className="mb-2 flex items-center gap-2 font-serif text-2xl font-bold text-secondary">
+              <MessageSquare size={20} className="text-primary" />
+              Leave a comment
+            </h3>
+            <p className="mb-6 text-sm leading-6 text-gray-500">
+              Share your thoughts or ask a question about this article.
+            </p>
+            <form onSubmit={submitComment} className="space-y-5">
+              <div className="grid gap-5 md:grid-cols-2">
+                <label className="space-y-2 text-sm font-semibold text-secondary">
+                  <span>Name</span>
+                  <Input
+                    value={commenterName}
+                    onChange={(event) => setCommenterName(event.target.value)}
+                    placeholder="Your name"
+                    minLength={2}
+                    maxLength={80}
+                    required
+                    disabled={createComment.isPending}
+                  />
+                </label>
+                <label className="space-y-2 text-sm font-semibold text-secondary">
+                  <span>Email <span className="font-normal text-gray-400">(optional)</span></span>
+                  <Input
+                    type="email"
+                    value={commenterEmail}
+                    onChange={(event) => setCommenterEmail(event.target.value)}
+                    placeholder="you@example.com"
+                    maxLength={254}
+                    disabled={createComment.isPending}
+                  />
+                </label>
+              </div>
+              <label className="block space-y-2 text-sm font-semibold text-secondary">
+                <span>Comment</span>
+                <Textarea
+                  value={commentContent}
+                  onChange={(event) => setCommentContent(event.target.value)}
+                  placeholder="What did you think?"
+                  maxLength={2000}
+                  required
+                  rows={5}
+                  disabled={createComment.isPending}
+                />
+                <span className="block text-right text-xs font-normal text-gray-400">
+                  {commentContent.length}/2000
+                </span>
+              </label>
+              <Button type="submit" disabled={createComment.isPending}>
+                {createComment.isPending ? "Posting..." : "Post comment"}
+              </Button>
+            </form>
+          </div>
+
+          {commentsLoading ? (
+            <div className="space-y-5" aria-label="Loading comments">
+              <div className="h-24 animate-pulse rounded-sm bg-gray-100" />
+              <div className="h-24 animate-pulse rounded-sm bg-gray-100" />
+            </div>
+          ) : comments.length > 0 ? (
+            <div className="space-y-6">
+              {comments.map((comment) => (
+                <article key={comment.id} className="border-b border-gray-100 pb-6 last:border-b-0">
+                  <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+                    <h3 className="font-semibold text-secondary">{comment.name}</h3>
+                    <time dateTime={comment.createdAt} className="text-xs text-gray-400">
+                      {format(new Date(comment.createdAt), "MMMM d, yyyy")}
+                    </time>
+                  </div>
+                  <p className="whitespace-pre-wrap text-sm leading-7 text-gray-600">{comment.content}</p>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="border border-dashed border-gray-200 px-6 py-8 text-center text-sm text-gray-500">
+              Be the first to share your thoughts.
+            </p>
+          )}
+        </section>
         
         <div className="mt-16 border-t border-gray-200 pt-8">
           <div className="text-center">

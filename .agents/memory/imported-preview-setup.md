@@ -20,3 +20,9 @@ Imported Wouter apps may need an explicit exact route for a protected root path 
 **Why:** The wildcard route did not match the bare admin path in the preview, sending users to the public 404 page even though nested admin routes were configured.
 
 **How to apply:** When validating a root dashboard URL after import, test the exact path and add an explicit route before relying on a wildcard-only match.
+
+Imported Vite artifacts require both `PORT` and `BASE_PATH` for standalone production builds, even though managed dev workflows supply them automatically.
+
+**Why:** Running the package build without those values fails while loading the Vite config, which can look like a feature regression even when the preview workflow is healthy.
+
+**How to apply:** Use the artifact's configured preview base path and an available port when running the production build directly; keep the config's required environment checks intact.
