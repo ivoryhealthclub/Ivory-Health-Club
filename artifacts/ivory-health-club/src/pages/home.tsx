@@ -1,88 +1,232 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import heroBg from "@assets/generated_images/hero-bg.jpg";
 import gymImg from "@assets/generated_images/gym.jpg";
 import spaImg from "@assets/generated_images/spa.jpg";
 import restImg from "@assets/generated_images/restaurant.jpg";
-import { ArrowRight, Star, ChevronRight, Check } from "lucide-react";
+import entertainmentImg from "@assets/generated_images/entertainment.jpg";
+import { ArrowRight, Check, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { useListMembershipPlans } from "@workspace/api-client-react";
+import { useEffect, useState } from "react";
+
+const heroSlides = [
+  {
+    eyebrow: "Where wellness",
+    title: "Becomes a lifestyle",
+    description:
+      "Nigeria's most exclusive health and wellness destination. Elevate your body, mind, and spirit in a sanctuary of luxury.",
+    image: heroBg,
+    alt: "Athlete running in the Ivory Health Club gym at golden hour",
+    kicker: "Health · Fitness · Wellness · Lifestyle",
+  },
+  {
+    eyebrow: "Move with",
+    title: "quiet confidence",
+    description:
+      "Train with intention in a considered space where every detail is designed around your strongest self.",
+    image: gymImg,
+    alt: "Premium strength and conditioning floor inside Ivory Health Club",
+    kicker: "Performance, redefined",
+  },
+  {
+    eyebrow: "Restore your",
+    title: "natural rhythm",
+    description:
+      "A slower kind of luxury. Let expert hands, warm water, and uninterrupted time bring you back to yourself.",
+    image: spaImg,
+    alt: "Calm treatment room with warm ambient lighting at the Ivory spa",
+    kicker: "The art of restoration",
+  },
+  {
+    eyebrow: "Nourish the",
+    title: "life you lead",
+    description:
+      "Thoughtful plates, fresh-pressed goodness, and the kind of hospitality that makes staying in feel like going out.",
+    image: restImg,
+    alt: "Elegant restaurant and juice bar dining area at Ivory Health Club",
+    kicker: "Wellness, served beautifully",
+  },
+  {
+    eyebrow: "Make room for",
+    title: "the good life",
+    description:
+      "Beyond the workout, find a private world for connection, celebration, and the moments worth lingering over.",
+    image: entertainmentImg,
+    alt: "Elegant social lounge inside Ivory Health Club",
+    kicker: "More than a membership",
+  },
+];
 
 export default function Home() {
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 1000], [0, 200]);
-  const y2 = useTransform(scrollY, [0, 1000], [0, -100]);
-  
+  const prefersReducedMotion = useReducedMotion();
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+
+    const interval = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % heroSlides.length);
+    }, 6500);
+
+    return () => window.clearInterval(interval);
+  }, [prefersReducedMotion]);
+
+  const goToSlide = (index: number) => {
+    setActiveSlide((index + heroSlides.length) % heroSlides.length);
+  };
+
   const { data: plans } = useListMembershipPlans();
   const featuredPlans = plans?.filter(p => ["gold_single", "diamond", "gold_plus"].includes(p.tier)).slice(0, 3);
 
   return (
     <div className="overflow-hidden">
       {/* Hero Section */}
-      <section className="relative h-[100dvh] flex items-center justify-center overflow-hidden bg-secondary">
-        <motion.div 
-          style={{ y: y1 }}
-          className="absolute inset-0 z-0"
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-[#140A3A]/80 via-[#29166F]/60 to-[#140A3A]/90 z-10 mix-blend-multiply" />
-          <img 
-            src={heroBg} 
-            alt="Ivory Health Club" 
-            className="w-full h-full object-cover opacity-80 object-center"
-          />
+      <section className="relative isolate min-h-[100dvh] overflow-hidden bg-[#080d13] text-white">
+        <motion.div style={{ y: y1 }} className="absolute inset-0 z-0 hidden md:block">
+          <AnimatePresence initial={false}>
+            <motion.img
+              key={heroSlides[activeSlide].image}
+              src={heroSlides[activeSlide].image}
+              alt={heroSlides[activeSlide].alt}
+              initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 1.09 }}
+              animate={{ opacity: 1, scale: prefersReducedMotion ? 1 : 1.02 }}
+              exit={{ opacity: 0, scale: prefersReducedMotion ? 1 : 1.06 }}
+              transition={{ duration: prefersReducedMotion ? 0.01 : 1.25, ease: [0.22, 1, 0.36, 1] }}
+              className="h-full w-full object-cover object-center"
+              data-testid={`img-hero-slide-${activeSlide}`}
+            />
+          </AnimatePresence>
         </motion.div>
-        
-        <div className="relative z-10 container mx-auto px-6 text-center max-w-5xl mt-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="flex items-center justify-center gap-2 mb-6 text-primary"
-          >
-            <Star size={16} fill="currentColor" />
-            <Star size={16} fill="currentColor" />
-            <Star size={16} fill="currentColor" />
-            <Star size={16} fill="currentColor" />
-            <Star size={16} fill="currentColor" />
-          </motion.div>
-          
-          <motion.h1 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.4 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white leading-tight tracking-tight mb-6 drop-shadow-lg"
-          >
-            Where Wellness <br />
-            <span className="text-primary italic font-light">Becomes a Lifestyle</span>
-          </motion.h1>
-          
-          <motion.p 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.6 }}
-            className="text-lg md:text-2xl text-white/80 max-w-2xl mx-auto mb-10 font-light"
-          >
-            Nigeria's most exclusive health and wellness destination. 
-            Elevate your body, mind, and spirit in a sanctuary of luxury.
-          </motion.p>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.8 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Link href="/membership">
-              <Button size="lg" className="w-full sm:w-auto px-8 h-14 text-lg bg-primary text-secondary hover:bg-primary/90 rounded-[10px] uppercase tracking-wider font-bold">
-                Become a Member
-              </Button>
-            </Link>
-            <Link href="/services">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 h-14 text-lg border-white text-white hover:bg-white hover:text-secondary rounded-[10px] uppercase tracking-wider font-bold bg-transparent">
-                Discover Ivory
-              </Button>
-            </Link>
-          </motion.div>
+        <div className="absolute inset-0 z-0 md:hidden">
+          <AnimatePresence initial={false}>
+            <motion.img
+              key={`mobile-${heroSlides[activeSlide].image}`}
+              src={heroSlides[activeSlide].image}
+              alt={heroSlides[activeSlide].alt}
+              initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 1.06 }}
+              animate={{ opacity: 1, scale: prefersReducedMotion ? 1 : 1.01 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: prefersReducedMotion ? 0.01 : 0.9 }}
+              className="h-full w-full object-cover object-center"
+              data-testid={`img-mobile-hero-slide-${activeSlide}`}
+            />
+          </AnimatePresence>
+        </div>
+        <div className="absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(6,11,16,0.98)_0%,rgba(6,11,16,0.91)_32%,rgba(6,11,16,0.42)_64%,rgba(6,11,16,0.5)_100%)]" />
+        <div className="absolute inset-0 z-[1] bg-[linear-gradient(180deg,rgba(6,11,16,0.65)_0%,transparent_24%,transparent_69%,rgba(6,11,16,0.92)_100%)]" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-[2] hidden w-[52%] border-l border-white/10 bg-gradient-to-l from-transparent via-transparent to-[#080d13]/10 md:block" />
+
+        <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[1440px] flex-col justify-center px-6 pb-28 pt-24 sm:px-10 lg:px-16 xl:px-20">
+          <div className="max-w-[620px]">
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.15 }}
+              className="mb-7 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.38em] text-primary sm:text-xs"
+            >
+              <span className="h-px w-9 bg-primary" />
+              <span>Ivory Health Club</span>
+            </motion.div>
+
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeSlide}
+                initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 22 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: prefersReducedMotion ? 0 : -18 }}
+                transition={{ duration: prefersReducedMotion ? 0.01 : 0.6, ease: "easeOut" }}
+              >
+                <p className="mb-3 text-sm font-medium uppercase tracking-[0.25em] text-white/65 sm:text-base">
+                  {heroSlides[activeSlide].eyebrow}
+                </p>
+                <h1 className="max-w-[680px] text-[clamp(3.6rem,8vw,7.7rem)] font-serif font-medium leading-[0.88] tracking-[-0.045em] text-white">
+                  <span className="block">{heroSlides[activeSlide].title.split(" ")[0]}</span>
+                  <span className="block italic text-primary">
+                    {heroSlides[activeSlide].title.split(" ").slice(1).join(" ")}
+                  </span>
+                </h1>
+                <p className="mt-7 max-w-[470px] text-sm leading-7 text-white/72 sm:text-base sm:leading-8">
+                  {heroSlides[activeSlide].description}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={`cta-${activeSlide}`}
+                initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: prefersReducedMotion ? 0 : -12 }}
+                transition={{ duration: prefersReducedMotion ? 0.01 : 0.55, delay: prefersReducedMotion ? 0 : 0.12 }}
+                className="mt-9 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center"
+              >
+                <Link
+                  href="/membership"
+                  className="group inline-flex h-14 items-center justify-center gap-5 rounded-[3px] bg-primary px-6 text-xs font-bold uppercase tracking-[0.17em] text-secondary shadow-[0_10px_35px_rgba(248,195,1,0.18)] transition-colors hover:bg-[#ffe082] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#080d13] sm:min-w-[200px]"
+                  data-testid="link-become-member"
+                >
+                  Become a Member
+                  <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+                <Link
+                  href="/services"
+                  className="group inline-flex h-14 items-center justify-center gap-5 rounded-[3px] border border-white/45 bg-white/[0.02] px-6 text-xs font-bold uppercase tracking-[0.17em] text-white backdrop-blur-sm transition-colors hover:border-white hover:bg-white hover:text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#080d13] sm:min-w-[200px]"
+                  data-testid="link-discover-ivory"
+                >
+                  Discover Ivory
+                  <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          <div className="absolute bottom-9 left-6 right-6 flex items-end justify-between sm:left-10 sm:right-10 lg:left-16 lg:right-16 xl:left-20 xl:right-20">
+            <div className="hidden items-center gap-3 text-[10px] uppercase tracking-[0.3em] text-white/45 sm:flex">
+              <span className="h-px w-12 bg-white/30" />
+              <span>{heroSlides[activeSlide].kicker}</span>
+            </div>
+            <div className="ml-auto flex items-center gap-4">
+              <div className="flex items-center gap-2" role="tablist" aria-label="Hero slides">
+                {heroSlides.map((slide, index) => (
+                  <button
+                    key={slide.title}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeSlide === index}
+                    aria-label={`Show slide ${index + 1}: ${slide.title}`}
+                    onClick={() => goToSlide(index)}
+                    className="group flex h-8 items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#080d13]"
+                    data-testid={`button-hero-indicator-${index}`}
+                  >
+                    <span className={`block h-px transition-all duration-500 ${activeSlide === index ? "w-10 bg-primary" : "w-4 bg-white/40 group-hover:bg-white/80"}`} />
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  aria-label="Previous hero slide"
+                  onClick={() => goToSlide(activeSlide - 1)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white/75 transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#080d13]"
+                  data-testid="button-hero-previous"
+                >
+                  <ChevronLeft size={17} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Next hero slide"
+                  onClick={() => goToSlide(activeSlide + 1)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-white/75 transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[#080d13]"
+                  data-testid="button-hero-next"
+                >
+                  <ChevronRight size={17} />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
