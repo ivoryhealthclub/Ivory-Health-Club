@@ -2,3 +2,4 @@
 - [Program enrollment storage](program-enrollment-storage.md) — program signups reuse pending bookings; preserve the selected program and details in the booking request notes.
 - [Admin router mounting](admin-router-mounting.md) — scope admin middleware under `/admin` and keep handler paths relative to prevent public-route auth leaks and duplicated URLs.
 - [App Storage media paths](app-storage-media-paths.md) — strip the returned `/objects` prefix when constructing public media URLs.
+- [Seeded media validation](seeded-media-validation.md) — validate remote image URLs; insert-only seeders do not repair an existing broken record.

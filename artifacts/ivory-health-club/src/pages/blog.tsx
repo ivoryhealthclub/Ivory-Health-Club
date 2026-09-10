@@ -7,7 +7,8 @@ import { ChevronRight } from "lucide-react";
 import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 
 export default function BlogList() {
-  const { data: posts, isLoading } = useListBlogPosts();
+  const [failedImageIds, setFailedImageIds] = useState<Set<number>>(new Set());
+  const { data: posts, isLoading, isError, refetch } = useListBlogPosts();
   const [activeCategory, setActiveCategory] = useState<string>("all");
 
   const categories = ["all", ...Array.from(new Set(posts?.map(p => p.category) || []))];
@@ -51,6 +52,18 @@ export default function BlogList() {
               <div key={i} className="h-[400px] bg-white animate-pulse rounded-sm shadow-sm"></div>
             ))}
           </div>
+        ) : isError ? (
+          <div className="col-span-full rounded-sm border border-dashed border-gray-300 bg-white px-6 py-20 text-center">
+            <p className="text-lg font-serif font-bold text-secondary">The journal is temporarily unavailable.</p>
+            <p className="mt-2 text-sm text-gray-500">Please try again in a moment.</p>
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="mt-6 bg-secondary px-6 py-3 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-primary hover:text-secondary"
+            >
+              Try again
+            </button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts?.map((post) => (
@@ -60,15 +73,22 @@ export default function BlogList() {
                 className="group flex flex-col bg-white shadow-sm hover:shadow-xl transition-shadow duration-300 rounded-sm overflow-hidden"
               >
                 <div className="aspect-[4/3] bg-gray-200 overflow-hidden relative">
-                  {post.imageUrl ? (
-                    <img 
-                      src={post.imageUrl} 
-                      alt={post.title} 
+                  {post.imageUrl && !failedImageIds.has(post.id) ? (
+                    <img
+                      src={post.imageUrl}
+                      alt={post.title}
+                      onError={() => {
+                        setFailedImageIds((current) => {
+                          const next = new Set(current);
+                          next.add(post.id);
+                          return next;
+                        });
+                      }}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-secondary text-white font-serif text-2xl opacity-80">
-                      IVORY
+                      {failedImageIds.has(post.id) ? "IMAGE UNAVAILABLE" : "IVORY"}
                     </div>
                   )}
                   <div className="absolute top-4 left-4 bg-primary text-secondary text-xs font-bold uppercase tracking-wider px-3 py-1">

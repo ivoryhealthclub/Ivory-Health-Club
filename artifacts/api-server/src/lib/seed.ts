@@ -292,7 +292,7 @@ const starterGalleryImages = [
   ["events", "Community Night", "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=85"],
   ["events", "Outdoor Event", "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=85"],
   ["events", "Member Celebration", "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=85"],
-  ["events", "Ivory Evenings", "https://images.unsplash.com/photo-1470229722913-7c0e2dbb afd?auto=format&fit=crop&w=1200&q=85".replace(" ", "")],
+  ["events", "Ivory Evenings", "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=1200&q=85"],
 ] as const;
 
 export async function seedEditorialContent() {

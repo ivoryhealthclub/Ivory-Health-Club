@@ -5,7 +5,8 @@ import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
 
 export default function Gallery() {
   const [activeCategory, setActiveCategory] = useState<string>("all");
-  const { data: images, isLoading } = useListGalleryImages();
+  const [failedImageIds, setFailedImageIds] = useState<Set<number>>(new Set());
+  const { data: images, isLoading, isError, refetch } = useListGalleryImages();
 
   const categories = ["all", "gym", "spa", "restaurant", "events"];
 
@@ -48,6 +49,18 @@ export default function Gallery() {
               <div key={i} className="aspect-square bg-gray-100 animate-pulse"></div>
             ))}
           </div>
+        ) : isError ? (
+          <div className="col-span-full rounded-sm border border-dashed border-gray-300 bg-gray-50 px-6 py-20 text-center">
+            <p className="text-lg font-serif font-bold text-secondary">The gallery is temporarily unavailable.</p>
+            <p className="mt-2 text-sm text-gray-500">Please try again in a moment.</p>
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="mt-6 bg-secondary px-6 py-3 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-primary hover:text-secondary"
+            >
+              Try again
+            </button>
+          </div>
         ) : (
           <motion.div 
             layout
@@ -64,11 +77,27 @@ export default function Gallery() {
                   key={img.id}
                   className="group relative aspect-square overflow-hidden bg-gray-100 cursor-pointer"
                 >
-                  <img 
-                    src={img.url} 
-                    alt={img.title} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
+                  {failedImageIds.has(img.id) ? (
+                    <div className="flex h-full w-full items-center justify-center bg-secondary px-8 text-center text-white">
+                      <div>
+                        <p className="font-serif text-xl font-bold">{img.title}</p>
+                        <p className="mt-2 text-sm text-white/70">Image unavailable</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={img.url}
+                      alt={img.title}
+                      onError={() => {
+                        setFailedImageIds((current) => {
+                          const next = new Set(current);
+                          next.add(img.id);
+                          return next;
+                        });
+                      }}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8">
                     <h3 className="text-white font-serif font-bold text-xl mb-1 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">{img.title}</h3>
                     {img.description && (
