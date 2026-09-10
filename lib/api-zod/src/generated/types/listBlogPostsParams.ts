@@ -9,4 +9,5 @@
 export type ListBlogPostsParams = {
 category?: string;
 limit?: number;
+includeUnpublished?: boolean;
 };

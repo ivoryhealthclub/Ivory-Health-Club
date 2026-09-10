@@ -38,6 +38,8 @@ A full-stack luxury health and wellness club website for Ivory Health Club, Nige
 - Admin dashboard uses sidebar layout at `/admin/*` routes
 - Membership plans are seeded at startup — no create endpoint needed for plans (admin-only in future)
 - Blog posts are filtered to `published: true` on public endpoints; admin can see all
+- Blog and gallery records are stored in PostgreSQL; startup seeding inserts only missing starter records and never resets existing content.
+- Admin-uploaded images are stored in persistent App Storage, while PostgreSQL stores the stable media URL used by public pages.
 
 ## Product
 

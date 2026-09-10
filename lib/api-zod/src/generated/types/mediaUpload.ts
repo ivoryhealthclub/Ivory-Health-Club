@@ -6,7 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type ListGalleryImagesParams = {
-category?: string;
-includeUnpublished?: boolean;
-};
+export interface MediaUpload {
+  uploadURL: string;
+  objectPath: string;
+  name: string;
+  size: number;
+  contentType: string;
+}

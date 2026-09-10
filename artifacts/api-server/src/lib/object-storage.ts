@@ -49,3 +49,25 @@ export async function createReceiptDownload(objectPath: string): Promise<string>
   if (!objectPath.startsWith("/objects/")) throw new Error("Invalid receipt path");
   return signObjectUrl(`${privateObjectDir()}${objectPath.slice("/objects".length)}`, "GET");
 }
+
+export async function createMediaUpload(
+  contentType: string,
+): Promise<{ uploadURL: string; objectPath: string }> {
+  const objectPath = `/objects/uploads/media/${randomUUID()}`;
+  const uploadURL = await signObjectUrl(
+    `${privateObjectDir()}${objectPath.slice("/objects".length)}`,
+    "PUT",
+    contentType,
+  );
+  return { uploadURL, objectPath };
+}
+
+export async function createMediaDownload(objectPath: string): Promise<string> {
+  if (!objectPath.startsWith("/objects/uploads/media/")) {
+    throw new Error("Invalid media path");
+  }
+  return signObjectUrl(
+    `${privateObjectDir()}${objectPath.slice("/objects".length)}`,
+    "GET",
+  );
+}

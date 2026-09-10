@@ -13,7 +13,7 @@ import {
   UpdateBlogPostResponse,
   DeleteBlogPostParams,
 } from "@workspace/api-zod";
-import { adminAuthMiddleware } from "../lib/admin-auth";
+import { adminAuthMiddleware, getAdminSessionEmail } from "../lib/admin-auth";
 
 const router: IRouter = Router();
 
@@ -29,7 +29,10 @@ router.get("/blog-posts", async (req, res): Promise<void> => {
     return;
   }
 
-  const conditions = [eq(blogPostsTable.published, true)];
+  const isAdmin = Boolean(getAdminSessionEmail(req));
+  const conditions = query.data.includeUnpublished && isAdmin
+    ? []
+    : [eq(blogPostsTable.published, true)];
   if (query.data.category) conditions.push(eq(blogPostsTable.category, query.data.category));
 
   const rows = await db
@@ -90,7 +93,7 @@ router.get("/blog-posts/:id", async (req, res): Promise<void> => {
     .from(blogPostsTable)
     .where(eq(blogPostsTable.id, params.data.id));
 
-  if (!post) {
+  if (!post || (!post.published && !getAdminSessionEmail(req))) {
     res.status(404).json({ error: "Blog post not found" });
     return;
   }

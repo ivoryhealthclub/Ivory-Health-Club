@@ -11,4 +11,5 @@ export interface GalleryImageInput {
   title: string;
   description?: string;
   category: string;
+  published?: boolean;
 }

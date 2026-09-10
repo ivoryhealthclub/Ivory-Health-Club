@@ -1,5 +1,11 @@
 import { useRef, useState, type ChangeEvent, type DragEvent, type FormEvent } from "react";
-import { useListGalleryImages, useDeleteGalleryImage, useCreateGalleryImage } from "@workspace/api-client-react";
+import {
+  useListGalleryImages,
+  useDeleteGalleryImage,
+  useCreateGalleryImage,
+  useUpdateGalleryImage,
+  type GalleryImage,
+} from "@workspace/api-client-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,10 +19,11 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { getListGalleryImagesQueryKey } from "@workspace/api-client-react";
-import { Trash2, Plus, Upload } from "lucide-react";
+import { Trash2, Plus, Upload, Pencil } from "lucide-react";
+import { uploadImage } from "@/lib/media-upload";
 
 export default function AdminGallery() {
-  const { data: images, isLoading } = useListGalleryImages();
+  const { data: images, isLoading } = useListGalleryImages({ includeUnpublished: true });
   const deleteImage = useDeleteGalleryImage();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -39,7 +46,7 @@ export default function AdminGallery() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-serif font-bold text-secondary">Gallery Management</h1>
-        <AddImageDialog />
+        <ImageDialog />
       </div>
 
       {isLoading ? (
@@ -51,17 +58,23 @@ export default function AdminGallery() {
               <div className="aspect-square relative overflow-hidden bg-gray-100">
                 <img src={img.url} alt={img.title} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <Button variant="destructive" size="icon" onClick={() => handleDelete(img.id)}>
-                    <Trash2 size={16} />
-                  </Button>
+                  <div className="flex gap-2">
+                    <ImageDialog image={img} />
+                    <Button variant="destructive" size="icon" onClick={() => handleDelete(img.id)} aria-label={`Delete ${img.title}`}>
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
                 </div>
               </div>
               <div className="p-3">
                 <h4 className="font-bold text-sm truncate">{img.title}</h4>
-                <div className="flex justify-between items-center mt-1">
+                  <div className="flex justify-between items-center mt-1">
                   <span className="text-xs text-primary uppercase font-bold">{img.category}</span>
-                  <span className="text-xs text-gray-400">{format(new Date(img.createdAt), 'MMM d, yy')}</span>
+                   <span className={`text-[10px] font-bold uppercase ${img.published ? "text-green-600" : "text-gray-400"}`}>
+                     {img.published ? "Published" : "Hidden"}
+                   </span>
                 </div>
+                 <span className="mt-1 block text-xs text-gray-400">{format(new Date(img.createdAt), 'MMM d, yy')}</span>
               </div>
             </div>
           ))}
@@ -71,26 +84,46 @@ export default function AdminGallery() {
   );
 }
 
-function AddImageDialog() {
+function ImageDialog({ image }: { image?: GalleryImage }) {
   const [open, setOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const createImg = useCreateGalleryImage();
+  const updateImg = useUpdateGalleryImage();
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   
-  const [formData, setFormData] = useState({
+  const emptyForm = {
     title: "",
     url: "",
     category: "gym",
-    description: ""
-  });
+    description: "",
+    published: true,
+  };
+  const [formData, setFormData] = useState(emptyForm);
+  const isEditing = Boolean(image);
+  const isPending = createImg.isPending || updateImg.isPending || isUploadingImage;
 
-  const updateForm = (key: keyof typeof formData, value: string) => {
+  const updateForm = <K extends keyof typeof formData>(
+    key: K,
+    value: (typeof formData)[K],
+  ) => {
     setFormData((current) => ({ ...current, [key]: value }));
   };
 
-  const readImageFile = (file: File) => {
+  const resetForm = () => {
+    setFormData(image ? {
+      title: image.title,
+      url: image.url,
+      category: image.category,
+      description: image.description ?? "",
+      published: image.published,
+    } : emptyForm);
+    setIsDragging(false);
+  };
+
+  const readImageFile = async (file: File) => {
     const acceptedTypes = ["image/png", "image/jpeg", "image/webp"];
     const maxFileSize = 5 * 1024 * 1024;
 
@@ -112,23 +145,23 @@ function AddImageDialog() {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") updateForm("url", reader.result);
-    };
-    reader.onerror = () => {
+    setIsUploadingImage(true);
+    try {
+      updateForm("url", await uploadImage(file));
+    } catch (error) {
       toast({
-        title: "Could not read image",
-        description: "Try selecting the image again.",
+        title: "Could not upload image",
+        description: error instanceof Error ? error.message : "Try selecting the image again.",
         variant: "destructive",
       });
-    };
-    reader.readAsDataURL(file);
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) readImageFile(file);
+    if (file) void readImageFile(file);
     event.target.value = "";
   };
 
@@ -136,32 +169,47 @@ function AddImageDialog() {
     event.preventDefault();
     setIsDragging(false);
     const file = event.dataTransfer.files?.[0];
-    if (file) readImageFile(file);
+    if (file) void readImageFile(file);
   };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    createImg.mutate({ data: formData }, {
+    const options = {
       onSuccess: () => {
-        toast({ title: "Image added to gallery" });
+        toast({ title: isEditing ? "Gallery image updated" : "Image added to gallery" });
         queryClient.invalidateQueries({ queryKey: getListGalleryImagesQueryKey() });
         setOpen(false);
-        setFormData({ title: "", url: "", category: "gym", description: "" });
+        resetForm();
       },
       onError: () => {
-        toast({ title: "Error adding image", variant: "destructive" });
+        toast({ title: isEditing ? "Error updating image" : "Error adding image", variant: "destructive" });
       }
-    });
+    };
+    if (image) {
+      updateImg.mutate({ id: image.id, data: formData }, options);
+    } else {
+      createImg.mutate({ data: formData }, options);
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(nextOpen) => {
+      setOpen(nextOpen);
+      if (nextOpen) resetForm();
+    }}>
       <DialogTrigger asChild>
-        <Button className="bg-secondary text-white hover:bg-primary"><Plus size={16} className="mr-2" /> Add Image</Button>
+        <Button
+          size={isEditing ? "icon" : "default"}
+          variant={isEditing ? "ghost" : "default"}
+          className={isEditing ? "text-secondary hover:bg-primary/10" : "bg-secondary text-white hover:bg-primary"}
+          aria-label={isEditing ? `Edit ${image?.title ?? "image"}` : undefined}
+        >
+          {isEditing ? <Pencil size={16} /> : <><Plus size={16} className="mr-2" /> Add Image</>}
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add to Gallery</DialogTitle>
+          <DialogTitle>{isEditing ? "Edit Gallery Image" : "Add to Gallery"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div>
@@ -197,6 +245,15 @@ function AddImageDialog() {
             <label className="text-sm font-medium mb-1 block">Description (Optional)</label>
             <Input value={formData.description} onChange={e => updateForm("description", e.target.value)} />
           </div>
+          <label className="flex items-center gap-3 text-sm font-medium text-secondary">
+            <input
+              type="checkbox"
+              checked={formData.published}
+              onChange={(event) => updateForm("published", event.target.checked)}
+              className="h-4 w-4 accent-primary"
+            />
+            Visible on the public website
+          </label>
           <input
             ref={fileInputRef}
             type="file"
@@ -243,8 +300,8 @@ function AddImageDialog() {
               </div>
             )}
           </div>
-          <Button type="submit" className="w-full bg-secondary text-white hover:bg-primary" disabled={createImg.isPending}>
-            {createImg.isPending ? "Adding..." : "Add Image"}
+          <Button type="submit" className="w-full bg-secondary text-white hover:bg-primary" disabled={isPending}>
+            {isPending ? "Saving..." : isEditing ? "Save Changes" : "Add Image"}
           </Button>
         </form>
       </DialogContent>

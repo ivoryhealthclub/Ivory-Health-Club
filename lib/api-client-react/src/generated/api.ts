@@ -36,6 +36,7 @@ import type {
   EnrollmentInput,
   GalleryImage,
   GalleryImageInput,
+  GalleryImagePatch,
   GetRecentActivityParams,
   HealthStatus,
   ListBlogPostsParams,
@@ -44,6 +45,8 @@ import type {
   ListEnrollmentsParams,
   ListGalleryImagesParams,
   MarkReadInput,
+  MediaUpload,
+  MediaUploadInput,
   MembershipBreakdownItem,
   MembershipPlan,
   MembershipPlanInput,
@@ -1962,6 +1965,78 @@ export const useCreateGalleryImage = <TError = ErrorType<unknown>,
       return useMutation(getCreateGalleryImageMutationOptions(options));
     }
 
+export const getUpdateGalleryImageUrl = (id: number,) => {
+
+
+
+
+  return `/api/gallery/${id}`
+}
+
+/**
+ * @summary Update a gallery image (admin)
+ */
+export const updateGalleryImage = async (id: number,
+    galleryImagePatch: GalleryImagePatch, options?: Parameters<typeof customFetch>[1]): Promise<GalleryImage> => {
+
+  return customFetch<GalleryImage>(getUpdateGalleryImageUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(galleryImagePatch)
+  }
+);}
+
+
+
+
+
+export const getUpdateGalleryImageMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateGalleryImage>>, TError,{id: number;data: BodyType<GalleryImagePatch>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateGalleryImage>>, TError,{id: number;data: BodyType<GalleryImagePatch>}, TContext> => {
+
+const mutationKey = ['updateGalleryImage'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateGalleryImage>>, {id: number;data: BodyType<GalleryImagePatch>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateGalleryImage(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateGalleryImageMutationResult = NonNullable<Awaited<ReturnType<typeof updateGalleryImage>>>
+    export type UpdateGalleryImageMutationBody = BodyType<GalleryImagePatch>
+    export type UpdateGalleryImageMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update a gallery image (admin)
+ */
+export const useUpdateGalleryImage = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateGalleryImage>>, TError,{id: number;data: BodyType<GalleryImagePatch>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateGalleryImage>>,
+        TError,
+        {id: number;data: BodyType<GalleryImagePatch>},
+        TContext
+      > => {
+      return useMutation(getUpdateGalleryImageMutationOptions(options));
+    }
+
 export const getDeleteGalleryImageUrl = (id: number,) => {
 
 
@@ -2031,6 +2106,77 @@ export const useDeleteGalleryImage = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getDeleteGalleryImageMutationOptions(options));
+    }
+
+export const getRequestMediaUploadUrlUrl = () => {
+
+
+
+
+  return `/api/storage/media/uploads/request-url`
+}
+
+/**
+ * @summary Request a persistent image upload URL (admin)
+ */
+export const requestMediaUploadUrl = async (mediaUploadInput: MediaUploadInput, options?: Parameters<typeof customFetch>[1]): Promise<MediaUpload> => {
+
+  return customFetch<MediaUpload>(getRequestMediaUploadUrlUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(mediaUploadInput)
+  }
+);}
+
+
+
+
+
+export const getRequestMediaUploadUrlMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestMediaUploadUrl>>, TError,{data: BodyType<MediaUploadInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof requestMediaUploadUrl>>, TError,{data: BodyType<MediaUploadInput>}, TContext> => {
+
+const mutationKey = ['requestMediaUploadUrl'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof requestMediaUploadUrl>>, {data: BodyType<MediaUploadInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  requestMediaUploadUrl(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RequestMediaUploadUrlMutationResult = NonNullable<Awaited<ReturnType<typeof requestMediaUploadUrl>>>
+    export type RequestMediaUploadUrlMutationBody = BodyType<MediaUploadInput>
+    export type RequestMediaUploadUrlMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Request a persistent image upload URL (admin)
+ */
+export const useRequestMediaUploadUrl = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestMediaUploadUrl>>, TError,{data: BodyType<MediaUploadInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof requestMediaUploadUrl>>,
+        TError,
+        {data: BodyType<MediaUploadInput>},
+        TContext
+      > => {
+      return useMutation(getRequestMediaUploadUrlMutationOptions(options));
     }
 
 export const getSubmitContactUrl = () => {

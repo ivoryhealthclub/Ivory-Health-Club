@@ -3,11 +3,18 @@ import { eq } from "drizzle-orm";
 import { db, bookingsTable, enrollmentsTable } from "@workspace/db";
 import { adminAuthMiddleware } from "../lib/admin-auth";
 import { matchesReceiptUploadToken } from "../lib/receipt-tokens";
-import { createReceiptDownload, createReceiptUpload } from "../lib/object-storage";
+import {
+  createMediaDownload,
+  createMediaUpload,
+  createReceiptDownload,
+  createReceiptUpload,
+} from "../lib/object-storage";
 
 const router: IRouter = Router();
 const MAX_RECEIPT_SIZE = 10 * 1024 * 1024;
+const MAX_MEDIA_SIZE = 5 * 1024 * 1024;
 const allowedMimeTypes = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
+const allowedMediaMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 function isEntityType(value: unknown): value is "booking" | "enrollment" {
   return value === "booking" || value === "enrollment";
@@ -109,6 +116,47 @@ router.get("/storage/objects/*path", adminAuthMiddleware, async (req, res): Prom
   } catch (error) {
     req.log.error({ err: error }, "Could not create receipt download URL");
     res.status(404).json({ error: "Receipt not found" });
+  }
+});
+
+router.post("/storage/media/uploads/request-url", adminAuthMiddleware, async (req, res): Promise<void> => {
+  const { name, size, contentType } = req.body ?? {};
+  if (
+    typeof name !== "string" ||
+    name.length < 1 ||
+    typeof size !== "number" ||
+    !Number.isInteger(size) ||
+    size < 1 ||
+    size > MAX_MEDIA_SIZE ||
+    typeof contentType !== "string" ||
+    !allowedMediaMimeTypes.has(contentType)
+  ) {
+    res.status(400).json({ error: "Images must be JPG, PNG, or WebP files up to 5 MB." });
+    return;
+  }
+
+  try {
+    const upload = await createMediaUpload(contentType);
+    res.json({ ...upload, name, size, contentType });
+  } catch (error) {
+    req.log.error({ err: error }, "Could not create media upload URL");
+    res.status(500).json({ error: "Could not prepare image upload." });
+  }
+});
+
+router.get("/storage/media/*path", async (req, res): Promise<void> => {
+  const raw = req.params.path;
+  const path = `/objects/${Array.isArray(raw) ? raw.join("/") : raw}`;
+  if (!path.startsWith("/objects/uploads/media/")) {
+    res.status(404).json({ error: "Image not found" });
+    return;
+  }
+
+  try {
+    res.redirect(302, await createMediaDownload(path));
+  } catch (error) {
+    req.log.error({ err: error }, "Could not create media download URL");
+    res.status(404).json({ error: "Image not found" });
   }
 });
 

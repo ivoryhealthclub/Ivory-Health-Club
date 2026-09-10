@@ -22,6 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { uploadImage } from "@/lib/media-upload";
 import { getListBlogPostsQueryKey } from "@workspace/api-client-react";
 import {
   BookOpen,
@@ -38,7 +39,7 @@ import {
 } from "lucide-react";
 
 export default function AdminBlog() {
-  const { data: posts, isLoading } = useListBlogPosts();
+  const { data: posts, isLoading } = useListBlogPosts({ includeUnpublished: true });
   const deletePost = useDeleteBlogPost();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -132,7 +133,8 @@ function AddPostDialog({ post }: { post?: BlogPost }) {
   const queryClient = useQueryClient();
   const createPost = useCreateBlogPost();
   const updatePost = useUpdateBlogPost();
-  const { data: galleryImages } = useListGalleryImages();
+  const { data: galleryImages } = useListGalleryImages({ includeUnpublished: true });
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const emptyForm = {
     title: "",
@@ -152,7 +154,7 @@ function AddPostDialog({ post }: { post?: BlogPost }) {
 
   const [formData, setFormData] = useState(emptyForm);
   const isEditing = Boolean(post);
-  const isPending = createPost.isPending || updatePost.isPending;
+  const isPending = createPost.isPending || updatePost.isPending || isUploadingImage;
 
   const updateForm = <K extends keyof typeof formData>(
     key: K,
@@ -188,7 +190,7 @@ function AddPostDialog({ post }: { post?: BlogPost }) {
     }
   };
 
-  const readImageFile = (file: File) => {
+  const readImageFile = async (file: File) => {
     const acceptedTypes = ["image/png", "image/jpeg", "image/webp"];
     const maxFileSize = 5 * 1024 * 1024;
 
@@ -210,25 +212,23 @@ function AddPostDialog({ post }: { post?: BlogPost }) {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        updateForm("imageUrl", reader.result);
-      }
-    };
-    reader.onerror = () => {
+    setIsUploadingImage(true);
+    try {
+      updateForm("imageUrl", await uploadImage(file));
+    } catch (error) {
       toast({
-        title: "Could not read image",
-        description: "Try selecting the image again.",
+        title: "Could not upload image",
+        description: error instanceof Error ? error.message : "Try selecting the image again.",
         variant: "destructive",
       });
-    };
-    reader.readAsDataURL(file);
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) readImageFile(file);
+    if (file) void readImageFile(file);
     event.target.value = "";
   };
 
@@ -236,7 +236,7 @@ function AddPostDialog({ post }: { post?: BlogPost }) {
     event.preventDefault();
     setIsDragging(false);
     const file = event.dataTransfer.files?.[0];
-    if (file) readImageFile(file);
+    if (file) void readImageFile(file);
   };
 
   const submitPost = (published: boolean) => {
@@ -411,6 +411,15 @@ function AddPostDialog({ post }: { post?: BlogPost }) {
                       className="h-11 rounded-xl border-border/80 bg-white"
                     />
                   </div>
+                  <label className="flex items-center gap-3 text-sm font-medium text-secondary">
+                    <input
+                      type="checkbox"
+                      checked={formData.published}
+                      onChange={(event) => updateForm("published", event.target.checked)}
+                      className="h-4 w-4 accent-[#299fe5]"
+                    />
+                    Visible on the public website
+                  </label>
                   <div className="space-y-2">
                     <label htmlFor="blog-author" className="text-sm font-semibold text-secondary">
                       Author <span className="text-primary">*</span>
@@ -522,7 +531,7 @@ function AddPostDialog({ post }: { post?: BlogPost }) {
                     <div className="space-y-1 text-[#a0a9b6]">
                       <Upload className="mx-auto text-[#c5ccd6]" size={24} />
                       <p className="text-[12px] font-medium">Click or drag image here</p>
-                      <p className="text-[11px]">PNG, JPG, WebP up to 5 MB — saved with the post</p>
+                       <p className="text-[11px]">PNG, JPG, WebP up to 5 MB — saved in persistent storage</p>
                     </div>
                   )}
                 </div>

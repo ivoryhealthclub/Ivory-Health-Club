@@ -6,13 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface GalleryImage {
-  id: number;
-  url: string;
-  title: string;
+export interface GalleryImagePatch {
+  url?: string;
+  title?: string;
   /** @nullable */
   description?: string | null;
-  category: string;
-  published: boolean;
-  createdAt: string;
+  category?: string;
+  published?: boolean;
 }

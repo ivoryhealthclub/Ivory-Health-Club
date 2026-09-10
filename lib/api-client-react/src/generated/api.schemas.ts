@@ -424,6 +424,7 @@ export interface GalleryImage {
   /** @nullable */
   description?: string | null;
   category: string;
+  published: boolean;
   createdAt: string;
 }
 
@@ -432,6 +433,43 @@ export interface GalleryImageInput {
   title: string;
   description?: string;
   category: string;
+  published?: boolean;
+}
+
+export interface GalleryImagePatch {
+  url?: string;
+  title?: string;
+  /** @nullable */
+  description?: string | null;
+  category?: string;
+  published?: boolean;
+}
+
+export type MediaUploadInputContentType = typeof MediaUploadInputContentType[keyof typeof MediaUploadInputContentType];
+
+
+export const MediaUploadInputContentType = {
+  'image/jpeg': 'image/jpeg',
+  'image/png': 'image/png',
+  'image/webp': 'image/webp',
+} as const;
+
+export interface MediaUploadInput {
+  name: string;
+  /**
+     * @minimum 1
+     * @maximum 5242880
+     */
+  size: number;
+  contentType: MediaUploadInputContentType;
+}
+
+export interface MediaUpload {
+  uploadURL: string;
+  objectPath: string;
+  name: string;
+  size: number;
+  contentType: string;
 }
 
 export interface ContactMessage {
@@ -537,10 +575,12 @@ export const ListBookingsServiceType = {
 export type ListBlogPostsParams = {
 category?: string;
 limit?: number;
+includeUnpublished?: boolean;
 };
 
 export type ListGalleryImagesParams = {
 category?: string;
+includeUnpublished?: boolean;
 };
 
 export type ListContactMessagesParams = {

@@ -536,7 +536,8 @@ export const listBlogPostsQueryLimitDefault = 10;
 
 export const ListBlogPostsQueryParams = zod.object({
   "category": zod.coerce.string().optional(),
-  "limit": zod.coerce.number().default(listBlogPostsQueryLimitDefault)
+  "limit": zod.coerce.number().default(listBlogPostsQueryLimitDefault),
+  "includeUnpublished": zod.coerce.boolean().optional()
 })
 
 export const ListBlogPostsResponseItem = zod.object({
@@ -727,7 +728,8 @@ export const CreateBlogCommentResponse = zod.object({
  * @summary List gallery images
  */
 export const ListGalleryImagesQueryParams = zod.object({
-  "category": zod.coerce.string().optional()
+  "category": zod.coerce.string().optional(),
+  "includeUnpublished": zod.coerce.boolean().optional()
 })
 
 export const ListGalleryImagesResponseItem = zod.object({
@@ -736,6 +738,7 @@ export const ListGalleryImagesResponseItem = zod.object({
   "title": zod.string(),
   "description": zod.string().nullish(),
   "category": zod.string(),
+  "published": zod.boolean(),
   "createdAt": zod.string()
 })
 export const ListGalleryImagesResponse = zod.array(ListGalleryImagesResponseItem)
@@ -748,7 +751,8 @@ export const CreateGalleryImageBody = zod.object({
   "url": zod.string(),
   "title": zod.string(),
   "description": zod.string().optional(),
-  "category": zod.string()
+  "category": zod.string(),
+  "published": zod.boolean().optional()
 })
 
 export const CreateGalleryImageResponse = zod.object({
@@ -757,6 +761,33 @@ export const CreateGalleryImageResponse = zod.object({
   "title": zod.string(),
   "description": zod.string().nullish(),
   "category": zod.string(),
+  "published": zod.boolean(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Update a gallery image (admin)
+ */
+export const UpdateGalleryImageParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateGalleryImageBody = zod.object({
+  "url": zod.string().optional(),
+  "title": zod.string().optional(),
+  "description": zod.string().nullish(),
+  "category": zod.string().optional(),
+  "published": zod.boolean().optional()
+})
+
+export const UpdateGalleryImageResponse = zod.object({
+  "id": zod.number(),
+  "url": zod.string(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "category": zod.string(),
+  "published": zod.boolean(),
   "createdAt": zod.string()
 })
 
@@ -769,6 +800,28 @@ export const DeleteGalleryImageParams = zod.object({
 })
 
 export const DeleteGalleryImageResponse = zod.void()
+
+
+/**
+ * @summary Request a persistent image upload URL (admin)
+ */
+export const requestMediaUploadUrlBodySizeMax = 5242880;
+
+
+
+export const RequestMediaUploadUrlBody = zod.object({
+  "name": zod.string(),
+  "size": zod.number().min(1).max(requestMediaUploadUrlBodySizeMax),
+  "contentType": zod.enum(['image/jpeg', 'image/png', 'image/webp'])
+})
+
+export const RequestMediaUploadUrlResponse = zod.object({
+  "uploadURL": zod.string(),
+  "objectPath": zod.string(),
+  "name": zod.string(),
+  "size": zod.number(),
+  "contentType": zod.string()
+})
 
 
 /**

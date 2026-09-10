@@ -1,4 +1,4 @@
-import { db, membershipPlansTable } from "@workspace/db";
+import { db, blogPostsTable, galleryImagesTable, membershipPlansTable } from "@workspace/db";
 
 const membershipPlans = [
   {
@@ -153,5 +153,168 @@ export async function seedMembershipPlans() {
 
   if (missing.length > 0) {
     await db.insert(membershipPlansTable).values(missing);
+  }
+}
+
+const starterBlogPosts = [
+  {
+    title: "A Better Morning Begins With Movement",
+    slug: "a-better-morning-begins-with-movement",
+    excerpt: "Small movement rituals can change how you feel for the rest of the day.",
+    content: "# A better morning begins with movement\n\nA few intentional minutes of mobility, breathing, and light strength work can help you arrive in the day with more energy and less tension.\n\n## Start gently\n\nChoose a routine you can repeat. Consistency matters more than intensity when you are building a lasting wellness habit.",
+    category: "Movement",
+    imageUrl: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1400&q=85",
+    focusKeyword: "morning movement",
+    metaDescription: "Build a calmer, stronger morning with a simple movement ritual from Ivory Health Club.",
+    tags: ["movement", "wellness", "morning"],
+    ogTitle: "A Better Morning Begins With Movement",
+    ogDescription: "A simple movement ritual can change the way you feel all day.",
+    author: "Ivory Editorial",
+    published: true,
+  },
+  {
+    title: "The Art of Recovering Well",
+    slug: "the-art-of-recovering-well",
+    excerpt: "Recovery is not a pause from progress. It is where progress becomes sustainable.",
+    content: "# The art of recovering well\n\nTraining, work, and family life all ask something of the body. Recovery gives your nervous system space to settle and your muscles time to rebuild.\n\n## Make recovery visible\n\nPlan sleep, hydration, mobility, and quiet time with the same care you give your workouts.",
+    category: "Recovery",
+    imageUrl: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1400&q=85",
+    focusKeyword: "recovery wellness",
+    metaDescription: "Learn why intentional recovery is essential for sustainable health and performance.",
+    tags: ["recovery", "sleep", "mobility"],
+    ogTitle: "The Art of Recovering Well",
+    ogDescription: "Recovery is where consistent progress becomes sustainable.",
+    author: "Ivory Editorial",
+    published: true,
+  },
+  {
+    title: "Eating for Energy, Not Just Fullness",
+    slug: "eating-for-energy-not-just-fullness",
+    excerpt: "A balanced plate supports the energy you need to enjoy an active life.",
+    content: "# Eating for energy, not just fullness\n\nNutrition is not about chasing perfection. It is about giving your body reliable fuel that supports movement, focus, and recovery.\n\n## Build a balanced plate\n\nPair a protein source with colourful plants, satisfying carbohydrates, and enough water to support your day.",
+    category: "Nutrition",
+    imageUrl: "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1400&q=85",
+    focusKeyword: "healthy eating",
+    metaDescription: "Use simple nutrition principles to build meals that support steady energy and recovery.",
+    tags: ["nutrition", "energy", "healthy eating"],
+    ogTitle: "Eating for Energy, Not Just Fullness",
+    ogDescription: "Simple nutrition principles for steady energy and better recovery.",
+    author: "Ivory Editorial",
+    published: true,
+  },
+  {
+    title: "Why Community Makes Healthy Habits Stick",
+    slug: "why-community-makes-healthy-habits-stick",
+    excerpt: "The right people make it easier to show up, try again, and keep going.",
+    content: "# Why community makes healthy habits stick\n\nWellness is personal, but it does not have to be solitary. Encouragement and shared routines make healthy choices feel more natural.\n\n## Find your people\n\nChoose spaces where progress is celebrated at every level and where showing up matters as much as the result.",
+    category: "Lifestyle",
+    imageUrl: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=1400&q=85",
+    focusKeyword: "wellness community",
+    metaDescription: "Discover how community and accountability can support healthier habits that last.",
+    tags: ["community", "habits", "lifestyle"],
+    ogTitle: "Why Community Makes Healthy Habits Stick",
+    ogDescription: "Shared routines and encouragement make healthy choices easier to sustain.",
+    author: "Ivory Editorial",
+    published: true,
+  },
+  {
+    title: "Five Minutes of Breathing to Reset Your Day",
+    slug: "five-minutes-of-breathing-to-reset-your-day",
+    excerpt: "A short breathing practice can help create space between a busy moment and your next choice.",
+    content: "# Five minutes of breathing to reset your day\n\nYou do not need a perfect setting to slow down. A few deliberate breaths can help bring attention back to the body and the moment.\n\n## A simple reset\n\nSit comfortably, soften your shoulders, and make each exhale a little longer than the inhale for five minutes.",
+    category: "Mindfulness",
+    imageUrl: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=85",
+    focusKeyword: "breathing exercise",
+    metaDescription: "Try this five-minute breathing reset to bring more calm and focus to a busy day.",
+    tags: ["mindfulness", "breathing", "stress"],
+    ogTitle: "Five Minutes of Breathing to Reset Your Day",
+    ogDescription: "A short breathing practice for more calm and focus.",
+    author: "Ivory Editorial",
+    published: true,
+  },
+  {
+    title: "Strength Training for Every Starting Point",
+    slug: "strength-training-for-every-starting-point",
+    excerpt: "Strength training can meet you exactly where you are and grow with you.",
+    content: "# Strength training for every starting point\n\nStrength is not reserved for experienced athletes. It is a practical way to feel more capable in everyday life.\n\n## Begin with confidence\n\nLearn a few fundamental movement patterns, keep the load manageable, and build gradually with guidance.",
+    category: "Training",
+    imageUrl: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1400&q=85",
+    focusKeyword: "strength training",
+    metaDescription: "A welcoming guide to starting strength training at any experience level.",
+    tags: ["strength", "training", "fitness"],
+    ogTitle: "Strength Training for Every Starting Point",
+    ogDescription: "Strength training can meet you where you are and grow with you.",
+    author: "Ivory Editorial",
+    published: true,
+  },
+  {
+    title: "Making Space for Play and Rest",
+    slug: "making-space-for-play-and-rest",
+    excerpt: "A healthy life needs both purposeful effort and unhurried enjoyment.",
+    content: "# Making space for play and rest\n\nWellness is broader than a workout plan. Play, connection, and rest all help us return to the things we care about with more presence.\n\n## Protect the whole picture\n\nMake room for movement that feels joyful, meals shared with others, and periods of genuine rest.",
+    category: "Lifestyle",
+    imageUrl: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=85",
+    focusKeyword: "rest and wellness",
+    metaDescription: "Create a more balanced wellness routine with space for play, rest, movement, and connection.",
+    tags: ["rest", "play", "balance"],
+    ogTitle: "Making Space for Play and Rest",
+    ogDescription: "A healthy life needs purposeful effort and unhurried enjoyment.",
+    author: "Ivory Editorial",
+    published: true,
+  },
+];
+
+const starterGalleryImages = [
+  ["gym", "Morning Strength Studio", "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=85"],
+  ["gym", "Training Floor", "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=85"],
+  ["gym", "Personal Training", "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=1200&q=85"],
+  ["gym", "Cardio Suite", "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=1200&q=85"],
+  ["gym", "Functional Fitness", "https://images.unsplash.com/photo-1599058917212-d750089bc07e?auto=format&fit=crop&w=1200&q=85"],
+  ["gym", "Movement Community", "https://images.unsplash.com/photo-1538805060514-97d9cc17730c?auto=format&fit=crop&w=1200&q=85"],
+  ["gym", "Recovery Training", "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=1200&q=85"],
+  ["spa", "Quiet Treatment Room", "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=85"],
+  ["spa", "Restorative Ritual", "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1200&q=85"],
+  ["spa", "Warm Stone Therapy", "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?auto=format&fit=crop&w=1200&q=85"],
+  ["spa", "Wellness Sanctuary", "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1200&q=85"],
+  ["spa", "Aromatherapy", "https://images.unsplash.com/photo-1552693673-1bf958298935?auto=format&fit=crop&w=1200&q=85"],
+  ["spa", "Hydrotherapy", "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1200&q=85"],
+  ["spa", "Aftercare Lounge", "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=85&sat=-10"],
+  ["restaurant", "The Ivory Table", "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=85"],
+  ["restaurant", "Seasonal Dining", "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=85"],
+  ["restaurant", "Chef's Table", "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1200&q=85"],
+  ["restaurant", "Fresh Plates", "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=85"],
+  ["restaurant", "Shared Moments", "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=85"],
+  ["restaurant", "Evening Service", "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=1200&q=85"],
+  ["restaurant", "Wellness Refreshments", "https://images.unsplash.com/photo-1544148103-0773bf10d330?auto=format&fit=crop&w=1200&q=85"],
+  ["events", "Club Gathering", "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=85"],
+  ["events", "Summer Social", "https://images.unsplash.com/photo-1505236858219-8359eb29e329?auto=format&fit=crop&w=1200&q=85"],
+  ["events", "Live Celebration", "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=1200&q=85"],
+  ["events", "Community Night", "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=85"],
+  ["events", "Outdoor Event", "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=85"],
+  ["events", "Member Celebration", "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=85"],
+  ["events", "Ivory Evenings", "https://images.unsplash.com/photo-1470229722913-7c0e2dbb afd?auto=format&fit=crop&w=1200&q=85".replace(" ", "")],
+] as const;
+
+export async function seedEditorialContent() {
+  const existingPosts = await db.select({ slug: blogPostsTable.slug }).from(blogPostsTable);
+  const existingSlugs = new Set(existingPosts.map((post) => post.slug));
+  const missingPosts = starterBlogPosts.filter((post) => !existingSlugs.has(post.slug));
+  if (missingPosts.length > 0) {
+    await db.insert(blogPostsTable).values(missingPosts);
+  }
+
+  const existingImages = await db.select({ title: galleryImagesTable.title }).from(galleryImagesTable);
+  const existingTitles = new Set(existingImages.map((image) => image.title));
+  const missingImages = starterGalleryImages
+    .filter(([, title]) => !existingTitles.has(title))
+    .map(([category, title, url]) => ({
+      category,
+      title,
+      url,
+      description: `A look inside the Ivory Health Club ${category} experience.`,
+      published: true,
+    }));
+  if (missingImages.length > 0) {
+    await db.insert(galleryImagesTable).values(missingImages);
   }
 }
