@@ -95,7 +95,7 @@ export default function Home() {
               animate={{ opacity: 1, scale: prefersReducedMotion ? 1 : 1.02 }}
               exit={{ opacity: 0, scale: prefersReducedMotion ? 1 : 1.06 }}
               transition={{ duration: prefersReducedMotion ? 0.01 : 1.25, ease: [0.22, 1, 0.36, 1] }}
-              className="h-full w-full object-cover object-center"
+              className="absolute inset-0 h-full w-full object-cover object-center"
               data-testid={`img-hero-slide-${activeSlide}`}
             />
           </AnimatePresence>
@@ -110,7 +110,7 @@ export default function Home() {
               animate={{ opacity: 1, scale: prefersReducedMotion ? 1 : 1.01 }}
               exit={{ opacity: 0 }}
               transition={{ duration: prefersReducedMotion ? 0.01 : 0.9 }}
-              className="h-full w-full object-cover object-center"
+              className="absolute inset-0 h-full w-full object-cover object-center"
               data-testid={`img-mobile-hero-slide-${activeSlide}`}
             />
           </AnimatePresence>
