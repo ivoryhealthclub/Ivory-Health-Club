@@ -49,6 +49,7 @@ export function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -125,18 +126,21 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "liquid-glass fixed left-3 right-3 top-3 z-[70] overflow-visible rounded-[28px] transition-all duration-300",
+        "liquid-glass fixed left-2 right-2 top-2 z-[70] overflow-visible rounded-[24px] transition-all duration-500 sm:left-3 sm:right-3",
         isScrolled
-          ? "py-3 shadow-[0_16px_42px_rgba(41,22,111,0.16)]"
-          : "py-4 shadow-[0_12px_34px_rgba(41,22,111,0.12)]"
+          ? "liquid-glass-scrolled top-1.5 py-1.5 shadow-[0_14px_38px_rgba(20,10,58,0.22)]"
+          : "py-2.5 shadow-[0_10px_30px_rgba(41,22,111,0.12)]"
       )}
     >
-      <div className="container mx-auto flex max-w-7xl items-center gap-4 px-6 lg:gap-6">
+      <div className="container mx-auto flex max-w-7xl items-center gap-3 px-4 sm:px-5 lg:gap-5 lg:px-6">
         <Link href="/" className="group flex items-center shrink-0">
           <img
             src={logo}
             alt="Ivory Health Club"
-            className="h-12 w-auto object-contain transition-transform group-hover:scale-105"
+            className={cn(
+              "w-auto object-contain transition-all duration-500 group-hover:scale-105",
+              isScrolled ? "h-10 sm:h-10" : "h-11 sm:h-12"
+            )}
           />
         </Link>
 
@@ -354,10 +358,10 @@ export function Navbar() {
           aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-controls="mobile-navigation"
           aria-expanded={mobileMenuOpen}
-          className="ml-auto p-2 text-secondary xl:hidden"
+          className="ml-auto p-1.5 text-secondary xl:hidden"
           onClick={() => setMobileMenuOpen((open) => !open)}
         >
-          {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
       </div>
 
