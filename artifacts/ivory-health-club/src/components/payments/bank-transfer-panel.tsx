@@ -13,6 +13,9 @@ type BankTransferPanelProps = {
   uploadToken?: string | null;
 };
 
+const MAX_RECEIPT_SIZE = 10 * 1024 * 1024;
+const ALLOWED_RECEIPT_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
+
 export function BankTransferDetails({ compact = false }: { compact?: boolean }) {
   const { data, isLoading, isError } = useGetPaymentSettings();
 
@@ -59,6 +62,25 @@ export function BankTransferPanel({ entityType, entityId, uploadToken }: BankTra
   const [uploading, setUploading] = useState(false);
   const [uploaded, setUploaded] = useState(false);
   const { toast } = useToast();
+
+  const handleFileChange = (candidate: File | undefined) => {
+    if (!candidate) {
+      setFile(null);
+      return;
+    }
+
+    if (!ALLOWED_RECEIPT_TYPES.has(candidate.type) || candidate.size > MAX_RECEIPT_SIZE) {
+      setFile(null);
+      toast({
+        title: "Receipt file not accepted",
+        description: "Choose a PDF, JPG, PNG, or WEBP file no larger than 10 MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setFile(candidate);
+  };
 
   const uploadReceipt = async () => {
     if (!file || !entityType || !entityId || !uploadToken) return;
@@ -119,21 +141,38 @@ export function BankTransferPanel({ entityType, entityId, uploadToken }: BankTra
             <ShieldCheck className="mt-0.5 text-secondary" size={18} />
             <div>
               <h3 className="font-bold text-secondary">Upload your payment receipt</h3>
-              <p className="text-sm text-gray-600">Attach the receipt to this {entityType} so our team can match it securely.</p>
+              <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-gray-600">
+                <li>Complete the bank transfer using the details above.</li>
+                <li>Select the transfer receipt and upload it here.</li>
+                <li>Our team will review it before approving this {entityType}.</li>
+              </ol>
             </div>
           </div>
           {uploaded ? (
-            <div className="flex items-center gap-2 rounded-sm bg-green-50 p-3 text-sm font-medium text-green-700"><CheckCircle2 size={18} /> Receipt received and awaiting review.</div>
+            <div aria-live="polite" className="flex items-center gap-2 rounded-sm bg-green-50 p-3 text-sm font-medium text-green-700"><CheckCircle2 size={18} /> Receipt received and awaiting review.</div>
           ) : (
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Input type="file" accept=".pdf,image/jpeg,image/png,image/webp" onChange={(event) => setFile(event.target.files?.[0] ?? null)} className="h-11 bg-gray-50" />
+            <div className="space-y-3">
+              <Input
+                type="file"
+                accept=".pdf,image/jpeg,image/png,image/webp"
+                onChange={(event) => handleFileChange(event.target.files?.[0])}
+                disabled={uploading}
+                className="h-11 bg-gray-50"
+              />
+              {file && (
+                <p className="truncate text-sm text-gray-600">
+                  Selected: <span className="font-medium text-secondary">{file.name}</span>
+                </p>
+              )}
+              <div className="flex justify-end">
               <Button type="button" onClick={uploadReceipt} disabled={!file || uploading} className="shrink-0 bg-secondary text-white hover:bg-primary hover:text-secondary">
                 {uploading ? <Loader2 className="animate-spin" /> : <FileUp />}
                 {uploading ? "Uploading…" : "Upload receipt"}
               </Button>
+              </div>
             </div>
           )}
-          <p className="mt-3 text-xs text-gray-500">PDF, JPG, PNG, or WEBP up to 10 MB.</p>
+          <p className="mt-3 text-xs text-gray-500">Accepted: PDF, JPG, PNG, or WEBP up to 10 MB.</p>
         </div>
       ) : (
         <p className="text-sm text-gray-600">After submitting, you’ll receive a reference and a secure receipt upload link.</p>
