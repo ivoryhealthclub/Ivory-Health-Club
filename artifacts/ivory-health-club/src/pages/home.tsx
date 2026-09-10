@@ -1,7 +1,11 @@
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import heroBg from "@assets/generated_images/hero-bg.jpg";
+import heroBg from "@assets/generated_images/hero-bg-luxury.jpg";
+import heroGymImg from "@assets/generated_images/hero-gym-luxury.jpg";
+import heroSpaImg from "@assets/generated_images/hero-spa-luxury.jpg";
+import heroRestaurantImg from "@assets/generated_images/hero-restaurant-luxury.jpg";
+import heroLoungeImg from "@assets/generated_images/hero-lounge-luxury.jpg";
 import gymImg from "@assets/generated_images/gym.jpg";
 import spaImg from "@assets/generated_images/spa.jpg";
 import restImg from "@assets/generated_images/restaurant.jpg";
@@ -25,7 +29,7 @@ const heroSlides = [
     title: "quiet confidence",
     description:
       "Train with intention in a considered space where every detail is designed around your strongest self.",
-    image: gymImg,
+    image: heroGymImg,
     alt: "Premium strength and conditioning floor inside Ivory Health Club",
     kicker: "Performance, redefined",
   },
@@ -34,7 +38,7 @@ const heroSlides = [
     title: "natural rhythm",
     description:
       "A slower kind of luxury. Let expert hands, warm water, and uninterrupted time bring you back to yourself.",
-    image: spaImg,
+    image: heroSpaImg,
     alt: "Calm treatment room with warm ambient lighting at the Ivory spa",
     kicker: "The art of restoration",
   },
@@ -43,7 +47,7 @@ const heroSlides = [
     title: "life you lead",
     description:
       "Thoughtful plates, fresh-pressed goodness, and the kind of hospitality that makes staying in feel like going out.",
-    image: restImg,
+    image: heroRestaurantImg,
     alt: "Elegant restaurant and juice bar dining area at Ivory Health Club",
     kicker: "Wellness, served beautifully",
   },
@@ -52,7 +56,7 @@ const heroSlides = [
     title: "the good life",
     description:
       "Beyond the workout, find a private world for connection, celebration, and the moments worth lingering over.",
-    image: entertainmentImg,
+    image: heroLoungeImg,
     alt: "Elegant social lounge inside Ivory Health Club",
     kicker: "More than a membership",
   },

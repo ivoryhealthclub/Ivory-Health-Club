@@ -53,12 +53,24 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileMenuOpen]);
+
   // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
     setFoodOpen(false);
     setProgramsOpen(false);
     setAcademiesOpen(false);
+    setMobileFoodOpen(false);
     setMobileProgramsOpen(false);
     setMobileAcademiesOpen(false);
   }, [location]);
@@ -113,7 +125,7 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "liquid-glass fixed left-3 right-3 top-3 z-50 overflow-visible rounded-[28px] transition-all duration-300",
+        "liquid-glass fixed left-3 right-3 top-3 z-[70] overflow-visible rounded-[28px] transition-all duration-300",
         isScrolled
           ? "py-3 shadow-[0_16px_42px_rgba(41,22,111,0.16)]"
           : "py-4 shadow-[0_12px_34px_rgba(41,22,111,0.12)]"
@@ -338,9 +350,12 @@ export function Navbar() {
 
         {/* Mobile Toggle */}
         <button
+          type="button"
           aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-controls="mobile-navigation"
+          aria-expanded={mobileMenuOpen}
           className="ml-auto p-2 text-secondary xl:hidden"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          onClick={() => setMobileMenuOpen((open) => !open)}
         >
           {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
@@ -350,10 +365,11 @@ export function Navbar() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
+            id="mobile-navigation"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="liquid-glass-panel absolute left-0 right-0 top-full rounded-b-[28px] border-t border-white/45 shadow-xl xl:hidden"
+            className="liquid-glass-panel absolute left-0 right-0 top-full z-[80] max-h-[calc(100dvh-6rem)] overflow-y-auto overscroll-contain rounded-b-[28px] border-t border-white/70 shadow-[0_24px_60px_rgba(20,10,58,0.24)] xl:hidden"
           >
             <div className="flex flex-col p-6 gap-4">
               {navLinksLeft.map((link) => (
@@ -477,6 +493,7 @@ export function Navbar() {
               {/* Mobile Food & Beverages accordion */}
               <div className="order-1 border-b border-gray-100">
                 <button
+                  type="button"
                   onClick={() => setMobileFoodOpen((o) => !o)}
                   className={cn(
                     "w-full flex items-center justify-between text-base font-serif py-2",
