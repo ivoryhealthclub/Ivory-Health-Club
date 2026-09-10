@@ -181,3 +181,58 @@
 .premium-gold-gradient {
   background: linear-gradient(135deg, #F8C301 0%, #FFD54A 100%);
 }
+
+/* Shared liquid-glass surface for the floating site header. */
+.liquid-glass {
+  isolation: isolate;
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0.78) 0%,
+      rgba(255, 255, 255, 0.48) 38%,
+      rgba(255, 255, 255, 0.62) 68%,
+      rgba(255, 255, 255, 0.42) 100%
+    );
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(24px) saturate(175%);
+  -webkit-backdrop-filter: blur(24px) saturate(175%);
+  box-shadow:
+    0 16px 42px rgba(41, 22, 111, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    inset 0 -1px 0 rgba(41, 22, 111, 0.07);
+}
+
+.liquid-glass::before {
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    linear-gradient(
+      108deg,
+      rgba(255, 255, 255, 0.65) 0%,
+      rgba(255, 255, 255, 0.08) 35%,
+      transparent 58%,
+      rgba(255, 255, 255, 0.3) 100%
+    );
+  content: "";
+  pointer-events: none;
+}
+
+.liquid-glass-panel {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.86),
+      rgba(255, 255, 255, 0.62)
+    );
+  backdrop-filter: blur(26px) saturate(180%);
+  -webkit-backdrop-filter: blur(26px) saturate(180%);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .liquid-glass,
+  .liquid-glass-panel {
+    background: rgba(255, 255, 255, 0.96);
+  }
+}

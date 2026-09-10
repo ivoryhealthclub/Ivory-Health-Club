@@ -113,10 +113,10 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 border-b border-white/45 bg-white/55 backdrop-blur-xl transition-all duration-300",
+        "liquid-glass fixed left-3 right-3 top-3 z-50 overflow-visible rounded-[28px] transition-all duration-300",
         isScrolled
-          ? "bg-white/80 shadow-[0_10px_35px_rgba(41,22,111,0.12)] py-3"
-          : "shadow-[0_8px_30px_rgba(41,22,111,0.08)] py-4"
+          ? "py-3 shadow-[0_16px_42px_rgba(41,22,111,0.16)]"
+          : "py-4 shadow-[0_12px_34px_rgba(41,22,111,0.12)]"
       )}
     >
       <div className="container mx-auto flex max-w-7xl items-center gap-4 px-6 lg:gap-6">
@@ -353,7 +353,7 @@ export function Navbar() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute left-0 right-0 top-full border-t border-white/45 bg-white/70 shadow-xl backdrop-blur-xl xl:hidden"
+            className="liquid-glass-panel absolute left-0 right-0 top-full rounded-b-[28px] border-t border-white/45 shadow-xl xl:hidden"
           >
             <div className="flex flex-col p-6 gap-4">
               {navLinksLeft.map((link) => (
