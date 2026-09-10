@@ -48,7 +48,10 @@ import type {
   MembershipPlan,
   MembershipPlanInput,
   MembershipPlanPatch,
-  PaymentConfirmation
+  PaymentConfirmation,
+  PaymentReview,
+  PaymentSettings,
+  PaymentSettingsInput
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -756,6 +759,78 @@ export const useConfirmPayment = <TError = ErrorType<void>,
       return useMutation(getConfirmPaymentMutationOptions(options));
     }
 
+export const getReviewEnrollmentPaymentUrl = (id: number,) => {
+
+
+
+
+  return `/api/enrollments/${id}/payment-review`
+}
+
+/**
+ * @summary Review an enrollment bank transfer receipt (admin)
+ */
+export const reviewEnrollmentPayment = async (id: number,
+    paymentReview: PaymentReview, options?: Parameters<typeof customFetch>[1]): Promise<Enrollment> => {
+
+  return customFetch<Enrollment>(getReviewEnrollmentPaymentUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(paymentReview)
+  }
+);}
+
+
+
+
+
+export const getReviewEnrollmentPaymentMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviewEnrollmentPayment>>, TError,{id: number;data: BodyType<PaymentReview>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof reviewEnrollmentPayment>>, TError,{id: number;data: BodyType<PaymentReview>}, TContext> => {
+
+const mutationKey = ['reviewEnrollmentPayment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reviewEnrollmentPayment>>, {id: number;data: BodyType<PaymentReview>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  reviewEnrollmentPayment(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReviewEnrollmentPaymentMutationResult = NonNullable<Awaited<ReturnType<typeof reviewEnrollmentPayment>>>
+    export type ReviewEnrollmentPaymentMutationBody = BodyType<PaymentReview>
+    export type ReviewEnrollmentPaymentMutationError = ErrorType<void>
+
+    /**
+ * @summary Review an enrollment bank transfer receipt (admin)
+ */
+export const useReviewEnrollmentPayment = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviewEnrollmentPayment>>, TError,{id: number;data: BodyType<PaymentReview>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof reviewEnrollmentPayment>>,
+        TError,
+        {id: number;data: BodyType<PaymentReview>},
+        TContext
+      > => {
+      return useMutation(getReviewEnrollmentPaymentMutationOptions(options));
+    }
+
 export const getListBookingsUrl = (params?: ListBookingsParams,) => {
   const normalizedParams = new URLSearchParams();
 
@@ -909,6 +984,154 @@ export const useCreateBooking = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getCreateBookingMutationOptions(options));
+    }
+
+export const getGetPaymentSettingsUrl = () => {
+
+
+
+
+  return `/api/payment-settings`
+}
+
+/**
+ * @summary Get the current bank transfer instructions
+ */
+export const getPaymentSettings = async ( options?: Parameters<typeof customFetch>[1]): Promise<PaymentSettings> => {
+
+  return customFetch<PaymentSettings>(getGetPaymentSettingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPaymentSettingsQueryKey = () => {
+    return [
+    `/api/payment-settings`
+    ] as const;
+    }
+
+
+export const getGetPaymentSettingsQueryOptions = <TData = Awaited<ReturnType<typeof getPaymentSettings>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPaymentSettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPaymentSettingsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPaymentSettings>>> = ({ signal }) => getPaymentSettings({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPaymentSettings>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPaymentSettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getPaymentSettings>>>
+export type GetPaymentSettingsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get the current bank transfer instructions
+ */
+
+export function useGetPaymentSettings<TData = Awaited<ReturnType<typeof getPaymentSettings>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPaymentSettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPaymentSettingsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdatePaymentSettingsUrl = () => {
+
+
+
+
+  return `/api/admin/payment-settings`
+}
+
+/**
+ * @summary Update bank transfer details (admin)
+ */
+export const updatePaymentSettings = async (paymentSettingsInput: PaymentSettingsInput, options?: Parameters<typeof customFetch>[1]): Promise<PaymentSettings> => {
+
+  return customFetch<PaymentSettings>(getUpdatePaymentSettingsUrl(),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(paymentSettingsInput)
+  }
+);}
+
+
+
+
+
+export const getUpdatePaymentSettingsMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePaymentSettings>>, TError,{data: BodyType<PaymentSettingsInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePaymentSettings>>, TError,{data: BodyType<PaymentSettingsInput>}, TContext> => {
+
+const mutationKey = ['updatePaymentSettings'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePaymentSettings>>, {data: BodyType<PaymentSettingsInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  updatePaymentSettings(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePaymentSettingsMutationResult = NonNullable<Awaited<ReturnType<typeof updatePaymentSettings>>>
+    export type UpdatePaymentSettingsMutationBody = BodyType<PaymentSettingsInput>
+    export type UpdatePaymentSettingsMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update bank transfer details (admin)
+ */
+export const useUpdatePaymentSettings = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePaymentSettings>>, TError,{data: BodyType<PaymentSettingsInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePaymentSettings>>,
+        TError,
+        {data: BodyType<PaymentSettingsInput>},
+        TContext
+      > => {
+      return useMutation(getUpdatePaymentSettingsMutationOptions(options));
     }
 
 export const getGetBookingUrl = (id: number,) => {

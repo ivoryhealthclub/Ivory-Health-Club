@@ -1,260 +1,169 @@
 import { useState } from "react";
-import {
-  useListEnrollments,
-  useConfirmPayment,
-  useListBookings,
-  useUpdateBookingStatus,
-  type Booking,
-  type BookingStatusUpdateStatus,
-} from "@workspace/api-client-react";
 import { format } from "date-fns";
+import { CheckCircle2, Download, Eye, XCircle } from "lucide-react";
+import {
+  getListEnrollmentsQueryKey,
+  useListEnrollments,
+  useReviewEnrollmentPayment,
+  type Enrollment,
+  type PaymentReviewDecision,
+} from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
-import { getListBookingsQueryKey, getListEnrollmentsQueryKey } from "@workspace/api-client-react";
 
-const PROGRAM_SERVICE_TYPES = new Set(["fitness_program", "youth_program"]);
-
-function getProgramName(booking: Booking) {
-  const programLine = booking.specialRequests?.split("\n").find((line) => line.startsWith("Program:"));
-  return programLine?.replace(/^Program:\s*/, "") || (
-    booking.serviceType === "youth_program" ? "Youth Program" : "Fitness Program"
-  );
+function enrollmentLabel(enrollment: Enrollment) {
+  if (enrollment.enrollmentType === "membership") return enrollment.planName || `Plan #${enrollment.planId ?? "—"}`;
+  return enrollment.programName || enrollment.programKey || "Programme enrollment";
 }
 
-function getProgramEnrollmentStatus(status: Booking["status"]) {
-  if (status === "confirmed") return "active";
-  return status;
+function typeLabel(type: Enrollment["enrollmentType"]) {
+  return type === "membership" ? "Membership" : `${type.charAt(0).toUpperCase()}${type.slice(1)} enrollment`;
 }
 
 export default function AdminEnrollments() {
   const [filter, setFilter] = useState("all");
-  const { data: enrollments, isLoading } = useListEnrollments();
-  const { data: bookings, isLoading: bookingsLoading } = useListBookings(undefined, {
-    query: {
-      // Program enrollments are submitted by public users, so refresh this
-      // queue periodically while an admin has the page open.
-      queryKey: getListBookingsQueryKey(),
-      refetchInterval: 15000,
-    },
-  });
-  const confirmPayment = useConfirmPayment();
-  const updateBookingStatus = useUpdateBookingStatus();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const [selected, setSelected] = useState<Enrollment | null>(null);
+  const { data: enrollments, isLoading } = useListEnrollments(undefined, { query: { queryKey: getListEnrollmentsQueryKey(), refetchInterval: 15000 } });
 
-  const programEnrollments = bookings?.filter((booking) => PROGRAM_SERVICE_TYPES.has(booking.serviceType)) || [];
-  const rows = [
-    ...(enrollments || []).map((enrollment) => ({
-      kind: "membership" as const,
-      id: enrollment.id,
-      firstName: enrollment.firstName,
-      lastName: enrollment.lastName,
-      email: enrollment.email,
-      phone: enrollment.phone,
-      label: enrollment.planName || `Plan #${enrollment.planId}`,
-      status: enrollment.status,
-      paymentStatus: enrollment.paymentStatus,
-      createdAt: enrollment.createdAt,
-    })),
-    ...programEnrollments.map((booking) => ({
-      kind: "program" as const,
-      id: booking.id,
-      firstName: booking.firstName,
-      lastName: booking.lastName,
-      email: booking.email,
-      phone: booking.phone,
-      label: getProgramName(booking),
-      status: getProgramEnrollmentStatus(booking.status),
-      paymentStatus: null,
-      createdAt: booking.createdAt,
-      booking,
-    })),
-  ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-  const filtered = rows.filter((row) => filter === "all" || row.status === filter);
-
-  const handleConfirmPayment = (id: number, ref: string) => {
-    confirmPayment.mutate({ id, data: { paymentReference: ref } }, {
-      onSuccess: () => {
-        toast({ title: "Payment confirmed and enrollment activated." });
-        queryClient.invalidateQueries({ queryKey: getListEnrollmentsQueryKey() });
-      },
-      onError: () => {
-        toast({ title: "Error confirming payment", variant: "destructive" });
-      }
-    });
-  };
-
-  const handleProgramStatusUpdate = (booking: Booking, status: BookingStatusUpdateStatus) => {
-    updateBookingStatus.mutate({ id: booking.id, data: { status } }, {
-      onSuccess: () => {
-        toast({ title: `Program enrollment marked as ${status}` });
-        queryClient.invalidateQueries({ queryKey: getListBookingsQueryKey() });
-      },
-      onError: () => {
-        toast({ title: "Error updating program enrollment", variant: "destructive" });
-      },
-    });
-  };
+  const filtered = enrollments?.filter((enrollment) => filter === "all" || enrollment.status === filter) ?? [];
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-3xl font-serif font-bold text-secondary">Enrollments</h1>
-          <p className="text-sm text-gray-500 mt-1">Membership applications and programme enrollment requests.</p>
+          <p className="mt-1 text-sm text-gray-500">Memberships, academies, and programme enrollments. Bookings are managed separately.</p>
         </div>
-        <div className="flex gap-2">
-          {["all", "pending", "active", "cancelled"].map(f => (
-            <Button 
-              key={f} 
-              variant={filter === f ? "default" : "outline"}
-              onClick={() => setFilter(f)}
-              size="sm"
-              className={filter === f ? "bg-secondary text-white" : ""}
-            >
-              {f.charAt(0).toUpperCase() + f.slice(1)}
+        <div className="flex flex-wrap gap-2">
+          {["all", "pending", "active", "cancelled"].map((value) => (
+            <Button key={value} variant={filter === value ? "default" : "outline"} size="sm" onClick={() => setFilter(value)} className={filter === value ? "bg-secondary text-white" : ""}>
+              {value.charAt(0).toUpperCase() + value.slice(1)}
             </Button>
           ))}
         </div>
       </div>
 
-      <div className="bg-white rounded-md shadow-sm border border-gray-100 overflow-hidden">
+      <div className="overflow-hidden rounded-md border border-gray-100 bg-white shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 text-gray-500 uppercase font-medium border-b border-gray-100">
+          <table className="w-full text-left text-sm">
+            <thead className="border-b border-gray-100 bg-gray-50 font-medium uppercase text-gray-500">
               <tr>
                 <th className="px-6 py-4">Applicant</th>
-                <th className="px-6 py-4">Plan / Program</th>
+                <th className="px-6 py-4">Enrollment</th>
                 <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Payment</th>
+                <th className="px-6 py-4">Payment review</th>
                 <th className="px-6 py-4">Date</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {isLoading || bookingsLoading ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">Loading...</td>
-                </tr>
+              {isLoading ? (
+                <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-500">Loading…</td></tr>
               ) : filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">No enrollments found.</td>
+                <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-500">No enrollments found.</td></tr>
+              ) : filtered.map((enrollment) => (
+                <tr key={enrollment.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">
+                    <div className="font-bold text-gray-900">{enrollment.firstName} {enrollment.lastName}</div>
+                    <div className="text-xs text-gray-500">{enrollment.email}</div>
+                    <div className="text-xs text-gray-500">{enrollment.phone}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="font-medium">{enrollmentLabel(enrollment)}</div>
+                    <div className="text-xs text-gray-500">{typeLabel(enrollment.enrollmentType)}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <Badge variant="outline" className={enrollment.status === "active" ? "border-green-200 bg-green-50 text-green-700" : enrollment.status === "pending" ? "border-orange-200 bg-orange-50 text-orange-700" : ""}>
+                      {enrollment.status}
+                    </Badge>
+                  </td>
+                  <td className="px-6 py-4">
+                    <Badge variant="outline" className={enrollment.paymentStatus === "paid" ? "border-green-200 text-green-700" : enrollment.paymentStatus === "receipt_submitted" ? "border-blue-200 text-blue-700" : "border-gray-200 text-gray-600"}>
+                      {enrollment.paymentStatus === "receipt_submitted" ? "Receipt submitted" : enrollment.paymentStatus}
+                    </Badge>
+                    {enrollment.receiptFileName && <div className="mt-1 max-w-[160px] truncate text-xs text-gray-500">{enrollment.receiptFileName}</div>}
+                  </td>
+                  <td className="px-6 py-4 text-gray-500">{format(new Date(enrollment.createdAt), "MMM d, yyyy")}</td>
+                  <td className="px-6 py-4 text-right">
+                    <Button size="sm" variant="ghost" onClick={() => setSelected(enrollment)}><Eye size={16} /> Review</Button>
+                  </td>
                 </tr>
-              ) : (
-                filtered.map((enroll) => (
-                  <tr key={`${enroll.kind}-${enroll.id}`} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-gray-900">{enroll.firstName} {enroll.lastName}</div>
-                      <div className="text-gray-500 text-xs">{enroll.email}</div>
-                      <div className="text-gray-500 text-xs">{enroll.phone}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="font-medium">{enroll.label}</div>
-                      <div className="text-xs text-gray-500">
-                        {enroll.kind === "program" ? "Program enrollment" : "Membership"}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Badge variant={enroll.status === 'active' ? 'default' : 'secondary'} className={
-                        enroll.status === 'active' ? 'bg-green-100 text-green-800 hover:bg-green-100' : 
-                        enroll.status === 'pending' ? 'bg-orange-100 text-orange-800 hover:bg-orange-100' : ''
-                      }>
-                        {enroll.status}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4">
-                      {enroll.kind === "program" ? (
-                        <Badge variant="outline" className="border-primary/30 text-secondary">Not applicable</Badge>
-                      ) : (
-                        <Badge variant="outline" className={
-                          enroll.paymentStatus === 'paid' ? 'border-green-200 text-green-700' : 'border-red-200 text-red-700'
-                        }>
-                          {enroll.paymentStatus}
-                        </Badge>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-gray-500">
-                      {format(new Date(enroll.createdAt), 'MMM d, yyyy')}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      {enroll.kind === "membership" && enroll.status === 'pending' && enroll.paymentStatus === 'unpaid' && (
-                        <PaymentDialog onSubmit={(ref) => handleConfirmPayment(enroll.id, ref)} />
-                      )}
-                      {enroll.kind === "program" && enroll.status === "pending" && (
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-green-600 border-green-200 hover:bg-green-50"
-                            onClick={() => handleProgramStatusUpdate(enroll.booking, "confirmed")}
-                            disabled={updateBookingStatus.isPending}
-                          >
-                            Confirm
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-red-600 border-red-200 hover:bg-red-50"
-                            onClick={() => handleProgramStatusUpdate(enroll.booking, "cancelled")}
-                            disabled={updateBookingStatus.isPending}
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         </div>
       </div>
+
+      <EnrollmentReviewDialog enrollment={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }
 
-function PaymentDialog({ onSubmit }: { onSubmit: (ref: string) => void }) {
-  const [open, setOpen] = useState(false);
-  const [ref, setRef] = useState("");
+function EnrollmentReviewDialog({ enrollment, onClose }: { enrollment: Enrollment | null; onClose: () => void }) {
+  const [reference, setReference] = useState("");
+  const [notes, setNotes] = useState("");
+  const reviewPayment = useReviewEnrollmentPayment();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (ref) {
-      onSubmit(ref);
-      setOpen(false);
-      setRef("");
-    }
+  const submitReview = (decision: PaymentReviewDecision) => {
+    if (!enrollment) return;
+    reviewPayment.mutate(
+      { id: enrollment.id, data: { decision, paymentReference: reference || undefined, notes: notes || undefined } },
+      {
+        onSuccess: () => {
+          toast({ title: decision === "approve" ? "Payment approved and enrollment activated." : "Payment rejected." });
+          queryClient.invalidateQueries({ queryKey: getListEnrollmentsQueryKey() });
+          onClose();
+        },
+        onError: (error) => toast({ title: "Payment review failed", description: error instanceof Error ? error.message : "Please try again.", variant: "destructive" }),
+      },
+    );
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" variant="outline" className="text-primary border-primary hover:bg-primary hover:text-secondary">Confirm Payment</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Confirm Payment</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-          <div>
-            <label className="text-sm font-medium mb-1 block">Payment Reference ID</label>
-            <Input required value={ref} onChange={e => setRef(e.target.value)} placeholder="e.g. TXN-123456" />
+    <Dialog open={!!enrollment} onOpenChange={(open) => !open && onClose()}>
+      {enrollment && (
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl text-secondary">Review enrollment payment</DialogTitle>
+            <DialogDescription>{enrollment.firstName} {enrollment.lastName} · {enrollmentLabel(enrollment)}</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid gap-3 rounded-md bg-gray-50 p-4 text-sm sm:grid-cols-2">
+              <div><p className="text-gray-500">Email</p><p className="font-medium break-all">{enrollment.email}</p></div>
+              <div><p className="text-gray-500">Payment status</p><p className="font-medium">{enrollment.paymentStatus}</p></div>
+              <div><p className="text-gray-500">Receipt</p><p className="font-medium">{enrollment.receiptFileName || "Not uploaded"}</p></div>
+              <div><p className="text-gray-500">Submitted</p><p className="font-medium">{format(new Date(enrollment.createdAt), "MMM d, yyyy")}</p></div>
+            </div>
+            {enrollment.receiptObjectPath ? (
+              <Button variant="outline" asChild className="w-full">
+                <a href={`/api/storage${enrollment.receiptObjectPath}`} target="_blank" rel="noreferrer"><Download size={16} /> Download receipt</a>
+              </Button>
+            ) : (
+              <p className="rounded-md border border-orange-200 bg-orange-50 p-3 text-sm text-orange-800">No receipt has been uploaded. Approval is disabled until the receipt is reviewed.</p>
+            )}
+            <Input value={reference} onChange={(event) => setReference(event.target.value)} placeholder="Bank transfer reference (optional)" />
+            <Textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Review notes (optional)" />
           </div>
-          <Button type="submit" className="w-full bg-secondary text-white hover:bg-primary">Confirm & Activate</Button>
-        </form>
-      </DialogContent>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="outline" className="text-red-600" onClick={() => submitReview("reject")} disabled={reviewPayment.isPending}><XCircle size={16} /> Reject</Button>
+            <Button onClick={() => submitReview("approve")} disabled={!enrollment.receiptObjectPath || reviewPayment.isPending}><CheckCircle2 size={16} /> Approve & activate</Button>
+          </DialogFooter>
+        </DialogContent>
+      )}
     </Dialog>
   );
 }

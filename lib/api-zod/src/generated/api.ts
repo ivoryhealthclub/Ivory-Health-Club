@@ -134,7 +134,16 @@ export const ListEnrollmentsQueryParams = zod.object({
 
 export const ListEnrollmentsResponseItem = zod.object({
   "id": zod.number(),
-  "planId": zod.number(),
+  "planId": zod.number().nullish(),
+  "enrollmentType": zod.enum(['membership', 'academy', 'program', 'other']),
+  "programKey": zod.string().nullish(),
+  "programName": zod.string().nullish(),
+  "enrollmentDate": zod.string().nullish(),
+  "participantName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "teamSize": zod.number().nullish(),
+  "age": zod.number().nullish(),
+  "experience": zod.string().nullish(),
   "planName": zod.string().nullish(),
   "firstName": zod.string(),
   "lastName": zod.string(),
@@ -143,9 +152,15 @@ export const ListEnrollmentsResponseItem = zod.object({
   "address": zod.string().nullish(),
   "dateOfBirth": zod.string().nullish(),
   "status": zod.enum(['pending', 'active', 'expired', 'cancelled']),
-  "paymentStatus": zod.enum(['unpaid', 'paid', 'failed']),
+  "paymentStatus": zod.enum(['unpaid', 'receipt_submitted', 'paid', 'rejected']),
   "paymentReference": zod.string().nullish(),
+  "paymentMethod": zod.enum(['bank_transfer']),
+  "receiptObjectPath": zod.string().nullish(),
+  "receiptFileName": zod.string().nullish(),
+  "receiptMimeType": zod.string().nullish(),
+  "receiptUploadedAt": zod.string().nullish(),
   "notes": zod.string().nullish(),
+  "receiptUploadToken": zod.string().nullish(),
   "createdAt": zod.string()
 })
 export const ListEnrollmentsResponse = zod.array(ListEnrollmentsResponseItem)
@@ -155,7 +170,16 @@ export const ListEnrollmentsResponse = zod.array(ListEnrollmentsResponseItem)
  * @summary Enroll a new member
  */
 export const CreateEnrollmentBody = zod.object({
-  "planId": zod.number(),
+  "planId": zod.number().optional(),
+  "enrollmentType": zod.enum(['membership', 'academy', 'program', 'other']).optional(),
+  "programKey": zod.string().optional(),
+  "programName": zod.string().optional(),
+  "enrollmentDate": zod.string().optional(),
+  "participantName": zod.string().optional(),
+  "companyName": zod.string().optional(),
+  "teamSize": zod.number().optional(),
+  "age": zod.number().optional(),
+  "experience": zod.string().optional(),
   "firstName": zod.string(),
   "lastName": zod.string(),
   "email": zod.string(),
@@ -167,7 +191,16 @@ export const CreateEnrollmentBody = zod.object({
 
 export const CreateEnrollmentResponse = zod.object({
   "id": zod.number(),
-  "planId": zod.number(),
+  "planId": zod.number().nullish(),
+  "enrollmentType": zod.enum(['membership', 'academy', 'program', 'other']),
+  "programKey": zod.string().nullish(),
+  "programName": zod.string().nullish(),
+  "enrollmentDate": zod.string().nullish(),
+  "participantName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "teamSize": zod.number().nullish(),
+  "age": zod.number().nullish(),
+  "experience": zod.string().nullish(),
   "planName": zod.string().nullish(),
   "firstName": zod.string(),
   "lastName": zod.string(),
@@ -176,9 +209,15 @@ export const CreateEnrollmentResponse = zod.object({
   "address": zod.string().nullish(),
   "dateOfBirth": zod.string().nullish(),
   "status": zod.enum(['pending', 'active', 'expired', 'cancelled']),
-  "paymentStatus": zod.enum(['unpaid', 'paid', 'failed']),
+  "paymentStatus": zod.enum(['unpaid', 'receipt_submitted', 'paid', 'rejected']),
   "paymentReference": zod.string().nullish(),
+  "paymentMethod": zod.enum(['bank_transfer']),
+  "receiptObjectPath": zod.string().nullish(),
+  "receiptFileName": zod.string().nullish(),
+  "receiptMimeType": zod.string().nullish(),
+  "receiptUploadedAt": zod.string().nullish(),
   "notes": zod.string().nullish(),
+  "receiptUploadToken": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -192,7 +231,16 @@ export const GetEnrollmentParams = zod.object({
 
 export const GetEnrollmentResponse = zod.object({
   "id": zod.number(),
-  "planId": zod.number(),
+  "planId": zod.number().nullish(),
+  "enrollmentType": zod.enum(['membership', 'academy', 'program', 'other']),
+  "programKey": zod.string().nullish(),
+  "programName": zod.string().nullish(),
+  "enrollmentDate": zod.string().nullish(),
+  "participantName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "teamSize": zod.number().nullish(),
+  "age": zod.number().nullish(),
+  "experience": zod.string().nullish(),
   "planName": zod.string().nullish(),
   "firstName": zod.string(),
   "lastName": zod.string(),
@@ -201,9 +249,15 @@ export const GetEnrollmentResponse = zod.object({
   "address": zod.string().nullish(),
   "dateOfBirth": zod.string().nullish(),
   "status": zod.enum(['pending', 'active', 'expired', 'cancelled']),
-  "paymentStatus": zod.enum(['unpaid', 'paid', 'failed']),
+  "paymentStatus": zod.enum(['unpaid', 'receipt_submitted', 'paid', 'rejected']),
   "paymentReference": zod.string().nullish(),
+  "paymentMethod": zod.enum(['bank_transfer']),
+  "receiptObjectPath": zod.string().nullish(),
+  "receiptFileName": zod.string().nullish(),
+  "receiptMimeType": zod.string().nullish(),
+  "receiptUploadedAt": zod.string().nullish(),
   "notes": zod.string().nullish(),
+  "receiptUploadToken": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -222,7 +276,16 @@ export const ConfirmPaymentBody = zod.object({
 
 export const ConfirmPaymentResponse = zod.object({
   "id": zod.number(),
-  "planId": zod.number(),
+  "planId": zod.number().nullish(),
+  "enrollmentType": zod.enum(['membership', 'academy', 'program', 'other']),
+  "programKey": zod.string().nullish(),
+  "programName": zod.string().nullish(),
+  "enrollmentDate": zod.string().nullish(),
+  "participantName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "teamSize": zod.number().nullish(),
+  "age": zod.number().nullish(),
+  "experience": zod.string().nullish(),
   "planName": zod.string().nullish(),
   "firstName": zod.string(),
   "lastName": zod.string(),
@@ -231,9 +294,61 @@ export const ConfirmPaymentResponse = zod.object({
   "address": zod.string().nullish(),
   "dateOfBirth": zod.string().nullish(),
   "status": zod.enum(['pending', 'active', 'expired', 'cancelled']),
-  "paymentStatus": zod.enum(['unpaid', 'paid', 'failed']),
+  "paymentStatus": zod.enum(['unpaid', 'receipt_submitted', 'paid', 'rejected']),
   "paymentReference": zod.string().nullish(),
+  "paymentMethod": zod.enum(['bank_transfer']),
+  "receiptObjectPath": zod.string().nullish(),
+  "receiptFileName": zod.string().nullish(),
+  "receiptMimeType": zod.string().nullish(),
+  "receiptUploadedAt": zod.string().nullish(),
   "notes": zod.string().nullish(),
+  "receiptUploadToken": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Review an enrollment bank transfer receipt (admin)
+ */
+export const ReviewEnrollmentPaymentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ReviewEnrollmentPaymentBody = zod.object({
+  "decision": zod.enum(['approve', 'reject']),
+  "paymentReference": zod.string().optional(),
+  "notes": zod.string().optional()
+})
+
+export const ReviewEnrollmentPaymentResponse = zod.object({
+  "id": zod.number(),
+  "planId": zod.number().nullish(),
+  "enrollmentType": zod.enum(['membership', 'academy', 'program', 'other']),
+  "programKey": zod.string().nullish(),
+  "programName": zod.string().nullish(),
+  "enrollmentDate": zod.string().nullish(),
+  "participantName": zod.string().nullish(),
+  "companyName": zod.string().nullish(),
+  "teamSize": zod.number().nullish(),
+  "age": zod.number().nullish(),
+  "experience": zod.string().nullish(),
+  "planName": zod.string().nullish(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "email": zod.string(),
+  "phone": zod.string(),
+  "address": zod.string().nullish(),
+  "dateOfBirth": zod.string().nullish(),
+  "status": zod.enum(['pending', 'active', 'expired', 'cancelled']),
+  "paymentStatus": zod.enum(['unpaid', 'receipt_submitted', 'paid', 'rejected']),
+  "paymentReference": zod.string().nullish(),
+  "paymentMethod": zod.enum(['bank_transfer']),
+  "receiptObjectPath": zod.string().nullish(),
+  "receiptFileName": zod.string().nullish(),
+  "receiptMimeType": zod.string().nullish(),
+  "receiptUploadedAt": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "receiptUploadToken": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -243,7 +358,7 @@ export const ConfirmPaymentResponse = zod.object({
  */
 export const ListBookingsQueryParams = zod.object({
   "status": zod.enum(['pending', 'confirmed', 'cancelled']).optional(),
-  "serviceType": zod.enum(['gym', 'spa', 'entertainment', 'restaurant', 'juicebar', 'event_hall', 'fitness_program', 'youth_program']).optional()
+  "serviceType": zod.enum(['restaurant', 'spa', 'fitness_program', 'gym']).optional()
 })
 
 export const ListBookingsResponseItem = zod.object({
@@ -259,6 +374,14 @@ export const ListBookingsResponseItem = zod.object({
   "specialRequests": zod.string().nullish(),
   "status": zod.enum(['pending', 'confirmed', 'cancelled']),
   "notes": zod.string().nullish(),
+  "paymentMethod": zod.enum(['bank_transfer']).optional(),
+  "paymentStatus": zod.enum(['unpaid', 'receipt_submitted', 'paid', 'rejected']).optional(),
+  "paymentReference": zod.string().nullish(),
+  "receiptObjectPath": zod.string().nullish(),
+  "receiptFileName": zod.string().nullish(),
+  "receiptMimeType": zod.string().nullish(),
+  "receiptUploadedAt": zod.string().nullish(),
+  "receiptUploadToken": zod.string().nullish(),
   "createdAt": zod.string()
 })
 export const ListBookingsResponse = zod.array(ListBookingsResponseItem)
@@ -268,7 +391,7 @@ export const ListBookingsResponse = zod.array(ListBookingsResponseItem)
  * @summary Book a service or event hall
  */
 export const CreateBookingBody = zod.object({
-  "serviceType": zod.enum(['gym', 'spa', 'entertainment', 'restaurant', 'juicebar', 'event_hall', 'fitness_program', 'youth_program']),
+  "serviceType": zod.enum(['restaurant', 'spa', 'fitness_program', 'gym']),
   "firstName": zod.string(),
   "lastName": zod.string(),
   "email": zod.string(),
@@ -292,7 +415,48 @@ export const CreateBookingResponse = zod.object({
   "specialRequests": zod.string().nullish(),
   "status": zod.enum(['pending', 'confirmed', 'cancelled']),
   "notes": zod.string().nullish(),
+  "paymentMethod": zod.enum(['bank_transfer']).optional(),
+  "paymentStatus": zod.enum(['unpaid', 'receipt_submitted', 'paid', 'rejected']).optional(),
+  "paymentReference": zod.string().nullish(),
+  "receiptObjectPath": zod.string().nullish(),
+  "receiptFileName": zod.string().nullish(),
+  "receiptMimeType": zod.string().nullish(),
+  "receiptUploadedAt": zod.string().nullish(),
+  "receiptUploadToken": zod.string().nullish(),
   "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Get the current bank transfer instructions
+ */
+export const GetPaymentSettingsResponse = zod.object({
+  "id": zod.number(),
+  "bankName": zod.string(),
+  "accountName": zod.string(),
+  "accountNumber": zod.string(),
+  "instructions": zod.string(),
+  "updatedAt": zod.string()
+})
+
+
+/**
+ * @summary Update bank transfer details (admin)
+ */
+export const UpdatePaymentSettingsBody = zod.object({
+  "bankName": zod.string(),
+  "accountName": zod.string(),
+  "accountNumber": zod.string(),
+  "instructions": zod.string()
+})
+
+export const UpdatePaymentSettingsResponse = zod.object({
+  "id": zod.number(),
+  "bankName": zod.string(),
+  "accountName": zod.string(),
+  "accountNumber": zod.string(),
+  "instructions": zod.string(),
+  "updatedAt": zod.string()
 })
 
 
@@ -316,6 +480,14 @@ export const GetBookingResponse = zod.object({
   "specialRequests": zod.string().nullish(),
   "status": zod.enum(['pending', 'confirmed', 'cancelled']),
   "notes": zod.string().nullish(),
+  "paymentMethod": zod.enum(['bank_transfer']).optional(),
+  "paymentStatus": zod.enum(['unpaid', 'receipt_submitted', 'paid', 'rejected']).optional(),
+  "paymentReference": zod.string().nullish(),
+  "receiptObjectPath": zod.string().nullish(),
+  "receiptFileName": zod.string().nullish(),
+  "receiptMimeType": zod.string().nullish(),
+  "receiptUploadedAt": zod.string().nullish(),
+  "receiptUploadToken": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -345,6 +517,14 @@ export const UpdateBookingStatusResponse = zod.object({
   "specialRequests": zod.string().nullish(),
   "status": zod.enum(['pending', 'confirmed', 'cancelled']),
   "notes": zod.string().nullish(),
+  "paymentMethod": zod.enum(['bank_transfer']).optional(),
+  "paymentStatus": zod.enum(['unpaid', 'receipt_submitted', 'paid', 'rejected']).optional(),
+  "paymentReference": zod.string().nullish(),
+  "receiptObjectPath": zod.string().nullish(),
+  "receiptFileName": zod.string().nullish(),
+  "receiptMimeType": zod.string().nullish(),
+  "receiptUploadedAt": zod.string().nullish(),
+  "receiptUploadToken": zod.string().nullish(),
   "createdAt": zod.string()
 })
 

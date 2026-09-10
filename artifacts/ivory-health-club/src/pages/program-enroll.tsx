@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { ArrowLeft, CheckCircle2, ChevronRight } from "lucide-react";
-import { useCreateBooking } from "@workspace/api-client-react";
+import { useCreateEnrollment } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -26,16 +26,14 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
+import { BankTransferDetails, BankTransferPanel } from "@/components/payments/bank-transfer-panel";
 
 type ProgramAudience = "adult" | "youth" | "corporate";
-type ProgramService = "fitness_program" | "youth_program";
-
 export type ProgramEnrollmentConfig = {
   key: string;
   title: string;
   eyebrow: string;
   intro: string;
-  serviceType: ProgramService;
   audience: ProgramAudience;
   levels: readonly string[];
 };
@@ -46,7 +44,6 @@ export const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
     title: "Adult Fitness Classes",
     eyebrow: "Ivory Performance",
     intro: "Choose from energetic group classes and structured coaching for every level.",
-    serviceType: "fitness_program",
     audience: "adult",
     levels: ["New to training", "Regular exerciser", "Experienced athlete"],
   },
@@ -55,7 +52,6 @@ export const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
     title: "Kids & Youth Programs",
     eyebrow: "Active Futures",
     intro: "Give a young person a positive relationship with movement in a safe, supportive setting.",
-    serviceType: "youth_program",
     audience: "youth",
     levels: ["Little Movers — ages 4–6", "Kids Active Club — ages 7–12", "Teen Performance — ages 13–17"],
   },
@@ -64,7 +60,6 @@ export const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
     title: "Summer Camp & Fun Club",
     eyebrow: "School Holiday Experiences",
     intro: "Register for an active holiday experience filled with sports, games, and new friendships.",
-    serviceType: "youth_program",
     audience: "youth",
     levels: ["Junior Fun Club — ages 4–6", "Explorers Camp — ages 7–12", "Teen Leadership Club — ages 13–17"],
   },
@@ -73,7 +68,6 @@ export const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
     title: "Ivory 70 Plus Club",
     eyebrow: "Active Ageing",
     intro: "Stay active, connected, and confident with gentle fitness and social activities for ages 70 and above.",
-    serviceType: "fitness_program",
     audience: "adult",
     levels: ["New member", "Returning participant", "Joining with a friend"],
   },
@@ -82,7 +76,6 @@ export const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
     title: "Weight Loss Challenge",
     eyebrow: "Healthy Transformation",
     intro: "Build sustainable habits with the support, structure, and accountability to keep moving forward.",
-    serviceType: "fitness_program",
     audience: "adult",
     levels: ["Starting my journey", "Returning to fitness", "Already active"],
   },
@@ -91,7 +84,6 @@ export const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
     title: "Bond4Fitness",
     eyebrow: "Corporate Wellness",
     intro: "Bring your team together through a practical, energising corporate wellness programme.",
-    serviceType: "fitness_program",
     audience: "corporate",
     levels: ["Exploring a team programme", "Planning a team launch", "Expanding an existing programme"],
   },
@@ -100,7 +92,6 @@ export const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
     title: "Fit2Live Bootcamp",
     eyebrow: "Bootcamp",
     intro: "Build the energy, confidence, and consistency to make every day feel stronger.",
-    serviceType: "fitness_program",
     audience: "adult",
     levels: ["New to bootcamp", "Some group training experience", "Regular bootcamp participant"],
   },
@@ -109,7 +100,6 @@ export const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
     title: "Customised & Personal Training",
     eyebrow: "Personal Training",
     intro: "Work one-to-one with a coach on a plan designed around your body, goals, and schedule.",
-    serviceType: "fitness_program",
     audience: "adult",
     levels: ["Beginner", "Intermediate", "Advanced"],
   },
@@ -118,7 +108,6 @@ export const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
     title: "Boxing Class",
     eyebrow: "Boxing",
     intro: "Build conditioning, confidence, and focus with a powerful coach-led boxing workout.",
-    serviceType: "fitness_program",
     audience: "adult",
     levels: ["Complete beginner", "Some boxing experience", "Experienced boxer"],
   },
@@ -127,7 +116,6 @@ export const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
     title: "Ivory Soccer Academy",
     eyebrow: "Sports Academy",
     intro: "Help a young player grow technically, tactically, physically, and as a teammate.",
-    serviceType: "youth_program",
     audience: "youth",
     levels: ["Foundation — ages 5–7", "Development — ages 8–12", "Performance — ages 13–17"],
   },
@@ -136,7 +124,6 @@ export const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
     title: "Ivory Tennis Academy",
     eyebrow: "Sports Academy",
     intro: "Build a reliable all-court game with focused coaching and purposeful practice.",
-    serviceType: "youth_program",
     audience: "youth",
     levels: ["Mini Tennis — ages 5–7", "Junior Development — ages 8–12", "Teen Performance — ages 13–17"],
   },
@@ -145,7 +132,6 @@ export const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
     title: "Ivory Swimming Club",
     eyebrow: "Sports Academy",
     intro: "Build water confidence, safe progression, and a lifelong love of the water.",
-    serviceType: "youth_program",
     audience: "youth",
     levels: ["Water Explorers — ages 4–6", "Stroke Development — ages 7–12", "Performance Swim — ages 13–17"],
   },
@@ -154,7 +140,6 @@ export const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
     title: "Ivory Basketball Academy",
     eyebrow: "Sports Academy",
     intro: "Learn the fundamentals, play creatively, and grow into a smart, confident teammate.",
-    serviceType: "youth_program",
     audience: "youth",
     levels: ["Rookies — ages 5–7", "Junior Development — ages 8–12", "Performance — ages 13–17"],
   },
@@ -212,9 +197,9 @@ function getProgram(key: string | null) {
 export default function ProgramEnroll() {
   const search = useSearch();
   const { toast } = useToast();
-  const [success, setSuccess] = useState<{ id: number; programName: string } | null>(null);
+  const [success, setSuccess] = useState<{ id: number; programName: string; uploadToken?: string | null } | null>(null);
   const initialProgram = useMemo(() => getProgram(new URLSearchParams(search).get("program")), [search]);
-  const createBooking = useCreateBooking();
+  const createEnrollment = useCreateEnrollment();
 
   const form = useForm<ProgramEnrollmentValues>({
     resolver: zodResolver(formSchema),
@@ -253,23 +238,28 @@ export default function ProgramEnroll() {
       `Goals and additional information: ${data.goals}`,
     ].filter(Boolean).join("\n");
 
-    createBooking.mutate(
+    createEnrollment.mutate(
       {
         data: {
-          serviceType: program.serviceType,
+          enrollmentType: program.key.includes("academy") ? "academy" : "program",
+          programKey: program.key,
+          programName: program.title,
+          enrollmentDate: data.preferredDate,
+          participantName: data.participantName || undefined,
+          companyName: data.companyName || undefined,
+          teamSize: data.teamSize || undefined,
+          age: data.age,
+          experience: data.level,
           firstName: data.firstName,
           lastName: data.lastName,
           email: data.email,
           phone: data.phone,
-          bookingDate: data.preferredDate,
-          bookingTime: data.preferredTime || undefined,
-          numberOfGuests: 1,
-          specialRequests: details,
+          notes: `${details}${data.preferredTime ? `\nPreferred time: ${data.preferredTime}` : ""}`,
         },
       },
       {
-        onSuccess: (booking) => {
-          setSuccess({ id: booking.id, programName: program.title });
+        onSuccess: (enrollment) => {
+          setSuccess({ id: enrollment.id, programName: program.title, uploadToken: enrollment.receiptUploadToken });
           window.scrollTo(0, 0);
         },
         onError: () => {
@@ -293,11 +283,14 @@ export default function ProgramEnroll() {
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary mb-3">Ivory Concierge</p>
           <h2 className="text-3xl md:text-4xl font-serif text-secondary font-bold mb-4">Enrollment Received</h2>
           <p className="text-gray-600 text-lg mb-4">
-            Thank you for your interest in <strong>{success.programName}</strong>. Our programme team will contact you to confirm availability and next steps.
+            Thank you for your interest in <strong>{success.programName}</strong>. Complete the bank transfer and upload your receipt below. Our programme team will review it before confirming your enrollment.
           </p>
           <p className="text-sm text-gray-500 mb-8">
             Reference: <span className="font-bold text-secondary">PRG-{success.id.toString().padStart(5, "0")}</span>
           </p>
+          <div className="mb-8 text-left">
+            <BankTransferPanel entityType="enrollment" entityId={success.id} uploadToken={success.uploadToken} />
+          </div>
           <div className="flex flex-col sm:flex-row justify-center gap-3">
             <Link href="/programs">
               <Button variant="outline" className="w-full sm:w-auto border-secondary text-secondary rounded-[10px] uppercase tracking-wider font-bold">
@@ -332,7 +325,7 @@ export default function ProgramEnroll() {
         <div className="flex flex-col lg:flex-row gap-10">
           <div className="lg:w-2/3 bg-white p-8 md:p-12 shadow-sm rounded-sm border border-gray-100">
             <p className="text-gray-500 mb-8">
-              Complete the form below and our programme team will contact you to confirm the best session for your goals.
+              Complete the form below and our programme team will contact you to confirm the best session for your goals. Bank transfer is the only accepted payment method.
             </p>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-7">
@@ -477,6 +470,8 @@ export default function ProgramEnroll() {
                   )}
                 </div>
 
+                <BankTransferDetails compact />
+
                 <div className="space-y-4 pt-2">
                   <h3 className="text-lg font-bold text-secondary border-b pb-2">About Your Goals</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -532,10 +527,10 @@ export default function ProgramEnroll() {
                 </div>
 
                 <div className="pt-3">
-                  <Button type="submit" className="w-full h-14 text-lg bg-secondary text-white hover:bg-primary hover:text-secondary rounded-none uppercase tracking-wider font-bold" disabled={createBooking.isPending}>
-                    {createBooking.isPending ? "Submitting Enrollment..." : "Submit Enrollment"}
+                  <Button type="submit" className="w-full h-14 text-lg bg-secondary text-white hover:bg-primary hover:text-secondary rounded-none uppercase tracking-wider font-bold" disabled={createEnrollment.isPending}>
+                    {createEnrollment.isPending ? "Submitting Enrollment..." : "Submit Enrollment"}
                   </Button>
-                  <p className="text-xs text-center text-gray-400 mt-4">No payment is required at this step. Our programme team will confirm availability with you.</p>
+                  <p className="text-xs text-center text-gray-400 mt-4">After submitting, upload your bank transfer receipt from the confirmation screen. Approval requires receipt review.</p>
                 </div>
               </form>
             </Form>

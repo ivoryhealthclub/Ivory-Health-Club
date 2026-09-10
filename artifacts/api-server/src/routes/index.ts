@@ -9,6 +9,8 @@ import galleryRouter from "./gallery";
 import contactRouter from "./contact";
 import blogCommentsRouter from "./blog-comments";
 import adminRouter from "./admin";
+import paymentSettingsRouter from "./payment-settings";
+import storageRouter from "./storage";
 
 const router: IRouter = Router();
 
@@ -21,6 +23,8 @@ router.use(blogPostsRouter);
 router.use(blogCommentsRouter);
 router.use(galleryRouter);
 router.use(contactRouter);
-router.use(adminRouter);
+  router.use("/admin", adminRouter);
+router.use(paymentSettingsRouter);
+router.use(storageRouter);
 
 export default router;

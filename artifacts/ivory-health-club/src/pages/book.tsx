@@ -21,13 +21,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useCreateBooking } from "@workspace/api-client-react";
+import { useCreateBooking, type Booking } from "@workspace/api-client-react";
 import { CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
+import { BankTransferDetails, BankTransferPanel } from "@/components/payments/bank-transfer-panel";
 
 const bookingSchema = z.object({
-  serviceType: z.enum(["gym", "spa", "entertainment", "restaurant", "juicebar", "event_hall", "fitness_program", "youth_program"]),
+  serviceType: z.enum(["restaurant", "spa", "fitness_program", "gym"]),
   firstName: z.string().min(2, "First name is required"),
   lastName: z.string().min(2, "Last name is required"),
   email: z.string().email("Valid email is required"),
@@ -42,7 +43,7 @@ type BookingFormValues = z.infer<typeof bookingSchema>;
 
 export default function Book() {
   const { toast } = useToast();
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState<Booking | null>(null);
   const createBooking = useCreateBooking();
 
   const form = useForm<BookingFormValues>({
@@ -63,8 +64,8 @@ export default function Book() {
     createBooking.mutate(
       { data },
       {
-        onSuccess: () => {
-          setSuccess(true);
+        onSuccess: (booking) => {
+          setSuccess(booking);
           window.scrollTo(0, 0);
         },
         onError: () => {
@@ -87,11 +88,13 @@ export default function Book() {
           </div>
           <h2 className="text-3xl font-serif text-secondary font-bold mb-4">Request Received</h2>
           <p className="text-gray-600 mb-8">
-            Thank you for choosing Ivory Health Club. We have received your booking request 
-            and our concierge will contact you shortly to confirm the reservation details.
+            Thank you for choosing Ivory Health Club. Your booking request is pending confirmation. Complete your bank transfer and upload the receipt below so our team can match your payment.
           </p>
+          <div className="mb-8 text-left">
+            <BankTransferPanel entityType="booking" entityId={success.id} uploadToken={success.receiptUploadToken} />
+          </div>
           <div className="flex flex-col gap-4">
-            <Button onClick={() => setSuccess(false)} variant="outline" className="w-full rounded-[10px] border-secondary text-secondary h-12 uppercase tracking-wider font-bold">
+            <Button onClick={() => setSuccess(null)} variant="outline" className="w-full rounded-[10px] border-secondary text-secondary h-12 uppercase tracking-wider font-bold">
               Make Another Booking
             </Button>
             <Link href="/">
@@ -130,7 +133,7 @@ export default function Book() {
                     name="serviceType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Service/Facility</FormLabel>
+                           <FormLabel>Booking type</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger className="h-12 rounded-none bg-gray-50">
@@ -141,10 +144,7 @@ export default function Book() {
                             <SelectItem value="spa">Luxury Spa Treatment</SelectItem>
                             <SelectItem value="restaurant">Restaurant Reservation</SelectItem>
                             <SelectItem value="fitness_program">Fitness Class</SelectItem>
-                            <SelectItem value="event_hall">Event Hall Inquiry</SelectItem>
-                            <SelectItem value="entertainment">VIP Lounge Access</SelectItem>
-                            <SelectItem value="gym">Personal Training</SelectItem>
-                            <SelectItem value="youth_program">Youth Program</SelectItem>
+                           <SelectItem value="gym">Gym Services / Activities</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -278,6 +278,9 @@ export default function Book() {
                   )}
                 />
               </div>
+
+              <BankTransferDetails compact />
+              <p className="text-sm text-gray-500">After submitting this booking, upload your bank transfer receipt using the secure link on the confirmation screen.</p>
 
               <div className="pt-4">
                 <Button 

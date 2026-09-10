@@ -75,6 +75,16 @@ export interface MembershipPlanPatch {
   pricePeriod?: MembershipPlanPatchPricePeriod;
 }
 
+export type EnrollmentEnrollmentType = typeof EnrollmentEnrollmentType[keyof typeof EnrollmentEnrollmentType];
+
+
+export const EnrollmentEnrollmentType = {
+  membership: 'membership',
+  academy: 'academy',
+  program: 'program',
+  other: 'other',
+} as const;
+
 export type EnrollmentStatus = typeof EnrollmentStatus[keyof typeof EnrollmentStatus];
 
 
@@ -90,13 +100,39 @@ export type EnrollmentPaymentStatus = typeof EnrollmentPaymentStatus[keyof typeo
 
 export const EnrollmentPaymentStatus = {
   unpaid: 'unpaid',
+  receipt_submitted: 'receipt_submitted',
   paid: 'paid',
-  failed: 'failed',
+  rejected: 'rejected',
+} as const;
+
+export type EnrollmentPaymentMethod = typeof EnrollmentPaymentMethod[keyof typeof EnrollmentPaymentMethod];
+
+
+export const EnrollmentPaymentMethod = {
+  bank_transfer: 'bank_transfer',
 } as const;
 
 export interface Enrollment {
   id: number;
-  planId: number;
+  /** @nullable */
+  planId?: number | null;
+  enrollmentType: EnrollmentEnrollmentType;
+  /** @nullable */
+  programKey?: string | null;
+  /** @nullable */
+  programName?: string | null;
+  /** @nullable */
+  enrollmentDate?: string | null;
+  /** @nullable */
+  participantName?: string | null;
+  /** @nullable */
+  companyName?: string | null;
+  /** @nullable */
+  teamSize?: number | null;
+  /** @nullable */
+  age?: number | null;
+  /** @nullable */
+  experience?: string | null;
   /** @nullable */
   planName?: string | null;
   firstName: string;
@@ -111,13 +147,43 @@ export interface Enrollment {
   paymentStatus: EnrollmentPaymentStatus;
   /** @nullable */
   paymentReference?: string | null;
+  paymentMethod: EnrollmentPaymentMethod;
+  /** @nullable */
+  receiptObjectPath?: string | null;
+  /** @nullable */
+  receiptFileName?: string | null;
+  /** @nullable */
+  receiptMimeType?: string | null;
+  /** @nullable */
+  receiptUploadedAt?: string | null;
   /** @nullable */
   notes?: string | null;
+  /** @nullable */
+  receiptUploadToken?: string | null;
   createdAt: string;
 }
 
+export type EnrollmentInputEnrollmentType = typeof EnrollmentInputEnrollmentType[keyof typeof EnrollmentInputEnrollmentType];
+
+
+export const EnrollmentInputEnrollmentType = {
+  membership: 'membership',
+  academy: 'academy',
+  program: 'program',
+  other: 'other',
+} as const;
+
 export interface EnrollmentInput {
-  planId: number;
+  planId?: number;
+  enrollmentType?: EnrollmentInputEnrollmentType;
+  programKey?: string;
+  programName?: string;
+  enrollmentDate?: string;
+  participantName?: string;
+  companyName?: string;
+  teamSize?: number;
+  age?: number;
+  experience?: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -129,6 +195,20 @@ export interface EnrollmentInput {
 
 export interface PaymentConfirmation {
   paymentReference: string;
+  notes?: string;
+}
+
+export type PaymentReviewDecision = typeof PaymentReviewDecision[keyof typeof PaymentReviewDecision];
+
+
+export const PaymentReviewDecision = {
+  approve: 'approve',
+  reject: 'reject',
+} as const;
+
+export interface PaymentReview {
+  decision: PaymentReviewDecision;
+  paymentReference?: string;
   notes?: string;
 }
 
@@ -155,6 +235,23 @@ export const BookingStatus = {
   cancelled: 'cancelled',
 } as const;
 
+export type BookingPaymentMethod = typeof BookingPaymentMethod[keyof typeof BookingPaymentMethod];
+
+
+export const BookingPaymentMethod = {
+  bank_transfer: 'bank_transfer',
+} as const;
+
+export type BookingPaymentStatus = typeof BookingPaymentStatus[keyof typeof BookingPaymentStatus];
+
+
+export const BookingPaymentStatus = {
+  unpaid: 'unpaid',
+  receipt_submitted: 'receipt_submitted',
+  paid: 'paid',
+  rejected: 'rejected',
+} as const;
+
 export interface Booking {
   id: number;
   serviceType: BookingServiceType;
@@ -172,6 +269,20 @@ export interface Booking {
   status: BookingStatus;
   /** @nullable */
   notes?: string | null;
+  paymentMethod?: BookingPaymentMethod;
+  paymentStatus?: BookingPaymentStatus;
+  /** @nullable */
+  paymentReference?: string | null;
+  /** @nullable */
+  receiptObjectPath?: string | null;
+  /** @nullable */
+  receiptFileName?: string | null;
+  /** @nullable */
+  receiptMimeType?: string | null;
+  /** @nullable */
+  receiptUploadedAt?: string | null;
+  /** @nullable */
+  receiptUploadToken?: string | null;
   createdAt: string;
 }
 
@@ -179,14 +290,10 @@ export type BookingInputServiceType = typeof BookingInputServiceType[keyof typeo
 
 
 export const BookingInputServiceType = {
-  gym: 'gym',
-  spa: 'spa',
-  entertainment: 'entertainment',
   restaurant: 'restaurant',
-  juicebar: 'juicebar',
-  event_hall: 'event_hall',
+  spa: 'spa',
   fitness_program: 'fitness_program',
-  youth_program: 'youth_program',
+  gym: 'gym',
 } as const;
 
 export interface BookingInput {
@@ -199,6 +306,22 @@ export interface BookingInput {
   bookingTime?: string;
   numberOfGuests?: number;
   specialRequests?: string;
+}
+
+export interface PaymentSettings {
+  id: number;
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  instructions: string;
+  updatedAt: string;
+}
+
+export interface PaymentSettingsInput {
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  instructions: string;
 }
 
 export type BookingStatusUpdateStatus = typeof BookingStatusUpdateStatus[keyof typeof BookingStatusUpdateStatus];
@@ -405,14 +528,10 @@ export type ListBookingsServiceType = typeof ListBookingsServiceType[keyof typeo
 
 
 export const ListBookingsServiceType = {
-  gym: 'gym',
-  spa: 'spa',
-  entertainment: 'entertainment',
   restaurant: 'restaurant',
-  juicebar: 'juicebar',
-  event_hall: 'event_hall',
+  spa: 'spa',
   fitness_program: 'fitness_program',
-  youth_program: 'youth_program',
+  gym: 'gym',
 } as const;
 
 export type ListBlogPostsParams = {

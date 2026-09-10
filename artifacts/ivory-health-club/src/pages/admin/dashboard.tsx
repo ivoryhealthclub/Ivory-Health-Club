@@ -1,10 +1,37 @@
-import { useGetAdminStats, useGetRecentActivity } from "@workspace/api-client-react";
+import { useEffect, useState } from "react";
+import { useGetAdminStats, useGetRecentActivity, useGetPaymentSettings, useUpdatePaymentSettings } from "@workspace/api-client-react";
 import { Users, FileText, CheckCircle, Clock, CreditCard, Mail } from "lucide-react";
 import { format } from "date-fns";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminDashboard() {
   const { data: stats, isLoading: statsLoading } = useGetAdminStats();
   const { data: activity, isLoading: activityLoading } = useGetRecentActivity({ limit: 10 });
+  const { data: paymentSettings } = useGetPaymentSettings();
+  const updatePaymentSettings = useUpdatePaymentSettings();
+  const { toast } = useToast();
+  const [paymentForm, setPaymentForm] = useState({ bankName: "", accountName: "", accountNumber: "", instructions: "" });
+
+  useEffect(() => {
+    if (paymentSettings) {
+      setPaymentForm({
+        bankName: paymentSettings.bankName,
+        accountName: paymentSettings.accountName,
+        accountNumber: paymentSettings.accountNumber,
+        instructions: paymentSettings.instructions,
+      });
+    }
+  }, [paymentSettings]);
+
+  const savePaymentSettings = () => {
+    updatePaymentSettings.mutate({ data: paymentForm }, {
+      onSuccess: () => toast({ title: "Payment details updated" }),
+      onError: () => toast({ title: "Could not update payment details", variant: "destructive" }),
+    });
+  };
 
   if (statsLoading || activityLoading) {
     return (
@@ -55,6 +82,24 @@ export default function AdminDashboard() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="bg-white rounded-md shadow-sm border border-gray-100 p-6">
+        <div className="mb-5">
+          <h2 className="font-bold text-lg text-secondary">Payment Management</h2>
+          <p className="text-sm text-gray-500">These bank details are shown on booking and enrollment forms. Bank transfer is the only accepted payment method.</p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <Input value={paymentForm.bankName} onChange={(event) => setPaymentForm({ ...paymentForm, bankName: event.target.value })} placeholder="Bank name" />
+          <Input value={paymentForm.accountName} onChange={(event) => setPaymentForm({ ...paymentForm, accountName: event.target.value })} placeholder="Account name" />
+          <Input value={paymentForm.accountNumber} onChange={(event) => setPaymentForm({ ...paymentForm, accountNumber: event.target.value })} placeholder="Account number" />
+        </div>
+        <div className="mt-4 flex flex-col gap-4 sm:flex-row">
+          <Textarea value={paymentForm.instructions} onChange={(event) => setPaymentForm({ ...paymentForm, instructions: event.target.value })} placeholder="Payment instructions" className="min-h-[90px]" />
+          <Button onClick={savePaymentSettings} disabled={updatePaymentSettings.isPending} className="shrink-0 bg-secondary text-white hover:bg-primary hover:text-secondary sm:self-end">
+            {updatePaymentSettings.isPending ? "Saving…" : "Save payment details"}
+          </Button>
+        </div>
       </div>
 
       {/* Recent Activity */}

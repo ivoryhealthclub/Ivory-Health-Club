@@ -10,12 +10,8 @@ export type ListBookingsServiceType = typeof ListBookingsServiceType[keyof typeo
 
 
 export const ListBookingsServiceType = {
-  gym: 'gym',
-  spa: 'spa',
-  entertainment: 'entertainment',
   restaurant: 'restaurant',
-  juicebar: 'juicebar',
-  event_hall: 'event_hall',
+  spa: 'spa',
   fitness_program: 'fitness_program',
-  youth_program: 'youth_program',
+  gym: 'gym',
 } as const;

@@ -4,7 +4,7 @@ import { z } from "zod/v4";
 
 export const bookingsTable = pgTable("bookings", {
   id: serial("id").primaryKey(),
-  serviceType: text("service_type").notNull(), // gym, spa, entertainment, restaurant, juicebar, event_hall, fitness_program, youth_program
+  serviceType: text("service_type").notNull(), // restaurant, spa, fitness_program, gym
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   email: text("email").notNull(),
@@ -15,6 +15,14 @@ export const bookingsTable = pgTable("bookings", {
   specialRequests: text("special_requests"),
   status: text("status").notNull().default("pending"), // pending, confirmed, cancelled
   notes: text("notes"),
+  paymentMethod: text("payment_method").notNull().default("bank_transfer"),
+  paymentStatus: text("payment_status").notNull().default("unpaid"), // unpaid, receipt_submitted, paid, rejected
+  paymentReference: text("payment_reference"),
+  receiptObjectPath: text("receipt_object_path"),
+  receiptFileName: text("receipt_file_name"),
+  receiptMimeType: text("receipt_mime_type"),
+  receiptUploadedAt: timestamp("receipt_uploaded_at", { withTimezone: true }),
+  receiptUploadTokenHash: text("receipt_upload_token_hash"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

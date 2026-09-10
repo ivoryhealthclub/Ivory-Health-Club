@@ -5,12 +5,32 @@
  * Ivory Health Club API
  * OpenAPI spec version: 0.1.0
  */
+import type { EnrollmentEnrollmentType } from './enrollmentEnrollmentType';
+import type { EnrollmentPaymentMethod } from './enrollmentPaymentMethod';
 import type { EnrollmentPaymentStatus } from './enrollmentPaymentStatus';
 import type { EnrollmentStatus } from './enrollmentStatus';
 
 export interface Enrollment {
   id: number;
-  planId: number;
+  /** @nullable */
+  planId?: number | null;
+  enrollmentType: EnrollmentEnrollmentType;
+  /** @nullable */
+  programKey?: string | null;
+  /** @nullable */
+  programName?: string | null;
+  /** @nullable */
+  enrollmentDate?: string | null;
+  /** @nullable */
+  participantName?: string | null;
+  /** @nullable */
+  companyName?: string | null;
+  /** @nullable */
+  teamSize?: number | null;
+  /** @nullable */
+  age?: number | null;
+  /** @nullable */
+  experience?: string | null;
   /** @nullable */
   planName?: string | null;
   firstName: string;
@@ -25,7 +45,18 @@ export interface Enrollment {
   paymentStatus: EnrollmentPaymentStatus;
   /** @nullable */
   paymentReference?: string | null;
+  paymentMethod: EnrollmentPaymentMethod;
+  /** @nullable */
+  receiptObjectPath?: string | null;
+  /** @nullable */
+  receiptFileName?: string | null;
+  /** @nullable */
+  receiptMimeType?: string | null;
+  /** @nullable */
+  receiptUploadedAt?: string | null;
   /** @nullable */
   notes?: string | null;
+  /** @nullable */
+  receiptUploadToken?: string | null;
   createdAt: string;
 }

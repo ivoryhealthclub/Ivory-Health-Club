@@ -94,6 +94,7 @@ export default function AdminBookings() {
                 <th className="px-6 py-4">Client</th>
                 <th className="px-6 py-4">Service</th>
                 <th className="px-6 py-4">Date & Time</th>
+                <th className="px-6 py-4">Payment</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
@@ -101,11 +102,11 @@ export default function AdminBookings() {
             <tbody className="divide-y divide-gray-100">
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">Loading...</td>
+                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">Loading...</td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">No bookings found.</td>
+                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">No bookings found.</td>
                 </tr>
               ) : (
                 filtered.map(booking => (
@@ -123,6 +124,11 @@ export default function AdminBookings() {
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-900">{format(new Date(booking.bookingDate), 'MMM d, yyyy')}</div>
                       <div className="text-gray-500 text-xs">{booking.bookingTime || 'No specific time'}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <Badge variant="outline" className={booking.paymentStatus === "paid" ? "border-green-200 text-green-700" : booking.paymentStatus === "receipt_submitted" ? "border-blue-200 text-blue-700" : "border-gray-200 text-gray-600"}>
+                        {booking.paymentStatus === "receipt_submitted" ? "Receipt submitted" : booking.paymentStatus || "unpaid"}
+                      </Badge>
                     </td>
                     <td className="px-6 py-4">
                       <Badge variant="outline" className={
@@ -221,6 +227,17 @@ export default function AdminBookings() {
                   <p className="whitespace-pre-wrap leading-6 text-gray-600">{selectedBooking.specialRequests}</p>
                 </div>
               )}
+              <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+                <div>
+                  <p className="font-semibold text-gray-900">Payment</p>
+                  <p className="text-sm text-gray-500">{selectedBooking.paymentStatus === "receipt_submitted" ? "Receipt submitted for review" : selectedBooking.paymentStatus || "unpaid"}</p>
+                </div>
+                {selectedBooking.receiptObjectPath && (
+                  <Button variant="outline" size="sm" asChild>
+                    <a href={`/api/storage${selectedBooking.receiptObjectPath}`} target="_blank" rel="noreferrer"><Copy size={14} /> Receipt</a>
+                  </Button>
+                )}
+              </div>
               <div className="flex items-center gap-2 border-t border-gray-200 pt-4">
                 <span className="font-semibold text-gray-900">Status</span>
                 <Badge variant="outline">{selectedBooking.status}</Badge>

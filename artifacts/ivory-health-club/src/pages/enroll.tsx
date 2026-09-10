@@ -22,10 +22,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useListMembershipPlans, useCreateEnrollment } from "@workspace/api-client-react";
+import { useListMembershipPlans, useCreateEnrollment, type Enrollment } from "@workspace/api-client-react";
 import { CheckCircle2, ChevronRight, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
+import { BankTransferDetails, BankTransferPanel } from "@/components/payments/bank-transfer-panel";
 
 const enrollSchema = z.object({
   planId: z.coerce.number().min(1, "Please select a membership plan"),
@@ -43,7 +44,7 @@ type EnrollFormValues = z.infer<typeof enrollSchema>;
 export default function Enroll() {
   const search = useSearch();
   const { toast } = useToast();
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState<Enrollment | null>(null);
   const [submittedPlanName, setSubmittedPlanName] = useState("");
   const [confirmationId, setConfirmationId] = useState<number | null>(null);
   
@@ -89,7 +90,7 @@ export default function Enroll() {
         onSuccess: (enrollment) => {
           setSubmittedPlanName(selectedPlan?.name ?? "your selected membership");
           setConfirmationId(enrollment.id);
-          setSuccess(true);
+          setSuccess(enrollment);
           window.scrollTo(0, 0);
         },
         onError: () => {
@@ -113,14 +114,16 @@ export default function Enroll() {
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary mb-3">Welcome to Ivory</p>
           <h2 className="text-4xl font-serif text-secondary font-bold mb-4">Application Received</h2>
           <p className="text-gray-600 text-lg mb-8">
-            Thank you for applying for <strong>{submittedPlanName}</strong>. Our concierge team is reviewing your application
-            and will contact you shortly with membership rates and next steps.
+            Thank you for applying for <strong>{submittedPlanName}</strong>. Complete the bank transfer and upload your receipt below. Our concierge team will review the payment before activating your membership.
           </p>
           {confirmationId && (
             <p className="mb-8 text-sm text-gray-500">
               Application reference: <span className="font-bold text-secondary">IHC-{confirmationId.toString().padStart(5, "0")}</span>
             </p>
           )}
+          <div className="mb-8 text-left">
+            <BankTransferPanel entityType="enrollment" entityId={success.id} uploadToken={success.receiptUploadToken} />
+          </div>
           <div className="flex justify-center gap-4">
             <Link href="/">
               <Button variant="outline" className="border-secondary text-secondary rounded-[10px] uppercase tracking-wider font-bold">
@@ -150,7 +153,7 @@ export default function Enroll() {
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Form Side */}
           <div className="lg:w-2/3 bg-white p-8 md:p-12 shadow-sm rounded-sm">
-            <p className="text-gray-500 mb-8">Please provide your details below to begin the enrollment process.</p>
+            <p className="text-gray-500 mb-8">Please provide your details below to begin the enrollment process. Bank transfer is the only accepted payment method.</p>
             
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -191,6 +194,8 @@ export default function Enroll() {
                     )}
                   />
                 </div>
+
+                <BankTransferDetails compact />
 
                 <div className="space-y-4 pt-4">
                     <h3 className="text-lg font-bold text-secondary border-b pb-2">Personal Details</h3>
@@ -307,7 +312,7 @@ export default function Enroll() {
                   </Button>
                   <p className="text-xs text-center text-gray-400 mt-4">
                     By submitting, you agree to our Terms of Service and Privacy Policy.
-                    No payment is required at this step.
+                     Bank transfer is the only accepted payment method. You can upload your receipt after submitting.
                   </p>
                 </div>
               </form>

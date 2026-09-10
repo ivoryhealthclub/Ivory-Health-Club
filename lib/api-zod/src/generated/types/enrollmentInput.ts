@@ -5,9 +5,19 @@
  * Ivory Health Club API
  * OpenAPI spec version: 0.1.0
  */
+import type { EnrollmentInputEnrollmentType } from './enrollmentInputEnrollmentType';
 
 export interface EnrollmentInput {
-  planId: number;
+  planId?: number;
+  enrollmentType?: EnrollmentInputEnrollmentType;
+  programKey?: string;
+  programName?: string;
+  enrollmentDate?: string;
+  participantName?: string;
+  companyName?: string;
+  teamSize?: number;
+  age?: number;
+  experience?: string;
   firstName: string;
   lastName: string;
   email: string;

@@ -6,10 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type EnrollmentPaymentStatus = typeof EnrollmentPaymentStatus[keyof typeof EnrollmentPaymentStatus];
+export type BookingPaymentStatus = typeof BookingPaymentStatus[keyof typeof BookingPaymentStatus];
 
 
-export const EnrollmentPaymentStatus = {
+export const BookingPaymentStatus = {
   unpaid: 'unpaid',
   receipt_submitted: 'receipt_submitted',
   paid: 'paid',

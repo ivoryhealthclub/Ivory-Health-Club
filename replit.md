@@ -42,9 +42,10 @@ A full-stack luxury health and wellness club website for Ivory Health Club, Nige
 ## Product
 
 - **Public site:** Homepage with animated hero (Framer Motion), Services, Membership plans, Programs, Gallery, Blog, Contact
-- **Enrollment:** Users pick a plan, fill a form, submit — creates a pending enrollment; admin confirms payment
-- **Booking:** Users book any service (gym, spa, restaurant, event hall, programs) with date/time/guests
-- **Admin dashboard:** Stats overview, recent activity, enrollment management (confirm payment), booking management, message inbox, blog management, gallery management
+- **Enrollment:** Users submit membership, academy, or programme applications as separate enrollment records; bank-transfer receipts must be reviewed before activation
+- **Booking:** Users request restaurant, spa, fitness programme, or gym services/activities with date/time/guest details
+- **Payments:** Bank transfer is the only payment method; payment settings are managed from the admin dashboard and receipts use private object storage
+- **Admin dashboard:** Stats overview, recent activity, enrollment payment review, booking management, bank-detail management, message inbox, blog management, and gallery management
 
 ## User preferences
 

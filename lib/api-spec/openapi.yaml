@@ -211,6 +211,33 @@ paths:
         "404":
           description: Not found
 
+  /enrollments/{id}/payment-review:
+    patch:
+      operationId: reviewEnrollmentPayment
+      tags: [memberships]
+      summary: Review an enrollment bank transfer receipt (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentReview"
+      responses:
+        "200":
+          description: Enrollment payment review saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Enrollment"
+        "404":
+          description: Not found
+
   # Bookings
   /bookings:
     get:
@@ -227,7 +254,7 @@ paths:
           in: query
           schema:
             type: string
-            enum: [gym, spa, entertainment, restaurant, juicebar, event_hall, fitness_program, youth_program]
+            enum: [restaurant, spa, fitness_program, gym]
       responses:
         "200":
           description: List of bookings
@@ -256,6 +283,38 @@ paths:
                 $ref: "#/components/schemas/Booking"
         "400":
           description: Validation error
+
+  /payment-settings:
+    get:
+      operationId: getPaymentSettings
+      tags: [admin]
+      summary: Get the current bank transfer instructions
+      responses:
+        "200":
+          description: Bank transfer details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentSettings"
+
+  /admin/payment-settings:
+    patch:
+      operationId: updatePaymentSettings
+      tags: [admin]
+      summary: Update bank transfer details (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentSettingsInput"
+      responses:
+        "200":
+          description: Bank transfer details updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentSettings"
 
   /bookings/{id}:
     get:
@@ -701,12 +760,31 @@ components:
 
     Enrollment:
       type: object
-      required: [id, planId, firstName, lastName, email, phone, status, paymentStatus, createdAt]
+      required: [id, enrollmentType, firstName, lastName, email, phone, status, paymentStatus, paymentMethod, createdAt]
       properties:
         id:
           type: number
         planId:
-          type: number
+          type: ["number", "null"]
+        enrollmentType:
+          type: string
+          enum: [membership, academy, program, other]
+        programKey:
+          type: ["string", "null"]
+        programName:
+          type: ["string", "null"]
+        enrollmentDate:
+          type: ["string", "null"]
+        participantName:
+          type: ["string", "null"]
+        companyName:
+          type: ["string", "null"]
+        teamSize:
+          type: ["number", "null"]
+        age:
+          type: ["number", "null"]
+        experience:
+          type: ["string", "null"]
         planName:
           type: ["string", "null"]
         firstName:
@@ -726,20 +804,52 @@ components:
           enum: [pending, active, expired, cancelled]
         paymentStatus:
           type: string
-          enum: [unpaid, paid, failed]
+          enum: [unpaid, receipt_submitted, paid, rejected]
         paymentReference:
           type: ["string", "null"]
+        paymentMethod:
+          type: string
+          enum: [bank_transfer]
+        receiptObjectPath:
+          type: ["string", "null"]
+        receiptFileName:
+          type: ["string", "null"]
+        receiptMimeType:
+          type: ["string", "null"]
+        receiptUploadedAt:
+          type: ["string", "null"]
         notes:
+          type: ["string", "null"]
+        receiptUploadToken:
           type: ["string", "null"]
         createdAt:
           type: string
 
     EnrollmentInput:
       type: object
-      required: [planId, firstName, lastName, email, phone]
+      required: [firstName, lastName, email, phone]
       properties:
         planId:
           type: number
+        enrollmentType:
+          type: string
+          enum: [membership, academy, program, other]
+        programKey:
+          type: string
+        programName:
+          type: string
+        enrollmentDate:
+          type: string
+        participantName:
+          type: string
+        companyName:
+          type: string
+        teamSize:
+          type: number
+        age:
+          type: number
+        experience:
+          type: string
         firstName:
           type: string
         lastName:
@@ -759,6 +869,18 @@ components:
       type: object
       required: [paymentReference]
       properties:
+        paymentReference:
+          type: string
+        notes:
+          type: string
+
+    PaymentReview:
+      type: object
+      required: [decision]
+      properties:
+        decision:
+          type: string
+          enum: [approve, reject]
         paymentReference:
           type: string
         notes:
@@ -794,6 +916,24 @@ components:
           enum: [pending, confirmed, cancelled]
         notes:
           type: ["string", "null"]
+        paymentMethod:
+          type: string
+          enum: [bank_transfer]
+        paymentStatus:
+          type: string
+          enum: [unpaid, receipt_submitted, paid, rejected]
+        paymentReference:
+          type: ["string", "null"]
+        receiptObjectPath:
+          type: ["string", "null"]
+        receiptFileName:
+          type: ["string", "null"]
+        receiptMimeType:
+          type: ["string", "null"]
+        receiptUploadedAt:
+          type: ["string", "null"]
+        receiptUploadToken:
+          type: ["string", "null"]
         createdAt:
           type: string
 
@@ -803,7 +943,7 @@ components:
       properties:
         serviceType:
           type: string
-          enum: [gym, spa, entertainment, restaurant, juicebar, event_hall, fitness_program, youth_program]
+          enum: [restaurant, spa, fitness_program, gym]
         firstName:
           type: string
         lastName:
@@ -819,6 +959,36 @@ components:
         numberOfGuests:
           type: number
         specialRequests:
+          type: string
+
+    PaymentSettings:
+      type: object
+      required: [id, bankName, accountName, accountNumber, instructions, updatedAt]
+      properties:
+        id:
+          type: number
+        bankName:
+          type: string
+        accountName:
+          type: string
+        accountNumber:
+          type: string
+        instructions:
+          type: string
+        updatedAt:
+          type: string
+
+    PaymentSettingsInput:
+      type: object
+      required: [bankName, accountName, accountNumber, instructions]
+      properties:
+        bankName:
+          type: string
+        accountName:
+          type: string
+        accountNumber:
+          type: string
+        instructions:
           type: string
 
     BookingStatusUpdate:

@@ -13,12 +13,15 @@ import {
   UpdateBookingStatusResponse,
 } from "@workspace/api-zod";
 import { adminAuthMiddleware } from "../lib/admin-auth";
+import { createReceiptUploadToken } from "../lib/receipt-tokens";
 
 const router: IRouter = Router();
 
-const toBooking = (r: typeof bookingsTable.$inferSelect) => ({
+const toBooking = (r: typeof bookingsTable.$inferSelect, receiptUploadToken?: string) => ({
   ...r,
   createdAt: r.createdAt.toISOString(),
+  receiptUploadedAt: r.receiptUploadedAt?.toISOString() ?? null,
+  receiptUploadToken: receiptUploadToken ?? null,
 });
 
 router.get("/bookings", adminAuthMiddleware, async (req, res): Promise<void> => {
@@ -38,7 +41,7 @@ router.get("/bookings", adminAuthMiddleware, async (req, res): Promise<void> => 
     .where(conditions.length > 0 ? and(...conditions) : undefined)
     .orderBy(bookingsTable.createdAt);
 
-  res.json(ListBookingsResponse.parse(rows.map(toBooking)));
+  res.json(ListBookingsResponse.parse(rows.map((row) => toBooking(row))));
 });
 
 router.post("/bookings", async (req, res): Promise<void> => {
@@ -48,6 +51,13 @@ router.post("/bookings", async (req, res): Promise<void> => {
     return;
   }
 
+  const allowedServices = new Set(["restaurant", "spa", "fitness_program", "gym"]);
+  if (!allowedServices.has(parsed.data.serviceType)) {
+    res.status(400).json({ error: "Bookings are limited to restaurant reservations, spa services, fitness programs, and gym services/activities." });
+    return;
+  }
+
+  const receiptToken = createReceiptUploadToken();
   const [booking] = await db
     .insert(bookingsTable)
     .values({
@@ -61,10 +71,13 @@ router.post("/bookings", async (req, res): Promise<void> => {
       numberOfGuests: parsed.data.numberOfGuests ?? null,
       specialRequests: parsed.data.specialRequests ?? null,
       status: "pending",
+      paymentMethod: "bank_transfer",
+      paymentStatus: "unpaid",
+      receiptUploadTokenHash: receiptToken.hash,
     })
     .returning();
 
-  res.status(201).json(CreateBookingResponse.parse(toBooking(booking)));
+  res.status(201).json(CreateBookingResponse.parse(toBooking(booking, receiptToken.token)));
 });
 
 router.get("/bookings/:id", adminAuthMiddleware, async (req, res): Promise<void> => {

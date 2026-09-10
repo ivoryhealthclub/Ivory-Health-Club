@@ -12,7 +12,7 @@ import { adminAuthMiddleware } from "../lib/admin-auth";
 const router: IRouter = Router();
 router.use(adminAuthMiddleware);
 
-router.get("/admin/stats", async (_req, res): Promise<void> => {
+router.get("/stats", async (_req, res): Promise<void> => {
   const [enrollmentCounts] = await db
     .select({
       total: count(),
@@ -75,7 +75,7 @@ router.get("/admin/stats", async (_req, res): Promise<void> => {
   res.json(GetAdminStatsResponse.parse(stats));
 });
 
-router.get("/admin/recent-activity", async (req, res): Promise<void> => {
+router.get("/recent-activity", async (req, res): Promise<void> => {
   const query = GetRecentActivityQueryParams.safeParse(req.query);
   if (!query.success) {
     res.status(400).json({ error: query.error.message });
@@ -134,7 +134,7 @@ router.get("/admin/recent-activity", async (req, res): Promise<void> => {
   res.json(GetRecentActivityResponse.parse(activity));
 });
 
-router.get("/admin/membership-breakdown", async (_req, res): Promise<void> => {
+router.get("/membership-breakdown", async (_req, res): Promise<void> => {
   const plans = await db.select().from(membershipPlansTable);
 
   const breakdown = await Promise.all(

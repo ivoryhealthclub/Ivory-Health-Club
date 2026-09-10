@@ -5,6 +5,8 @@
  * Ivory Health Club API
  * OpenAPI spec version: 0.1.0
  */
+import type { BookingPaymentMethod } from './bookingPaymentMethod';
+import type { BookingPaymentStatus } from './bookingPaymentStatus';
 import type { BookingServiceType } from './bookingServiceType';
 import type { BookingStatus } from './bookingStatus';
 
@@ -25,5 +27,19 @@ export interface Booking {
   status: BookingStatus;
   /** @nullable */
   notes?: string | null;
+  paymentMethod?: BookingPaymentMethod;
+  paymentStatus?: BookingPaymentStatus;
+  /** @nullable */
+  paymentReference?: string | null;
+  /** @nullable */
+  receiptObjectPath?: string | null;
+  /** @nullable */
+  receiptFileName?: string | null;
+  /** @nullable */
+  receiptMimeType?: string | null;
+  /** @nullable */
+  receiptUploadedAt?: string | null;
+  /** @nullable */
+  receiptUploadToken?: string | null;
   createdAt: string;
 }
