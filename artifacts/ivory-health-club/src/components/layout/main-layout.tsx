@@ -8,7 +8,24 @@ export function MainLayout({ children }: { children: ReactNode }) {
 
   // Scroll to top on navigation
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const behavior = prefersReducedMotion ? "auto" : "smooth";
+    const hash = window.location.hash;
+
+    if (hash) {
+      const targetId = decodeURIComponent(hash.slice(1));
+      const frame = window.requestAnimationFrame(() => {
+        document.getElementById(targetId)?.scrollIntoView({
+          behavior,
+          block: "start",
+        });
+      });
+
+      return () => window.cancelAnimationFrame(frame);
+    }
+
+    window.scrollTo({ top: 0, left: 0, behavior });
+    return undefined;
   }, [location]);
 
   return (

@@ -162,11 +162,35 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 7rem;
+  }
   body {
     @apply font-sans antialiased bg-background text-foreground selection:bg-primary selection:text-primary-foreground;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif text-[#29166F] dark:text-white;
+  }
+}
+
+:where(section, article, [id]) {
+  scroll-margin-top: 7rem;
+}
+
+@media (max-width: 1279px) {
+  html {
+    scroll-padding-top: 6rem;
+  }
+
+  :where(section, article, [id]) {
+    scroll-margin-top: 6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 
