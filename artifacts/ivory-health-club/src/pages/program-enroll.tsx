@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearch } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,7 +38,7 @@ export type ProgramEnrollmentConfig = {
   levels: readonly string[];
 };
 
-export const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
+const PROGRAM_ENROLLMENT_OPTIONS: readonly ProgramEnrollmentConfig[] = [
   {
     key: "adult-fitness",
     title: "Adult Fitness Classes",
@@ -219,6 +219,10 @@ export default function ProgramEnroll() {
       goals: "",
     },
   });
+
+  useEffect(() => {
+    form.setValue("programKey", initialProgram.key);
+  }, [form, initialProgram.key]);
 
   const selectedKey = form.watch("programKey");
   const selectedProgram = getProgram(selectedKey);

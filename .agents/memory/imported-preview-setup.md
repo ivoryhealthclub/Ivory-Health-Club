@@ -21,8 +21,8 @@ Imported Wouter apps may need an explicit exact route for a protected root path 
 
 **How to apply:** When validating a root dashboard URL after import, test the exact path and add an explicit route before relying on a wildcard-only match.
 
-Imported Vite artifacts require both `PORT` and `BASE_PATH` for standalone production builds, even though managed dev workflows supply them automatically.
+Imported Vite artifacts should accept `PORT` and `BASE_PATH` from managed workflows while providing safe defaults for standalone production builds.
 
-**Why:** Running the package build without those values fails while loading the Vite config, which can look like a feature regression even when the preview workflow is healthy.
+**Why:** Requiring workflow-only environment values makes ordinary package builds fail before compilation, which obscures real regressions and blocks repository-wide verification.
 
-**How to apply:** Use the artifact's configured preview base path and an available port when running the production build directly; keep the config's required environment checks intact.
+**How to apply:** Prefer `process.env.PORT` and `process.env.BASE_PATH` when present, but default to a development port and `/` base path when absent.

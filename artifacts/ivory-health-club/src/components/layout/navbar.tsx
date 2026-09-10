@@ -44,6 +44,7 @@ export function Navbar() {
   const [academiesOpen, setAcademiesOpen] = useState(false);
   const [mobileProgramsOpen, setMobileProgramsOpen] = useState(false);
   const [mobileAcademiesOpen, setMobileAcademiesOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const programsRef = useRef<HTMLDivElement>(null);
 
@@ -79,6 +80,12 @@ export function Navbar() {
   // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+        setMobileMenuOpen(false);
+        setMobileFoodOpen(false);
+        setMobileProgramsOpen(false);
+        setMobileAcademiesOpen(false);
+      }
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setFoodOpen(false);
       }
@@ -94,11 +101,13 @@ export function Navbar() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        setMobileMenuOpen(false);
+        setMobileFoodOpen(false);
+        setMobileProgramsOpen(false);
+        setMobileAcademiesOpen(false);
         setFoodOpen(false);
         setProgramsOpen(false);
         setAcademiesOpen(false);
-        setMobileProgramsOpen(false);
-        setMobileAcademiesOpen(false);
       }
     };
     document.addEventListener("keydown", handleKeyDown);
@@ -125,6 +134,7 @@ export function Navbar() {
 
   return (
     <header
+      ref={headerRef}
       className={cn(
         "liquid-glass fixed left-2 right-2 top-2 z-[70] overflow-visible rounded-[24px] transition-all duration-500 sm:left-3 sm:right-3",
         isScrolled
@@ -286,7 +296,10 @@ export function Navbar() {
           {/* Food & Beverages dropdown */}
           <div ref={dropdownRef} className="relative order-1">
             <button
+              type="button"
               onClick={() => setFoodOpen((o) => !o)}
+              aria-haspopup="menu"
+              aria-expanded={foodOpen}
               className={cn(
                 linkBase,
                 "flex max-w-[82px] items-center justify-center gap-1 text-center",
@@ -499,6 +512,8 @@ export function Navbar() {
                 <button
                   type="button"
                   onClick={() => setMobileFoodOpen((o) => !o)}
+                  aria-haspopup="menu"
+                  aria-expanded={mobileFoodOpen}
                   className={cn(
                     "w-full flex items-center justify-between text-base font-serif py-2",
                     isFoodActive ? "text-primary font-bold" : "text-secondary"

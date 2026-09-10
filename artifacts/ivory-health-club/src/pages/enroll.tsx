@@ -333,7 +333,9 @@ export default function Enroll() {
                   
                   <div className="mb-8">
                      <p className="text-white/70 text-sm mb-1">Membership rate</p>
-                     <p className="text-xl font-bold text-primary">Available on request</p>
+                      <p className="text-xl font-bold text-primary">
+                        ₦{selectedPlan.price.toLocaleString("en-NG")} / {selectedPlan.pricePeriod === "monthly" ? "month" : selectedPlan.pricePeriod}
+                      </p>
                   </div>
                   
                   <div className="space-y-3 mb-8">
