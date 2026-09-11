@@ -26,7 +26,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
-import { BankTransferDetails, BankTransferPanel } from "@/components/payments/bank-transfer-panel";
+import { BankTransferDetails, BankTransferPanel, validateReceiptFile } from "@/components/payments/bank-transfer-panel";
 
 type ProgramAudience = "adult" | "youth" | "corporate";
 export type ProgramEnrollmentConfig = {
@@ -198,6 +198,7 @@ export default function ProgramEnroll() {
   const search = useSearch();
   const { toast } = useToast();
   const [success, setSuccess] = useState<{ id: number; programName: string; uploadToken?: string | null } | null>(null);
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const initialProgram = useMemo(() => getProgram(new URLSearchParams(search).get("program")), [search]);
   const createEnrollment = useCreateEnrollment();
 
@@ -229,6 +230,20 @@ export default function ProgramEnroll() {
   const isYouth = selectedProgram.audience === "youth";
   const isCorporate = selectedProgram.audience === "corporate";
   const today = new Date().toISOString().slice(0, 10);
+
+  const handleReceiptChange = (candidate: File | undefined) => {
+    const validationError = validateReceiptFile(candidate);
+    if (validationError) {
+      setReceiptFile(null);
+      toast({
+        title: "Receipt file not accepted",
+        description: validationError,
+        variant: "destructive",
+      });
+      return;
+    }
+    setReceiptFile(candidate ?? null);
+  };
 
   const onSubmit = (data: ProgramEnrollmentValues) => {
     const program = getProgram(data.programKey);
@@ -293,7 +308,7 @@ export default function ProgramEnroll() {
             Reference: <span className="font-bold text-secondary">PRG-{success.id.toString().padStart(5, "0")}</span>
           </p>
           <div className="mb-8 text-left">
-            <BankTransferPanel entityType="enrollment" entityId={success.id} uploadToken={success.uploadToken} />
+            <BankTransferPanel entityType="enrollment" entityId={success.id} uploadToken={success.uploadToken} initialFile={receiptFile} />
           </div>
           <div className="flex flex-col sm:flex-row justify-center gap-3">
             <Link href="/programs">
@@ -476,6 +491,30 @@ export default function ProgramEnroll() {
 
                 <BankTransferDetails compact />
 
+                <div className="rounded-sm border border-gray-200 bg-gray-50 p-5">
+                  <div className="mb-3">
+                    <h3 className="text-lg font-bold text-secondary">Payment Receipt</h3>
+                    <p className="mt-1 text-sm text-gray-600">
+                      Already made the bank transfer? Select your receipt now and upload it securely after submitting your enrollment.
+                    </p>
+                  </div>
+                  <Input
+                    type="file"
+                    accept=".pdf,image/jpeg,image/png,image/webp"
+                    onChange={(event) => handleReceiptChange(event.target.files?.[0])}
+                    disabled={createEnrollment.isPending}
+                    className="h-11 bg-white"
+                    aria-label="Select payment receipt"
+                  />
+                  {receiptFile ? (
+                    <p className="mt-2 truncate text-sm text-gray-600">
+                      Selected: <span className="font-medium text-secondary">{receiptFile.name}</span>
+                    </p>
+                  ) : (
+                    <p className="mt-2 text-xs text-gray-500">Accepted: PDF, JPG, PNG, or WEBP up to 10 MB.</p>
+                  )}
+                </div>
+
                 <div className="space-y-4 pt-2">
                   <h3 className="text-lg font-bold text-secondary border-b pb-2">About Your Goals</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -534,7 +573,7 @@ export default function ProgramEnroll() {
                   <Button type="submit" className="w-full h-14 text-lg bg-secondary text-white hover:bg-primary hover:text-secondary rounded-none uppercase tracking-wider font-bold" disabled={createEnrollment.isPending}>
                     {createEnrollment.isPending ? "Submitting Enrollment..." : "Submit Enrollment"}
                   </Button>
-                  <p className="text-xs text-center text-gray-400 mt-4">After submitting, upload your bank transfer receipt from the confirmation screen. Approval requires receipt review.</p>
+                   <p className="text-xs text-center text-gray-400 mt-4">Your selected receipt will be uploaded securely from the confirmation screen. Approval requires receipt review.</p>
                 </div>
               </form>
             </Form>
