@@ -1,6 +1,7 @@
 import { ReactNode, useEffect } from "react";
 import { Navbar } from "./navbar";
 import { Footer } from "./footer";
+import { WhatsAppChat } from "./whatsapp-chat";
 import { useLocation } from "wouter";
 
 export function MainLayout({ children }: { children: ReactNode }) {
@@ -35,6 +36,7 @@ export function MainLayout({ children }: { children: ReactNode }) {
         {children}
       </main>
       <Footer />
+      <WhatsAppChat />
     </div>
   );
 }
