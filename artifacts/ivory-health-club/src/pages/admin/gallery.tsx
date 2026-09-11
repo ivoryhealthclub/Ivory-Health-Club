@@ -19,7 +19,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { getListGalleryImagesQueryKey } from "@workspace/api-client-react";
-import { Trash2, Plus, Upload, Pencil } from "lucide-react";
+import { Trash2, Plus, Upload, Pencil, X } from "lucide-react";
 import { uploadImage } from "@/lib/media-upload";
 
 export default function AdminGallery() {
@@ -102,6 +102,7 @@ function ImageDialog({ image }: { image?: GalleryImage }) {
     published: true,
   };
   const [formData, setFormData] = useState(emptyForm);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const isEditing = Boolean(image);
   const isPending = createImg.isPending || updateImg.isPending || isUploadingImage;
 
@@ -120,10 +121,11 @@ function ImageDialog({ image }: { image?: GalleryImage }) {
       description: image.description ?? "",
       published: image.published,
     } : emptyForm);
+    setSelectedFiles([]);
     setIsDragging(false);
   };
 
-  const readImageFile = async (file: File) => {
+  const validateImageFile = (file: File) => {
     const acceptedTypes = ["image/png", "image/jpeg", "image/webp"];
     const maxFileSize = 5 * 1024 * 1024;
 
@@ -133,7 +135,7 @@ function ImageDialog({ image }: { image?: GalleryImage }) {
         description: "Choose a PNG, JPG, or WebP image.",
         variant: "destructive",
       });
-      return;
+      return false;
     }
 
     if (file.size > maxFileSize) {
@@ -142,53 +144,97 @@ function ImageDialog({ image }: { image?: GalleryImage }) {
         description: "Gallery images must be 5 MB or smaller.",
         variant: "destructive",
       });
-      return;
+      return false;
     }
 
-    setIsUploadingImage(true);
-    try {
-      updateForm("url", await uploadImage(file));
-    } catch (error) {
-      toast({
-        title: "Could not upload image",
-        description: error instanceof Error ? error.message : "Try selecting the image again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploadingImage(false);
-    }
+    return true;
+  };
+
+  const addFiles = (files: File[]) => {
+    const validFiles = files.filter(validateImageFile);
+    if (!validFiles.length) return;
+
+    setSelectedFiles((current) => (isEditing ? validFiles.slice(0, 1) : [...current, ...validFiles]));
+    if (!isEditing) updateForm("url", "");
   };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) void readImageFile(file);
+    addFiles(Array.from(event.target.files ?? []));
     event.target.value = "";
   };
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragging(false);
-    const file = event.dataTransfer.files?.[0];
-    if (file) void readImageFile(file);
+    addFiles(Array.from(event.dataTransfer.files ?? []));
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const fileTitle = (file: File) =>
+    file.name.replace(/\.[^/.]+$/, "").replace(/[-_]+/g, " ").trim() || "Gallery image";
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const options = {
-      onSuccess: () => {
-        toast({ title: isEditing ? "Gallery image updated" : "Image added to gallery" });
+    if (!isEditing && selectedFiles.length > 0) {
+      setIsUploadingImage(true);
+      try {
+        const uploadedUrls = await Promise.all(selectedFiles.map((file) => uploadImage(file)));
+        await Promise.all(
+          uploadedUrls.map((url, index) =>
+            createImg.mutateAsync({
+              data: {
+                ...formData,
+                title: formData.title.trim()
+                  ? `${formData.title.trim()} — ${fileTitle(selectedFiles[index])}`
+                  : fileTitle(selectedFiles[index]),
+                url,
+              },
+            }),
+          ),
+        );
+        toast({
+          title: `${selectedFiles.length} images added to gallery`,
+        });
         queryClient.invalidateQueries({ queryKey: getListGalleryImagesQueryKey() });
         setOpen(false);
         resetForm();
-      },
-      onError: () => {
-        toast({ title: isEditing ? "Error updating image" : "Error adding image", variant: "destructive" });
+      } catch (error) {
+        toast({
+          title: "Could not add all images",
+          description: error instanceof Error ? error.message : "Try selecting the images again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsUploadingImage(false);
       }
-    };
-    if (image) {
-      updateImg.mutate({ id: image.id, data: formData }, options);
-    } else {
-      createImg.mutate({ data: formData }, options);
+      return;
+    }
+
+    const shouldUploadFile = selectedFiles.length > 0;
+    if (shouldUploadFile) setIsUploadingImage(true);
+    try {
+      const url = selectedFiles[0] ? await uploadImage(selectedFiles[0]) : formData.url;
+      if (!url) {
+        toast({ title: "Choose an image or enter an image URL", variant: "destructive" });
+        return;
+      }
+
+      if (image) {
+        await updateImg.mutateAsync({ id: image.id, data: { ...formData, url } });
+      } else {
+        await createImg.mutateAsync({ data: { ...formData, url } });
+      }
+      toast({ title: isEditing ? "Gallery image updated" : "Image added to gallery" });
+      queryClient.invalidateQueries({ queryKey: getListGalleryImagesQueryKey() });
+      setOpen(false);
+      resetForm();
+    } catch (error) {
+      toast({
+        title: isEditing ? "Error updating image" : "Error adding image",
+        description: error instanceof Error ? error.message : "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      if (shouldUploadFile) setIsUploadingImage(false);
     }
   };
 
@@ -220,11 +266,11 @@ function ImageDialog({ image }: { image?: GalleryImage }) {
             <label htmlFor="gallery-image-url" className="text-sm font-medium mb-1 block">Image URL or upload</label>
             <Input
               id="gallery-image-url"
-              required
+              required={isEditing || selectedFiles.length === 0}
               type="text"
               value={formData.url}
               onChange={e => updateForm("url", e.target.value)}
-              placeholder="https://... or choose an image below"
+              placeholder={isEditing ? "https://... or choose an image below" : "https://... or choose one or more images below"}
             />
           </div>
           <div>
@@ -258,6 +304,7 @@ function ImageDialog({ image }: { image?: GalleryImage }) {
             ref={fileInputRef}
             type="file"
             accept="image/png,image/jpeg,image/webp"
+            multiple={!isEditing}
             onChange={handleFileChange}
             className="sr-only"
             tabIndex={-1}
@@ -265,7 +312,7 @@ function ImageDialog({ image }: { image?: GalleryImage }) {
           <div
             role="button"
             tabIndex={0}
-            aria-label={formData.url ? "Replace gallery image" : "Upload gallery image"}
+            aria-label={isEditing ? "Replace gallery image" : "Upload one or more gallery images"}
             onClick={() => fileInputRef.current?.click()}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
@@ -285,23 +332,60 @@ function ImageDialog({ image }: { image?: GalleryImage }) {
                 : "border-gray-200 bg-gray-50 hover:border-primary hover:bg-primary/5"
             }`}
           >
-            {formData.url ? (
+            {selectedFiles.length > 0 ? (
+              <div className="w-full space-y-2 text-left">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-sm font-semibold text-secondary">
+                    {selectedFiles.length} image{selectedFiles.length === 1 ? "" : "s"} selected
+                  </p>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 gap-1 text-gray-500"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setSelectedFiles([]);
+                    }}
+                  >
+                    <X size={14} />
+                    Clear
+                  </Button>
+                </div>
+                <ul className="max-h-28 space-y-1 overflow-y-auto text-xs text-gray-500">
+                  {selectedFiles.map((file) => (
+                    <li key={`${file.name}-${file.lastModified}`} className="truncate rounded bg-white px-2 py-1">
+                      {file.name}
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-center text-[11px] text-gray-400">
+                  Click or drag to {isEditing ? "replace the image" : "add more images"}
+                </p>
+              </div>
+            ) : formData.url ? (
               <div className="relative w-full">
                 <img src={formData.url} alt="Gallery preview" className="max-h-36 w-full rounded-lg object-cover" />
                 <span className="absolute inset-x-0 bottom-2 mx-auto w-fit rounded-full bg-black/65 px-3 py-1 text-[11px] font-medium text-white">
-                  Click or drag to replace
+                  Click or drag to replace or add
                 </span>
               </div>
             ) : (
               <div className="space-y-1 text-gray-400">
                 <Upload className="mx-auto text-gray-300" size={24} />
-                <p className="text-xs font-medium">Click or drag image here</p>
+                <p className="text-xs font-medium">Click or drag image{isEditing ? "" : "s"} here</p>
                 <p className="text-[11px]">PNG, JPG, WebP up to 5 MB</p>
               </div>
             )}
           </div>
           <Button type="submit" className="w-full bg-secondary text-white hover:bg-primary" disabled={isPending}>
-            {isPending ? "Saving..." : isEditing ? "Save Changes" : "Add Image"}
+            {isPending
+              ? "Saving..."
+              : isEditing
+                ? "Save Changes"
+                : selectedFiles.length > 0
+                  ? `Add ${selectedFiles.length} Images`
+                  : "Add Image"}
           </Button>
         </form>
       </DialogContent>
