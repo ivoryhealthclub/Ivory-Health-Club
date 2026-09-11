@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { db, contactMessagesTable } from "@workspace/db";
 import {
   SubmitContactBody,
@@ -56,7 +56,7 @@ router.get("/contact-messages", adminAuthMiddleware, async (req, res): Promise<v
         ? eq(contactMessagesTable.isRead, query.data.isRead)
         : undefined
     )
-    .orderBy(contactMessagesTable.createdAt);
+    .orderBy(desc(contactMessagesTable.createdAt));
 
   res.json(ListContactMessagesResponse.parse(rows.map(toMsg)));
 });
