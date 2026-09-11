@@ -93,13 +93,12 @@ export function WhatsAppChat() {
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
-        className="flex items-center gap-2 rounded-full bg-[#25d366] px-4 py-3 text-sm font-bold text-white shadow-lg shadow-[#075e54]/25 transition-transform hover:-translate-y-0.5 hover:bg-[#20bd5b] focus:outline-none focus:ring-2 focus:ring-[#25d366] focus:ring-offset-2"
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-[#25d366] text-white shadow-lg shadow-[#075e54]/25 transition-transform hover:-translate-y-0.5 hover:bg-[#20bd5b] focus:outline-none focus:ring-2 focus:ring-[#25d366] focus:ring-offset-2"
         aria-expanded={open}
         aria-controls="whatsapp-chat-panel"
         aria-label={open ? "Close WhatsApp chat options" : "Open WhatsApp chat options"}
       >
         <FaWhatsapp size={22} aria-hidden="true" />
-        <span className="hidden sm:inline">Chat on WhatsApp</span>
       </button>
     </div>
   );
