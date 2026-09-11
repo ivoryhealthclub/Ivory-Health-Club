@@ -26,7 +26,7 @@ import { useListMembershipPlans, useCreateEnrollment, type Enrollment } from "@w
 import { CheckCircle2, ChevronRight, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { AnimatedPageHero } from "@/components/layout/animated-page-hero";
-import { BankTransferDetails, BankTransferPanel } from "@/components/payments/bank-transfer-panel";
+import { BankTransferDetails, BankTransferPanel, validateReceiptFile } from "@/components/payments/bank-transfer-panel";
 
 const enrollSchema = z.object({
   planId: z.coerce.number().min(1, "Please select a membership plan"),
@@ -47,6 +47,7 @@ export default function Enroll() {
   const [success, setSuccess] = useState<Enrollment | null>(null);
   const [submittedPlanName, setSubmittedPlanName] = useState("");
   const [confirmationId, setConfirmationId] = useState<number | null>(null);
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
   
   const { data: plans, isLoading: plansLoading, isError: plansError } = useListMembershipPlans();
   const createEnrollment = useCreateEnrollment();
@@ -77,6 +78,20 @@ export default function Enroll() {
 
   const selectedPlanId = form.watch("planId");
   const selectedPlan = plans?.find(p => p.id === selectedPlanId);
+
+  const handleReceiptChange = (candidate: File | undefined) => {
+    const validationError = validateReceiptFile(candidate);
+    if (validationError) {
+      setReceiptFile(null);
+      toast({
+        title: "Receipt file not accepted",
+        description: validationError,
+        variant: "destructive",
+      });
+      return;
+    }
+    setReceiptFile(candidate ?? null);
+  };
 
   const onSubmit = (data: EnrollFormValues) => {
     if (!selectedPlan) {
@@ -122,7 +137,7 @@ export default function Enroll() {
             </p>
           )}
           <div className="mb-8 text-left">
-            <BankTransferPanel entityType="enrollment" entityId={success.id} uploadToken={success.receiptUploadToken} />
+            <BankTransferPanel entityType="enrollment" entityId={success.id} uploadToken={success.receiptUploadToken} initialFile={receiptFile} />
           </div>
           <div className="flex justify-center gap-4">
             <Link href="/">
@@ -196,6 +211,30 @@ export default function Enroll() {
                 </div>
 
                 <BankTransferDetails compact />
+
+                <div className="rounded-sm border border-gray-200 bg-gray-50 p-5">
+                  <div className="mb-3">
+                    <h3 className="text-lg font-bold text-secondary">Payment Receipt</h3>
+                    <p className="mt-1 text-sm text-gray-600">
+                      Already made the bank transfer? Select your receipt now and upload it securely after submitting your application.
+                    </p>
+                  </div>
+                  <Input
+                    type="file"
+                    accept=".pdf,image/jpeg,image/png,image/webp"
+                    onChange={(event) => handleReceiptChange(event.target.files?.[0])}
+                    disabled={createEnrollment.isPending}
+                    className="h-11 bg-white"
+                    aria-label="Select payment receipt"
+                  />
+                  {receiptFile ? (
+                    <p className="mt-2 truncate text-sm text-gray-600">
+                      Selected: <span className="font-medium text-secondary">{receiptFile.name}</span>
+                    </p>
+                  ) : (
+                    <p className="mt-2 text-xs text-gray-500">Accepted: PDF, JPG, PNG, or WEBP up to 10 MB.</p>
+                  )}
+                </div>
 
                 <div className="space-y-4 pt-4">
                     <h3 className="text-lg font-bold text-secondary border-b pb-2">Personal Details</h3>

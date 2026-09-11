@@ -11,10 +11,22 @@ type BankTransferPanelProps = {
   entityType?: ReceiptEntity;
   entityId?: number | null;
   uploadToken?: string | null;
+  initialFile?: File | null;
 };
 
-const MAX_RECEIPT_SIZE = 10 * 1024 * 1024;
-const ALLOWED_RECEIPT_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
+export const MAX_RECEIPT_SIZE = 10 * 1024 * 1024;
+export const ALLOWED_RECEIPT_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
+
+export function validateReceiptFile(candidate: File | undefined): string | null {
+  if (!candidate) return null;
+  if (!ALLOWED_RECEIPT_TYPES.has(candidate.type)) {
+    return "Choose a PDF, JPG, PNG, or WEBP file.";
+  }
+  if (candidate.size > MAX_RECEIPT_SIZE) {
+    return "Receipt files must be no larger than 10 MB.";
+  }
+  return null;
+}
 
 export function BankTransferDetails({ compact = false }: { compact?: boolean }) {
   const { data, isLoading, isError } = useGetPaymentSettings();
@@ -57,8 +69,8 @@ export function BankTransferDetails({ compact = false }: { compact?: boolean }) 
   );
 }
 
-export function BankTransferPanel({ entityType, entityId, uploadToken }: BankTransferPanelProps) {
-  const [file, setFile] = useState<File | null>(null);
+export function BankTransferPanel({ entityType, entityId, uploadToken, initialFile }: BankTransferPanelProps) {
+  const [file, setFile] = useState<File | null>(initialFile ?? null);
   const [uploading, setUploading] = useState(false);
   const [uploaded, setUploaded] = useState(false);
   const { toast } = useToast();
@@ -69,11 +81,12 @@ export function BankTransferPanel({ entityType, entityId, uploadToken }: BankTra
       return;
     }
 
-    if (!ALLOWED_RECEIPT_TYPES.has(candidate.type) || candidate.size > MAX_RECEIPT_SIZE) {
+    const validationError = validateReceiptFile(candidate);
+    if (validationError) {
       setFile(null);
       toast({
         title: "Receipt file not accepted",
-        description: "Choose a PDF, JPG, PNG, or WEBP file no larger than 10 MB.",
+        description: validationError,
         variant: "destructive",
       });
       return;
