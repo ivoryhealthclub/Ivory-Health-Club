@@ -11,6 +11,7 @@ type AnimatedPageHeroProps = {
   imageAlt?: string;
   children?: ReactNode;
   compact?: boolean;
+  fast?: boolean;
   program?: boolean;
   className?: string;
 };
@@ -23,6 +24,7 @@ export function AnimatedPageHero({
   imageAlt = "Ivory Health Club",
   children,
   compact = false,
+  fast = false,
   program = false,
   className = "",
 }: AnimatedPageHeroProps) {
@@ -75,17 +77,21 @@ export function AnimatedPageHero({
 
       <div className="container mx-auto max-w-5xl px-6 py-24 text-center text-white md:py-28">
         <motion.p
-          initial={{ opacity: 0, y: 18 }}
+          initial={{ opacity: 0, y: fast ? 8 : 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65 }}
+          transition={{ duration: fast ? 0.24 : 0.65, ease: "easeOut" }}
           className="mb-5 text-sm font-bold uppercase tracking-[0.24em] text-primary"
         >
           {eyebrow}
         </motion.p>
         <motion.h1
-          initial={{ opacity: 0, y: 28 }}
+          initial={{ opacity: 0, y: fast ? 12 : 28 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
+          transition={{
+            duration: fast ? 0.3 : 0.8,
+            delay: fast ? 0.04 : 0.1,
+            ease: "easeOut",
+          }}
           className={`font-serif font-bold leading-[1.08] tracking-tight text-white ${
             compact ? "text-4xl md:text-5xl" : "text-5xl md:text-7xl"
           }`}
@@ -94,9 +100,13 @@ export function AnimatedPageHero({
         </motion.h1>
         {description && (
           <motion.div
-            initial={{ opacity: 0, y: 22 }}
+            initial={{ opacity: 0, y: fast ? 10 : 22 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.75, delay: 0.22 }}
+            transition={{
+              duration: fast ? 0.26 : 0.75,
+              delay: fast ? 0.08 : 0.22,
+              ease: "easeOut",
+            }}
             className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-white/80 md:text-xl"
           >
             {description}
@@ -104,9 +114,13 @@ export function AnimatedPageHero({
         )}
         {children && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: fast ? 8 : 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.36 }}
+            transition={{
+              duration: fast ? 0.24 : 0.7,
+              delay: fast ? 0.12 : 0.36,
+              ease: "easeOut",
+            }}
             className="mt-8 flex flex-wrap items-center justify-center gap-4"
           >
             {children}

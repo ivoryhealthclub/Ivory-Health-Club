@@ -10,6 +10,7 @@ export default function NotFound() {
         title="Page Not Found"
         description="The page you are looking for may have moved. Return to the home page and continue exploring Ivory."
         compact
+        fast
       >
         <Link href="/">
           <Button className="bg-primary text-secondary hover:bg-white hover:text-secondary uppercase tracking-wider font-bold rounded-full px-8 h-12">
